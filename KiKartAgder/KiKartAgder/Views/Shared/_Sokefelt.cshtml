@@ -1,0 +1,8 @@
+@model SokefeltModel
+@* Søkefelt med forslag mens man skriver. Forslagene hentes fra /Prosjekter/Forslag av site.js. *@
+<div class="searchbox" data-forslag>
+    @Ikoner.Sok
+    <input id="@Model.Id" name="q" type="search" placeholder="@Model.Placeholder" aria-label="@Model.Placeholder" value="@Model.Verdi"
+           autocomplete="off" role="combobox" aria-expanded="false" aria-controls="@(Model.Id)-list" />
+    <ul class="suggest" id="@(Model.Id)-list" role="listbox" hidden></ul>
+</div>

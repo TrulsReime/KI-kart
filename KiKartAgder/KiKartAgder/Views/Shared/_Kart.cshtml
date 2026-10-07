@@ -1,0 +1,31 @@
+@model KartViewModel
+@using System.Globalization
+@{
+    var inv = CultureInfo.InvariantCulture;
+    string F(double d) => d.ToString("0.#", inv);
+}
+@* Kartet tegnes på serveren som SVG. Hver kommune er en lenke til prosjektlisten filtrert på kommunen. *@
+<div class="map-wrap">
+    <svg viewBox="-6 -6 @F(Model.Kart.Bredde + 12) @F(Model.Kart.Hoyde + 12)" role="img" aria-label="Kart over Agder med antall KI-prosjekter per kommune">
+        <g>
+            @foreach (var k in Model.Kart.Kommuner)
+            {
+                var egne = Model.Egne.GetValueOrDefault(k);
+                var sam = Model.ISamarbeid.GetValueOrDefault(k);
+                <a href="/Prosjekter?kommune=@Uri.EscapeDataString(k)" aria-label="@k: @egne egne prosjekter og @sam samarbeid"
+                   data-navn="@k" data-egne="@egne" data-samarbeid="@sam">
+                    <path class="k" d="@Model.Kart.Former[k].Sti" fill="var(--seq-@Model.Trinn(k))" />
+                </a>
+            }
+        </g>
+        <g>
+            @foreach (var k in Model.Kart.Kommuner.Where(k => Model.Totalt(k) > 0))
+            {
+                var f = Model.Kart.Former[k];
+                @* <text> er et reservert ord i Razor, derfor skrives elementet som rå HTML *@
+                @Html.Raw($"<text x=\"{F(f.X)}\" y=\"{F(f.Y + 5)}\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#212529\" stroke=\"#fff\" stroke-width=\"4\" paint-order=\"stroke\" stroke-linejoin=\"round\">{Model.Totalt(k)}</text>")
+            }
+        </g>
+    </svg>
+    <div class="map-legend">Færre<span class="ramp">@for (var i = 0; i <= 6; i++) {<span style="background:var(--seq-@i)"></span>}</span>Flere<span style="margin-left:auto">Tallet inkluderer samarbeid</span></div>
+</div>

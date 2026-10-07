@@ -1,0 +1,22 @@
+@model TakkViewModel
+@{
+    ViewData["Fane"] = "meldinn";
+    ViewData["Title"] = "Takk";
+}
+<section class="thanks">
+    <span class="tick">@Ikoner.Ikon("check", 30)</span>
+    <h2>@(Model.Oppdatering ? "Takk for oppdateringen!" : "Takk for at du delte prosjektet!")</h2>
+    <p>@(Model.Oppdatering
+        ? "Oppdateringen vises med dagens dato så snart DigiAgder har sett over den."
+        : "DigiAgder ser over innmeldingen, vanligvis innen to arbeidsdager. Deretter blir prosjektet synlig i kartet og under «Sist oppdatert».")</p>
+    <div class="thanks-card"><partial name="_ProsjektKort" model="Model.Prosjekt" /></div>
+    <ol class="nextsteps">
+        <li><strong>Synlig for alle kommunene. </strong>Andre kan finne prosjektet og ta kontakt med deg.</li>
+        <li><strong>Varsel ved interesse. </strong>Du får e-post når noen vil samarbeide eller bli med.</li>
+        <li><strong>Påminnelse én gang i året. </strong>Et par klikk holder prosjektet oppdatert.</li>
+    </ol>
+    <div class="stepnav" style="justify-content:center">
+        <a class="btn primary big" asp-controller="MeldInn" asp-action="Index">Meld inn et prosjekt til</a>
+        <a class="btn big" asp-controller="Prosjekter" asp-action="Index">Se alle prosjekter</a>
+    </div>
+</section>

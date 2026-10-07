@@ -1,0 +1,144 @@
+@model ForvaltningViewModel
+@{
+    ViewData["Fane"] = "forvaltning";
+    ViewData["Title"] = "Forvaltning";
+}
+
+<div class="adminhead">
+    <div>
+        <h2>Forvaltning av innmeldinger</h2>
+        <p class="sub" style="margin:4px 0 0">For DigiAgder. Nye prosjekter, oppdateringer, rettelser og forespørsler om å bli med. Ingenting publiseres før det er godkjent.</p>
+    </div>
+    <span class="pill warn">Krever innlogging i ferdig løsning</span>
+</div>
+
+<div class="kpis" style="margin:16px 0">
+    <div class="kpi"><div class="eyebrow">Til behandling</div><div class="value num">@Model.AntallNye</div></div>
+    <div class="kpi"><div class="eyebrow">Venter på innsender</div><div class="value num">@Model.AntallVenter</div></div>
+    <div class="kpi"><div class="eyebrow">Godkjent</div><div class="value num">@Model.AntallGodkjent</div></div>
+    <div class="kpi"><div class="eyebrow">Må bekreftes</div><div class="value num" style="@(Model.Paminnelser.Any(x => x.Utlopt) ? "color:var(--crit-ink)" : null)">@Model.Paminnelser.Count</div></div>
+</div>
+
+<nav class="segtabs" aria-label="Status">
+    @foreach (var (v, l) in ForvaltningViewModel.Faner)
+    {
+        <a href="/Forvaltning?fane=@v" aria-current="@(Model.Fane == v ? "page" : null)">@l<span class="count">@Model.Antall(v)</span></a>
+    }
+</nav>
+
+<section class="panel qpanel">
+    @if (Model.Fane == "pam")
+    {
+        <p class="sub" style="margin-top:0">Sendes automatisk etter 11 måneder uten oppdatering. Her kan de også sendes manuelt.</p>
+        <ul class="alist">
+            @foreach (var r in Model.Paminnelser)
+            {
+                var p = r.Prosjekt;
+                <li>
+                    <div>
+                        <a class="linkbtn t" href="@Lenker.Prosjekt(Context, p.Id)">@p.Tittel</a>
+                        <div class="w" style="@(r.Utlopt ? "color:var(--crit-ink)" : null)">Sist oppdatert @Datoformat.Lang(p.Oppdatert) · @p.Kontakt.Navn@(p.PaminnelseSendt is DateOnly d ? $" · påminnelse sendt {Datoformat.Kort(d)}" : "")</div>
+                    </div>
+                    <form asp-action="Paminnelse" asp-route-id="@p.Id" method="post">
+                        <button class="btn small" type="submit" disabled="@(p.PaminnelseSendt != null)">@(p.PaminnelseSendt != null ? "Sendt" : "Send påminnelse")</button>
+                    </form>
+                    <details style="grid-column:1/-1">
+                        <summary style="font-size:12.5px;color:var(--ink-3);cursor:pointer">Se e-posten</summary>
+                        <div class="mail">@r.Epost</div>
+                    </details>
+                </li>
+            }
+            @if (Model.Paminnelser.Count == 0)
+            {
+                <li><span class="muted">Alle prosjekter er oppdatert.</span></li>
+            }
+        </ul>
+    }
+    else
+    {
+        @if (Model.Rader.Count == 0)
+        {
+            <div class="empty">@(Model.Fane == "ny" ? "Ingen nye innmeldinger. Bra jobbet!" : "Ingenting her.")</div>
+        }
+        @foreach (var r in Model.Rader)
+        {
+            var i = r.Innmelding;
+            var p = r.Prosjekt;
+            <details class="qrow" open="@(Model.ApenId == i.Id)">
+                <summary>
+                    <div class="qmain">
+                        <div class="qkind">@i.TypeTekst</div>
+                        <div class="qtitle">@p.Tittel</div>
+                        <div class="w">@i.Fra · sendt @Datoformat.Lang(i.Dato)</div>
+                    </div>
+                    <span class="pill @i.StatusKlasse">@i.StatusTekst</span>
+                </summary>
+                <div class="qbody">
+                    @if (i.Type == InnmeldingType.NyttProsjekt)
+                    {
+                        <dl class="kv">
+                            <dt>Ansvarlig</dt><dd>@p.Eier</dd>
+                            <dt>Organisering</dt><dd>@(p.Samarbeid ? "Samarbeid: " + string.Join(", ", p.Deltakere) : "Én kommune")</dd>
+                            <dt>Sektor og fase</dt><dd>@p.Sektor · @p.Fase</dd>
+                            <dt>Hva løsningen gjør</dt><dd>@p.Beskrivelse</dd>
+                            <dt>Stikkord</dt><dd>@string.Join(" ", p.Stikkord.Select(t => "#" + t))</dd>
+                            <dt>Kontakt</dt><dd>@p.Kontakt.Navn (@(string.IsNullOrEmpty(p.Kontakt.Rolle) ? "rolle ikke oppgitt" : p.Kontakt.Rolle)), @p.Kontakt.Epost</dd>
+                        </dl>
+                        @if (r.MuligeDuplikater.Count > 0)
+                        {
+                            <div class="qwarn">Mulig duplikat:
+                                @for (var n = 0; n < r.MuligeDuplikater.Count; n++)
+                                {
+                                    var b = r.MuligeDuplikater[n];
+                                    @(n > 0 ? ", " : "")<a class="linkbtn ul" href="@Lenker.Prosjekt(Context, b.Id)">@b.Tittel</a>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p style="margin:0 0 6px">@(i.Type == InnmeldingType.BliMed ? $"{i.Kommune} vil bli med i prosjektet. «{i.Tekst}»" : i.Tekst)</p>
+                        <a class="linkbtn ul" href="@Lenker.Prosjekt(Context, p.Id)">Åpne prosjektet slik det ser ut nå</a>
+                    }
+                    @if (i.Kommentar != null)
+                    {
+                        <div class="qnote"><strong>@(i.Status == InnmeldingStatus.Avvist ? "Begrunnelse: " : "Melding til innsender: ")</strong>@i.Kommentar</div>
+                    }
+                    @if (i.KanBehandles)
+                    {
+                        <form class="qactions" asp-action="Behandle" asp-route-id="@i.Id" method="post">
+                            <input type="hidden" name="fane" value="@Model.Fane" />
+                            <textarea name="melding" rows="2" class="qmsg" aria-label="Melding til innsender" placeholder="Melding til innsender (påkrevd ved «Be om endring» og «Avvis»)"></textarea>
+                            <div class="qbtns">
+                                <button class="btn primary" type="submit" name="handling" value="godkjenn">@(i.Type switch { InnmeldingType.NyttProsjekt => "Godkjenn og publiser", InnmeldingType.BliMed => "Legg til kommunen", _ => "Godkjenn endringen" })</button>
+                                <button class="btn" type="submit" name="handling" value="endring">Be om endring</button>
+                                <button class="btn danger" type="submit" name="handling" value="avvis">Avvis</button>
+                            </div>
+                        </form>
+                    }
+                    else if (i.BehandletDato is DateOnly bd)
+                    {
+                        <p class="sub" style="margin:8px 0 0">@i.StatusTekst @Datoformat.Lang(bd)</p>
+                    }
+                </div>
+            </details>
+        }
+    }
+</section>
+
+@if (Model.Henvendelser.Count > 0)
+{
+    <section class="panel" style="margin-top:16px">
+        <h2>Samarbeidshenvendelser</h2>
+        <p class="sub">Viser at kartet blir brukt. Kan brukes som suksessmål.</p>
+        <ul class="alist">
+            @foreach (var h in Model.Henvendelser)
+            {
+                <li>
+                    <div><div class="t">@h.ProsjektTittel</div><div class="w">Fra @h.Henvendelse.Fra · @h.Henvendelse.Melding</div></div>
+                    <span class="muted" style="font-size:12.5px">@Datoformat.Lang(h.Henvendelse.Dato)</span>
+                </li>
+            }
+        </ul>
+    </section>
+}

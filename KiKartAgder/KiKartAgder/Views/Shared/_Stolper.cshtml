@@ -1,0 +1,11 @@
+@model List<Stolpe>
+<div class="bars">
+    @foreach (var s in Model)
+    {
+        <a class="bar" href="@s.Url" aria-label="@s.Navn: @s.Antall">
+            <span class="name" title="@s.Navn">@s.Navn</span>
+            <span class="track"><span class="fill" style="width:@(s.Prosent.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))%;@(s.Kritisk ? "background:var(--crit)" : "")"></span></span>
+            <span class="v">@s.Antall</span>
+        </a>
+    }
+</div>

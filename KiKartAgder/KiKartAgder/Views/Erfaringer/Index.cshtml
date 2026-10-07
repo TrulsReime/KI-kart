@@ -1,0 +1,84 @@
+@model ErfaringerViewModel
+@{
+    ViewData["Fane"] = "erfaringer";
+    ViewData["Title"] = "Erfaringer";
+}
+
+<section class="panel">
+    <h2>Erfaringer fra andre prosjekter</h2>
+    <p class="sub">Erfaringer fra prosjekter som er i gang, i drift, fullført eller avbrutt. Avbrutte prosjekter viser hvorfor, så andre slipper å gjøre de samme feilene.</p>
+
+    <form method="get" action="/Erfaringer" data-autosend role="search">
+        <div class="searchbox">
+            @Ikoner.Sok
+            <input id="lq" name="q" type="search" value="@Model.Q" placeholder="Søk i erfaringene, f.eks. personvern, leverandør eller tale til tekst" aria-label="Søk i erfaringer" />
+        </div>
+        <div class="efrow">
+            <select name="sektor" class="efsel@(string.IsNullOrEmpty(Model.Sektor) ? "" : " on")" aria-label="Alle sektorer">
+                <option value="">Alle sektorer</option>
+                @foreach (var s in Katalog.Sektorer)
+                {
+                    <option value="@s" selected="@(Model.Sektor == s)">@s</option>
+                }
+            </select>
+            <select name="kommune" class="efsel@(string.IsNullOrEmpty(Model.Kommune) ? "" : " on")" aria-label="Alle kommuner">
+                <option value="">Alle kommuner</option>
+                @foreach (var k in Model.Kommuner)
+                {
+                    <option value="@k" selected="@(Model.Kommune == k)">@k</option>
+                }
+            </select>
+            <select name="dato" class="efsel@(string.IsNullOrEmpty(Model.Dato) ? "" : " on")" aria-label="Alle datoer">
+                <option value="">Alle datoer</option>
+                @foreach (var (v, l) in ErfaringerViewModel.Datoer)
+                {
+                    <option value="@v" selected="@(Model.Dato == v)">@l</option>
+                }
+            </select>
+            @if (Model.HarFilter)
+            {
+                <a class="btn ghost small" href="/Erfaringer">Nullstill</a>
+            }
+            <noscript><button class="btn small" type="submit">Søk</button></noscript>
+        </div>
+        <div class="checks" role="radiogroup" aria-label="Status">
+            @foreach (var (v, l) in ErfaringerViewModel.Statuser)
+            {
+                <label><input type="radio" name="status" value="@v" checked="@(Model.Status == v)" />@l (@Model.AntallPerStatus[v])</label>
+            }
+        </div>
+    </form>
+
+    <p class="efcount">@Model.Liste.Count @(Model.Liste.Count == 1 ? "prosjekt" : "prosjekter")</p>
+    <div>
+        @foreach (var p in Model.Liste)
+        {
+            var tidlig = p.Fase is Katalog.Pilot or Katalog.Ide;
+            <details class="fold" open="@(Model.Status == "stoppet")">
+                <summary>
+                    <span style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap">
+                        <partial name="_FasePill" model="p" />@p.Tittel
+                        @if (p.Samarbeid) { <span class="pill collab">Samarbeid</span> }
+                    </span>
+                    <span class="meta">@(p.Stopp != null ? "Avbrutt: " + p.Stopp.ToLowerInvariant() : p.Eier)</span>
+                </summary>
+                <div class="body">
+                    <dl class="lesson-grid">
+                        <div><dt>@(tidlig ? "Dette fungerer så langt" : "Dette fungerte")</dt><dd>@p.Fungerte</dd></div>
+                        <div><dt>@(p.Fase == Katalog.Avbrutt ? "Hvorfor avbrutt, og hva vi lærte" : "Dette ville vi gjort annerledes")</dt><dd>@p.Annerledes</dd></div>
+                    </dl>
+                    <div class="contactline">
+                        Spør <strong>@p.Kontakt.Navn</strong>
+                        <span class="muted">@p.Kontakt.Rolle, @p.Eier</span>
+                        <span class="upd" title="@p.SistEndret">Oppdatert @Datoformat.Lang(p.Oppdatert)</span>
+                        <a class="btn small" href="@Lenker.Prosjekt(Context, p.Id)">Alle detaljer</a>
+                    </div>
+                </div>
+            </details>
+        }
+        @if (Model.Liste.Count == 0)
+        {
+            <div class="empty">Ingen erfaringer passer. Prøv færre filtre.</div>
+        }
+    </div>
+</section>

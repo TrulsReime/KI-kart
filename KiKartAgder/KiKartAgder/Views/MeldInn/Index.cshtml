@@ -1,0 +1,247 @@
+@model MeldInnViewModel
+@{
+    ViewData["Fane"] = "meldinn";
+    ViewData["Title"] = Model.Redigerer != null ? "Oppdater prosjekt" : "Meld inn prosjekt";
+    var s = Model.Skjema;
+    var p = Model.Redigerer;
+    string[] steg = { "Om prosjektet", "Hvem står bak", "Del mer" };
+    string? Feil(string felt) => ViewData.ModelState.TryGetValue(felt, out var e) && e.Errors.Count > 0 ? e.Errors[0].ErrorMessage : null;
+}
+
+<section class="invite">
+    <div class="invite-text">
+        <h2>@(p != null ? "Oppdater prosjektet" : "Del prosjektet ditt")</h2>
+        <p>@(p != null
+            ? $"Du oppdaterer «{p.Tittel}». Endringene vises med dagens dato når DigiAgder har godkjent dem."
+            : "Det tar rundt fem minutter. Alle KI-prosjekter teller, også idéer og prosjekter som ble avbrutt. Du kan oppdatere når som helst.")</p>
+        <div class="invite-meta">@Ikoner.Ikon("clock", 18)<span>Ca. 5 minutter</span><span class="dot"></span><span>Bare 8 felt er påkrevd</span></div>
+    </div>
+    <div class="benefits">
+        <div class="ben"><span class="bi">@Ikoner.Ikon("eye")</span><div><strong>Bli synlig</strong><span>Ledere og fagmiljøer i hele Agder ser hva dere jobber med.</span></div></div>
+        <div class="ben"><span class="bi">@Ikoner.Ikon("people")</span><div><strong>Finn partnere</strong><span>Andre kommuner med samme behov kan ta kontakt eller bli med.</span></div></div>
+        <div class="ben"><span class="bi">@Ikoner.Ikon("bulb")</span><div><strong>Del det dere lærer</strong><span>Også idéer og avbrutte prosjekter hjelper andre å lykkes.</span></div></div>
+    </div>
+</section>
+
+<div class="grid form-grid" style="margin-top:20px">
+    <div class="panel stepform" data-stegskjema data-start="@Model.StartSteg">
+        <ol class="stepper">
+            @for (var i = 0; i < steg.Length; i++)
+            {
+                var n = i + 1;
+                <li class="@(n == Model.StartSteg ? "on" : n < Model.StartSteg ? "done" : "")" data-nr="@n">
+                    <span class="sn">@n</span><span class="sl">@steg[i]<small hidden="@(n != 3)"> valgfritt</small></span>
+                </li>
+            }
+        </ol>
+
+        @if (p == null)
+        {
+            @* Eget GET-skjema for å bytte til et eksisterende prosjekt. Kan ikke ligge inne i hovedskjemaet. *@
+            <form method="get" action="/MeldInn" class="f" data-autosend data-bare-steg="1" style="margin-bottom:18px">
+                <label for="velgProsjekt">Vil du heller oppdatere et prosjekt som allerede er lagt inn?</label>
+                <select id="velgProsjekt" name="id">
+                    <option value="">Nytt prosjekt</option>
+                    @foreach (var x in Model.Publiserte)
+                    {
+                        <option value="@x.Id">@x.Tittel (@x.Eier)</option>
+                    }
+                </select>
+                <noscript><button class="btn small" type="submit">Åpne</button></noscript>
+            </form>
+        }
+
+        <form asp-controller="MeldInn" asp-action="Index" method="post" novalidate id="meldinn">
+            <input type="hidden" name="Id" value="@s.Id" />
+
+            @* ---------- Steg 1 ---------- *@
+            <fieldset class="step" data-steg="1">
+                <legend class="sr-only">Om prosjektet</legend>
+                <div class="f">
+                    <label for="Tittel">Hva heter prosjektet?<span class="req"> *</span></label>
+                    <input id="Tittel" name="Tittel" value="@s.Tittel" placeholder="F.eks. Tale til tekst i hjemmetjenesten" required data-pakrevd="navn på prosjektet" />
+                    @if (Feil("Tittel") is string feilTittel) {<span class="ferr">@feilTittel</span>}
+                </div>
+                <div class="f">
+                    <label for="Beskrivelse">Hva gjør løsningen?<span class="req"> *</span></label>
+                    <textarea id="Beskrivelse" name="Beskrivelse" required data-pakrevd="hva løsningen gjør" placeholder="F.eks. Ansatte dikterer journalnotat på mobilen etter besøk, og teksten kontrolleres før den lagres.">@s.Beskrivelse</textarea>
+                    @if (Feil("Beskrivelse") is string feilBeskrivelse) {<span class="ferr">@feilBeskrivelse</span>}
+                    <span class="hint">To–tre setninger, skrevet som du ville forklart det til en kollega.</span>
+                </div>
+                <fieldset class="f choice" data-pakrevd-radio="Sektor" data-pakrevd="sektor">
+                    <legend class="lab">Sektor<span class="req"> *</span></legend>
+                    <div class="choices">
+                        @foreach (var x in Katalog.Sektorer)
+                        {
+                            <label class="choicebox"><input type="radio" name="Sektor" value="@x" checked="@(s.Sektor == x)" /><span class="ct">@x</span></label>
+                        }
+                    </div>
+                    @if (Feil("Sektor") is string feilSektor) {<span class="ferr">@feilSektor</span>}
+                </fieldset>
+                <fieldset class="f choice" data-pakrevd-radio="Fase" data-pakrevd="fase">
+                    <legend class="lab">Hvor langt har dere kommet?<span class="req"> *</span></legend>
+                    <div class="choices">
+                        @foreach (var x in Katalog.Faser)
+                        {
+                            <label class="choicebox"><input type="radio" name="Fase" value="@x" checked="@(s.Fase == x)" /><span class="ct">@x</span><span class="ch">@Katalog.FaseHjelp[x]</span></label>
+                        }
+                    </div>
+                    @if (Feil("Fase") is string feilFase) {<span class="ferr">@feilFase</span>}
+                </fieldset>
+                <div class="f" id="stoppBox" hidden="@(s.Fase != Katalog.Avbrutt)">
+                    <label for="Stopp">Hvorfor ble prosjektet avbrutt?</label>
+                    <select id="Stopp" name="Stopp">
+                        <option value="">Velg …</option>
+                        @foreach (var x in Katalog.StoppArsaker)
+                        {
+                            <option value="@x" selected="@(s.Stopp == x)">@x</option>
+                        }
+                    </select>
+                    <span class="hint">Hjelper andre å unngå det samme.</span>
+                </div>
+                <div class="f">
+                    <label for="Stikkord">Stikkord<span class="req"> *</span></label>
+                    <input id="Stikkord" name="Stikkord" value="@s.Stikkord" placeholder="Skill med komma, f.eks. chatbot, språkmodell" data-stikkord data-pakrevd="minst ett stikkord" />
+                    @if (Feil("Stikkord") is string feilStikkord) {<span class="ferr">@feilStikkord</span>}
+                    <span class="hint">Gjør prosjektet lett å finne. Velg gjerne blant de som brukes mest:</span>
+                    <div class="sugg js-only">
+                        @foreach (var t in Model.PopulareStikkord)
+                        {
+                            <button class="tag" type="button" data-legg-til="@t">+ #@t</button>
+                        }
+                    </div>
+                </div>
+            </fieldset>
+
+            @* ---------- Steg 2 ---------- *@
+            <fieldset class="step" data-steg="2">
+                <legend class="sr-only">Hvem står bak</legend>
+                <fieldset class="f choice">
+                    <legend class="lab">Hvem gjennomfører prosjektet?<span class="req"> *</span></legend>
+                    <div class="choices two">
+                        <label class="choicebox"><input type="radio" name="Organisering" value="Enkeltkommune" checked="@(s.Organisering != "Samarbeid")" /><span class="ct">Én kommune</span><span class="ch">Kommunen gjør prosjektet alene</span></label>
+                        <label class="choicebox"><input type="radio" name="Organisering" value="Samarbeid" checked="@(s.Organisering == "Samarbeid")" /><span class="ct">Samarbeid</span><span class="ch">Flere kommuner er med</span></label>
+                    </div>
+                </fieldset>
+                <div class="row2">
+                    <div class="f">
+                        <label for="Eier">Ansvarlig kommune eller virksomhet<span class="req"> *</span></label>
+                        <input id="Eier" name="Eier" value="@s.Eier" placeholder="F.eks. Arendal kommune" required data-pakrevd="ansvarlig" />
+                    @if (Feil("Eier") is string feilEier) {<span class="ferr">@feilEier</span>}
+                    </div>
+                    <div class="f">
+                        <label for="Kommune">Plassering i kartet<span class="req"> *</span></label>
+                        <select id="Kommune" name="Kommune" required data-pakrevd="plassering i kartet">
+                            <option value="">Velg …</option>
+                            @foreach (var k in Model.Kommuner)
+                            {
+                                <option value="@k" selected="@(s.Kommune == k)">@k</option>
+                            }
+                        </select>
+                        @if (Feil("Kommune") is string feilKommune) {<span class="ferr">@feilKommune</span>}
+                    </div>
+                </div>
+                <div class="f" id="partBox" hidden="@(s.Organisering != "Samarbeid")">
+                    <span class="lab">Hvilke kommuner er med?</span>
+                    <div class="checks kgrid">
+                        @foreach (var k in Model.Kommuner)
+                        {
+                            <label><input type="checkbox" name="Deltakere" value="@k" checked="@s.Deltakere.Contains(k)" />@k</label>
+                        }
+                    </div>
+                    <label class="opt" style="margin-top:6px"><input type="checkbox" name="Apen" value="true" checked="@s.Apen" />Åpent for at flere kommuner kan bli med</label>
+                    <input type="hidden" name="Apen" value="false" />
+                    @if (Feil("Deltakere") is string feilDeltakere) {<span class="ferr">@feilDeltakere</span>}
+                </div>
+                <div class="subhead">Kontaktperson<span>Vises for andre som vil ta kontakt</span></div>
+                <div class="row2">
+                    <div class="f">
+                        <label for="KontaktNavn">Navn<span class="req"> *</span></label>
+                        <input id="KontaktNavn" name="KontaktNavn" value="@s.KontaktNavn" required data-pakrevd="kontaktperson" />
+                    @if (Feil("KontaktNavn") is string feilKontaktNavn) {<span class="ferr">@feilKontaktNavn</span>}
+                    </div>
+                    <div class="f">
+                        <label for="KontaktRolle">Rolle</label>
+                        <input id="KontaktRolle" name="KontaktRolle" value="@s.KontaktRolle" placeholder="F.eks. Prosjektleder" />
+                    </div>
+                </div>
+                <div class="f">
+                    <label for="KontaktEpost">E-post<span class="req"> *</span></label>
+                    <input id="KontaktEpost" name="KontaktEpost" type="email" value="@s.KontaktEpost" required data-pakrevd="e-post" />
+                    @if (Feil("KontaktEpost") is string feilKontaktEpost) {<span class="ferr">@feilKontaktEpost</span>}
+                    <span class="hint">Brukes også til en påminnelse om å oppdatere én gang i året.</span>
+                </div>
+            </fieldset>
+
+            @* ---------- Steg 3 ---------- *@
+            <fieldset class="step" data-steg="3">
+                <legend class="sr-only">Del mer</legend>
+                <p class="sub" style="margin-top:0">Alt her er valgfritt, men det gjør prosjektet mye nyttigere for andre.</p>
+                <div class="f">
+                    <span class="lab">Vi ser etter</span>
+                    <div class="checks">@foreach (var b in Katalog.Behov) {<label><input type="checkbox" name="Soker" value="@b" checked="@s.Soker.Contains(b)" />@b</label>}</div>
+                </div>
+                <div class="f">
+                    <span class="lab">Vi kan tilby</span>
+                    <div class="checks">@foreach (var b in Katalog.Behov) {<label><input type="checkbox" name="Tilbyr" value="@b" checked="@s.Tilbyr.Contains(b)" />@b</label>}</div>
+                </div>
+                <div class="f"><label for="Mal">Mål</label><textarea id="Mal" name="Mal">@s.Mal</textarea></div>
+                <div class="row2">
+                    <div class="f"><label for="Status">Status nå</label><textarea id="Status" name="Status">@s.Status</textarea></div>
+                    <div class="f"><label for="Gevinst">Gevinst, forventet eller oppnådd</label><textarea id="Gevinst" name="Gevinst">@s.Gevinst</textarea></div>
+                </div>
+                <div class="f"><label for="Fungerte">Dette fungerer eller fungerte</label><textarea id="Fungerte" name="Fungerte">@s.Fungerte</textarea></div>
+                <div class="f"><label for="Annerledes">Dette ville vi gjort annerledes</label><textarea id="Annerledes" name="Annerledes">@s.Annerledes</textarea></div>
+                <div class="f">
+                    <label for="SistEndret">Hva er nytt?</label>
+                    <input id="SistEndret" name="SistEndret" value="@s.SistEndret" placeholder="F.eks. Piloten er satt i drift" />
+                    <span class="hint">Vises sammen med datoen for oppdateringen.</span>
+                </div>
+            </fieldset>
+
+            @{
+                var feil = ViewData.ModelState.Where(kv => kv.Value!.Errors.Count > 0).SelectMany(kv => kv.Value!.Errors.Select(e => e.ErrorMessage)).Distinct().ToList();
+            }
+            <p class="formerr" role="alert" id="formerr">@(feil.Count > 0 ? "Rett opp: " + string.Join(", ", feil).ToLowerInvariant() + "." : "")</p>
+            <div class="stepnav">
+                <button class="btn js-only" type="button" data-tilbake>Tilbake</button>
+                <span class="grow"></span>
+                <button class="btn primary big js-only" type="button" data-neste>Neste</button>
+                <button class="btn primary big" type="submit" data-send>@(p != null ? "Send oppdatering" : "Send inn prosjektet")</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="sticky">
+        <section class="panel previewpanel">
+            <div class="eyebrow" style="margin-bottom:10px">Slik vil prosjektet se ut</div>
+            <div class="card c2 preview" id="livePrev">
+                <div class="c-top">
+                    <div class="c-pills">
+                        <span class="pill @Katalog.FaseKlasse(s.Fase ?? Katalog.Ide)" data-vis="fasepill"><i></i><span data-vis="fase">@(s.Fase ?? Katalog.Ide)</span></span>
+                        <span class="pill collab" data-vis="samarbeid" hidden="@(s.Organisering != "Samarbeid")">Samarbeid</span>
+                    </div>
+                    <span class="upd">I dag</span>
+                </div>
+                <h3 data-vis="tittel">@(s.Tittel ?? "Prosjektets navn")</h3>
+                <p class="c-desc" data-vis="beskrivelse">@(s.Beskrivelse ?? "Kort beskrivelse av hva løsningen gjør.")</p>
+                <div class="c-meta">
+                    <span data-vis="eier">@(s.Eier ?? "Ansvarlig kommune")</span><span class="sep">·</span><span data-vis="sektor">@(s.Sektor ?? "Sektor")</span>
+                    <span class="c-tags" data-vis="stikkord">@string.Join("  ", s.StikkordListe().Take(3).Select(t => "#" + t))</span>
+                </div>
+            </div>
+        </section>
+        <details class="fold panel" style="padding:0 18px">
+            <summary><span>Usikker på om prosjektet passer?</span></summary>
+            <div class="body">
+                <ul class="checklist">
+                    <li><span class="y">✓</span>Løsningen bruker KI, for eksempel språkmodell, tale til tekst, bildegjenkjenning eller prediksjon</li>
+                    <li><span class="y">✓</span>Det er et felles tiltak i én eller flere kommuner, eller i fylkeskommunen</li>
+                    <li><span class="y">✓</span>Idéer, piloter og avbrutte prosjekter er like velkomne</li>
+                    <li><span class="n">✗</span>Enkeltpersoners bruk av Copilot eller ChatGPT i eget arbeid</li>
+                </ul>
+                <p class="sub" style="margin:10px 0 0">Er du i tvil, meld det inn. DigiAgder hjelper deg før noe publiseres.</p>
+            </div>
+        </details>
+    </div>
+</div>

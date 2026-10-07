@@ -1,0 +1,33 @@
+@model Prosjekt
+@{
+    var ekstra = Model.Deltakere.Count - 1;
+    var forhandsvisning = ViewData["Forhandsvisning"] is true;
+}
+<a class="card c2@(forhandsvisning ? " preview" : "")" href="@(forhandsvisning ? null : Lenker.Prosjekt(Context, Model.Id))">
+    <div class="c-top">
+        <div class="c-pills">
+            <partial name="_FasePill" model="Model" />
+            @if (Model.Samarbeid) { <span class="pill collab">Samarbeid</span> }
+            @if (Model.TilGodkjenning) { <span class="pill new">Til godkjenning</span> }
+        </div>
+        <span class="upd">@Datoformat.Lang(Model.Oppdatert)</span>
+    </div>
+    <h3>@Model.Tittel</h3>
+    @if (Model.Stopp != null)
+    {
+        <div class="stopline">Avbrutt: @Model.Stopp.ToLowerInvariant()</div>
+    }
+    else if (!string.IsNullOrEmpty(Model.Beskrivelse))
+    {
+        <p class="c-desc">@Model.Beskrivelse</p>
+    }
+    <div class="c-meta">
+        <span>@Model.Eier@(ekstra > 0 ? $" + {ekstra} {(ekstra == 1 ? "kommune" : "kommuner")}" : "")</span>
+        <span class="sep">·</span>
+        <span>@Model.Sektor</span>
+        @if (Model.Stikkord.Count > 0)
+        {
+            <span class="c-tags">@string.Join("  ", Model.Stikkord.Take(3).Select(t => "#" + t))</span>
+        }
+    </div>
+</a>

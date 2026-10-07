@@ -1,0 +1,196 @@
+@model ProsjektDetaljViewModel
+@{
+    var p = Model.Prosjekt;
+    ViewData["Title"] = p.Tittel;
+    ViewData["Fane"] = Model.TilbakeTekst switch
+    {
+        "oversikten" => "oversikt",
+        "samarbeid" => "samarbeid",
+        "erfaringene" => "erfaringer",
+        "forvaltning" => "forvaltning",
+        "skjemaet" or "kvitteringen" => "meldinn",
+        _ => "prosjekter"
+    };
+    var erfaringTittel = p.Fase is Katalog.Pilot or Katalog.Ide ? "Erfaringer så langt" : "Erfaringer";
+}
+
+<article class="detail">
+    <header class="dhead">
+        <a class="btn ghost back" href="@Model.TilbakeUrl">← Tilbake til @Model.TilbakeTekst</a>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <partial name="_FasePill" model="p" />
+            @if (p.Samarbeid)
+            {
+                <span class="pill collab">Samarbeid · @p.Deltakere.Count kommuner</span>
+            }
+            else
+            {
+                <span class="pill">Enkeltkommune</span>
+            }
+            <span class="pill">@p.Sektor</span>
+            @if (p.TilGodkjenning) { <span class="pill new">Til godkjenning</span> }
+        </div>
+        <h2 id="dTitle" tabindex="-1">@p.Tittel</h2>
+        <div class="dmeta">
+            <span>@p.Eier</span>
+            <span class="upd strong">Sist oppdatert @Datoformat.Lang(p.Oppdatert): @p.SistEndret</span>
+        </div>
+    </header>
+
+    <div class="dmain">
+        @if (p.Stopp != null)
+        {
+            <div class="stopbox">
+                <div class="eyebrow" style="color:var(--crit-ink)">Hvorfor prosjektet ble avbrutt</div>
+                <strong>@p.Stopp</strong>
+                <p style="margin:4px 0 0">@p.Annerledes</p>
+            </div>
+        }
+
+        <section class="dsec">
+            <h3>Om prosjektet</h3>
+            <dl class="kv">
+                @foreach (var (k, v) in new[] { ("Mål", p.Mal), ("Hva løsningen gjør", p.Beskrivelse), ("Status nå", p.Status), ("Neste steg", p.NesteSteg), ("Gevinst", p.Gevinst), ("Teknologi", p.Teknologi) })
+                {
+                    if (!string.IsNullOrWhiteSpace(v))
+                    {
+                        <dt>@k</dt>
+                        <dd>@v</dd>
+                    }
+                }
+            </dl>
+            <div class="tags" style="margin-top:12px">
+                @foreach (var t in p.Stikkord)
+                {
+                    <a class="tag" href="/Prosjekter?stikkord=@Uri.EscapeDataString(t)">#@t</a>
+                }
+            </div>
+        </section>
+
+        @if (p.HarErfaringer && p.Stopp == null)
+        {
+            <section class="dsec">
+                <h3>@erfaringTittel</h3>
+                <dl class="lesson-grid">
+                    <div><dt>Fungerte</dt><dd>@p.Fungerte</dd></div>
+                    <div><dt>Ville gjort annerledes</dt><dd>@p.Annerledes</dd></div>
+                </dl>
+            </section>
+        }
+        @if (p.Stopp != null && p.HarErfaringer)
+        {
+            <section class="dsec">
+                <h3>Det som fungerte</h3>
+                <p style="margin:0">@p.Fungerte</p>
+            </section>
+        }
+
+        @if (Model.Lignende.Count > 0)
+        {
+            <section class="dsec">
+                <h3>Lignende prosjekter</h3>
+                <ul class="rel">
+                    @foreach (var b in Model.Lignende)
+                    {
+                        <li>
+                            <a class="linkbtn t" href="@Lenker.Prosjekt(Context, b.Id)">@b.Tittel</a>
+                            <span class="muted"> @b.Eier · @b.Fase@(b.Stopp != null ? $" (avbrutt: {b.Stopp.ToLowerInvariant()})" : "")</span>
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+
+        <details class="fold">
+            <summary><span>Oppdateringshistorikk</span><span class="meta">@p.Logg.Count @(p.Logg.Count == 1 ? "oppføring" : "oppføringer")</span></summary>
+            <div class="body">
+                <ol class="logg">
+                    @foreach (var l in Enumerable.Reverse(p.Logg))
+                    {
+                        <li><span class="mono">@Datoformat.Lang(l.Dato)</span>@l.Tekst</li>
+                    }
+                </ol>
+            </div>
+        </details>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:flex-start">
+            <details>
+                <summary class="btn" style="list-style:none">Foreslå rettelse</summary>
+                <form class="inlineform" asp-action="Rettelse" asp-route-id="@p.Id" method="post" novalidate>
+                    <input type="hidden" name="tilbake" value="@Model.TilbakeUrl" />
+                    <textarea name="tekst" rows="3" placeholder="Hva er feil eller mangler?" aria-label="Rettelse"></textarea>
+                    <input name="fra" type="email" placeholder="Din e-post (valgfritt)" aria-label="Din e-post" />
+                    <button class="btn primary small" type="submit">Send til DigiAgder</button>
+                </form>
+            </details>
+            <a class="btn" asp-controller="MeldInn" asp-action="Index" asp-route-id="@p.Id">Oppdater (for eier)</a>
+        </div>
+    </div>
+
+    <aside class="dside">
+        <div class="contactbox">
+            <div class="eyebrow">Kontaktperson</div>
+            <div>
+                <div class="name">@p.Kontakt.Navn</div>
+                <div class="role">@p.Kontakt.Rolle, @p.Eier</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <span class="mono" style="font-size:13px;user-select:all">@p.Kontakt.Epost</span>
+                <button class="btn small" type="button" data-kopier="@p.Kontakt.Epost">Kopier</button>
+            </div>
+            @if (p.Soker.Count > 0 && p.ErApenForFlere)
+            {
+                <div>
+                    <div class="muted" style="font-size:12.5px;margin-bottom:4px">Ser etter</div>
+                    <div class="tags">@foreach (var s in p.Soker) {<span class="tag seek">@s</span>}</div>
+                </div>
+            }
+            @if (p.Tilbyr.Count > 0)
+            {
+                <div>
+                    <div class="muted" style="font-size:12.5px;margin-bottom:4px">Kan tilby</div>
+                    <div class="tags">@foreach (var s in p.Tilbyr) {<span class="tag plain">@s</span>}</div>
+                </div>
+            }
+            <details open="@(Model.Apne == "samarbeid")">
+                <summary class="btn teal" style="list-style:none">Ta kontakt om samarbeid</summary>
+                <form class="inlineform" asp-action="Henvendelse" asp-route-id="@p.Id" method="post" novalidate>
+                    <input type="hidden" name="tilbake" value="@Model.TilbakeUrl" />
+                    <input name="fra" placeholder="Ditt navn og kommune" aria-label="Ditt navn og kommune" />
+                    <textarea name="melding" rows="3" aria-label="Melding">Hei @p.Kontakt.Fornavn! Vi jobber med noe lignende og vil gjerne høre mer om «@p.Tittel».</textarea>
+                    <button class="btn primary small" type="submit">Send</button>
+                </form>
+            </details>
+        </div>
+
+        <div class="panel" style="padding:16px">
+            <h3 class="eyebrow" style="margin-bottom:8px">@(p.Samarbeid ? $"Kommuner som er med ({p.Deltakere.Count})" : "Hvem står bak")</h3>
+            <div class="members">
+                @for (var i = 0; i < p.Deltakere.Count; i++)
+                {
+                    <span class="mem@(i == 0 ? " lead" : "")">@p.Deltakere[i]@(i == 0 && p.Samarbeid ? " (leder)" : "")</span>
+                }
+            </div>
+            @if (p.ErApenForFlere)
+            {
+                <p class="sub" style="margin:10px 0 8px">@(p.Samarbeid ? "Prosjektet er åpent for flere kommuner." : "Kommunen er åpen for å gjøre dette sammen med andre.")</p>
+                <details class="joinbox" open="@(Model.Apne == "blimed")" id="blimed">
+                    <summary class="btn teal" style="list-style:none">Vil din kommune bli med?</summary>
+                    <form class="inlineform" asp-action="BliMed" asp-route-id="@p.Id" method="post" novalidate>
+                        <input type="hidden" name="tilbake" value="@Model.TilbakeUrl" />
+                        <select name="kommune" aria-label="Din kommune">
+                            <option value="">Velg kommune …</option>
+                            @foreach (var k in Model.KommunerSomKanBliMed)
+                            {
+                                <option value="@k">@k</option>
+                            }
+                        </select>
+                        <input name="navn" placeholder="Ditt navn og rolle" aria-label="Ditt navn og rolle" />
+                        <textarea name="melding" rows="2" aria-label="Melding">Vi ønsker å delta og kan bidra med …</textarea>
+                        <button class="btn primary small" type="submit">Send forespørsel</button>
+                    </form>
+                </details>
+            }
+        </div>
+    </aside>
+</article>

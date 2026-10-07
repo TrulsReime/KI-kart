@@ -1,0 +1,73 @@
+@model ProsjekterViewModel
+@{
+    ViewData["Fane"] = "prosjekter";
+    ViewData["Title"] = "Prosjekter";
+    var f = Model.Filter;
+}
+
+@* Hele siden er ett GET-skjema. site.js sender skjemaet automatisk når et filter endres. *@
+<form class="grid explore" method="get" action="/Prosjekter" data-autosend>
+    <aside class="side" aria-label="Filtre">
+        @foreach (var g in Model.Grupper)
+        {
+            var antallValgt = g.Valg.Count(v => v.Valgt);
+            <details class="fgroup" open="@(g.Apen || antallValgt > 0)">
+                <summary><span>@g.Tittel<span class="count" hidden="@(antallValgt == 0)">@antallValgt</span></span></summary>
+                @if (g.Navn == "kommune")
+                {
+                    <div class="fhead" style="margin-top:8px">
+                        <span class="muted" style="font-size:12px">Inkluderer samarbeid. Sorter:</span>
+                        <select class="minisort" name="ksort" aria-label="Sorter kommuner">
+                            <option value="alfa" selected="@(f.Ksort == "alfa")">A–Å</option>
+                            <option value="antall" selected="@(f.Ksort == "antall")">Flest prosjekter</option>
+                        </select>
+                    </div>
+                }
+                <div class="opts">
+                    @foreach (var v in g.Valg)
+                    {
+                        <label class="opt">
+                            <input type="checkbox" name="@g.Navn" value="@v.Verdi" checked="@v.Valgt" />
+                            <span>@v.Etikett</span><span class="n">@v.Antall</span>
+                        </label>
+                    }
+                </div>
+            </details>
+        }
+        <noscript><button class="btn primary" type="submit">Bruk filtrene</button></noscript>
+    </aside>
+
+    <section>
+        <partial name="_Sokefelt" model='new SokefeltModel("q", "Søk etter prosjekt, kommune, kontaktperson, #stikkord eller hvorfor noe ble avbrutt", f.Q)' />
+        <div class="toolbar">
+            <strong class="num">@Model.Resultat.Count prosjekter</strong>
+            <div class="chips">
+                @foreach (var (etikett, fjern) in f.Valgte())
+                {
+                    <span class="chip">@etikett<a href="@fjern" aria-label="Fjern @etikett">×</a></span>
+                }
+            </div>
+            @if (f.HarFilter)
+            {
+                <a class="btn ghost small" href="/Prosjekter">Nullstill</a>
+            }
+            <span style="margin-left:auto">
+                <select name="sort" aria-label="Sorter">
+                    <option value="opp" selected="@(f.Sort == "opp")">Sorter: Sist oppdatert</option>
+                    <option value="kommune" selected="@(f.Sort == "kommune")">Sorter: Kommune A–Å</option>
+                    <option value="tittel" selected="@(f.Sort == "tittel")">Sorter: Tittel A–Å</option>
+                </select>
+            </span>
+        </div>
+        <div class="cards">
+            @foreach (var p in Model.Resultat)
+            {
+                <partial name="_ProsjektKort" model="p" />
+            }
+            @if (Model.Resultat.Count == 0)
+            {
+                <div class="empty">Ingen prosjekter passer. Prøv færre filtre eller et annet søkeord.</div>
+            }
+        </div>
+    </section>
+</form>

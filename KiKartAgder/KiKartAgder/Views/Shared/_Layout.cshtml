@@ -1,0 +1,72 @@
+@inject KiKartAgder.Data.IKiKartRepository Repo
+@{
+    var fane = ViewData["Fane"] as string ?? "";
+    var publiserte = Repo.Publiserte();
+    var tilBehandling = Repo.Innmeldinger().Count(i => i.Status == InnmeldingStatus.Ny);
+    string? Aktiv(string navn) => fane == navn ? "page" : null;
+}
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] is string t ? t + " · " : "")KI-kart for Agder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<a class="skip" href="#view">Hopp til hovedinnhold</a>
+
+@* Toppmenyen etterligner digiagder.no. Når kartet ligger i en iframe på digiagder.no, skjules den (se site.js). *@
+<div class="hostbar dabar" aria-label="Toppmeny (prototype)">
+    <div class="wrap hostinner">
+        <span class="hostlogo dalogo"><svg width="46" height="34" viewBox="0 0 46 34" aria-hidden="true" fill="none" stroke="#3A3F44" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 3 4-2 5 4 2 6-3 5 2 4-6 4-5-2-6 2-4-3 1-5-4-3 3-5z"/><path d="M2 10h7M2 16h5M4 26h8M30 12h8l3-3M33 20h10M28 27h6l3 3"/><circle cx="41" cy="9" r="1.4"/><circle cx="43" cy="20" r="1.4"/><circle cx="37" cy="30" r="1.4"/><circle cx="2" cy="10" r="1.2"/><circle cx="4" cy="26" r="1.2"/></svg><span>Digi Agder</span></span>
+        <nav class="hostnav danav" aria-label="Hovedmeny (prototype)"><span>Digi Agders Prinsipper</span><span>Nyheter</span><span>Arrangement</span><span>Faggrupper</span><span>Portefølje</span><span class="on" aria-current="page">KI-kart</span><span>Kontakt oss</span><span>Om Digi Agder <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></nav>
+        <span class="dasearch" aria-label="Søk">@Ikoner.Sok</span>
+    </div>
+</div>
+
+<div class="hero"><div class="wrap">
+    <nav class="crumbs" aria-label="Brødsmulesti"><span>Forside</span><span aria-hidden="true">/</span><span aria-current="page">KI-kart</span></nav>
+    <div class="pagehead">
+        <div>
+            <h1>KI-kart for Agder</h1>
+            <p class="ingress">Her finner du prosjekter der kommunene i Agder tar i bruk kunstig intelligens (KI). Se hvem som samarbeider, lær av andres erfaringer og ta kontakt med prosjektene direkte.</p>
+        </div>
+        <a class="btn primary big outline-cta" asp-controller="MeldInn" asp-action="Index">+ Meld inn prosjekt</a>
+    </div>
+</div></div>
+
+<div class="wrap">
+    <div class="alert" role="note"><strong>Prototype.</strong> Prosjektene, personene og e-postadressene på denne siden er fiktive og ikke knyttet til de navngitte kommunene.</div>
+
+    <nav class="tabs" aria-label="Visninger i KI-kartet">
+        <a asp-controller="Home" asp-action="Index" aria-current="@Aktiv("oversikt")">Oversikt</a>
+        <a asp-controller="Prosjekter" asp-action="Index" aria-current="@Aktiv("prosjekter")">Prosjekter<span class="count">@publiserte.Count</span></a>
+        <a asp-controller="Samarbeid" asp-action="Index" aria-current="@Aktiv("samarbeid")">Samarbeid<span class="count">@publiserte.Count(p => p.Samarbeid)</span></a>
+        <a asp-controller="Erfaringer" asp-action="Index" aria-current="@Aktiv("erfaringer")">Erfaringer<span class="count">@publiserte.Count(p => p.HarErfaringer)</span></a>
+        <a asp-controller="MeldInn" asp-action="Index" aria-current="@Aktiv("meldinn")">Meld inn</a>
+        <a asp-controller="Forvaltning" asp-action="Index" aria-current="@Aktiv("forvaltning")" class="tab-adm">Forvaltning<span class="count alert" hidden="@(tilBehandling == 0)">@tilBehandling</span></a>
+    </nav>
+
+    <main id="view">
+        @RenderBody()
+    </main>
+
+    <div class="pagefoot">
+        <div><strong>Ansvarlig for KI-kartet:</strong> DigiAgder, samarbeidet mellom kommunene og fylkeskommunen i Agder</div>
+        <div>Hvert prosjekt viser når det sist ble oppdatert og hva som ble endret. Oppføringene bekreftes av prosjekteier minst hver 12. måned.</div>
+        <div class="pflinks"><span>Kart: kommunegrenser 2024, forenklet</span></div>
+    </div>
+</div>
+
+<div id="tip" hidden></div>
+@{ var melding = TempData["Melding"] as string; }
+<div id="toast" role="status" hidden="@(melding == null)">@melding</div>
+
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
