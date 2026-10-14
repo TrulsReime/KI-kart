@@ -16,6 +16,10 @@ public class ProsjektFilter
     public List<string> Fase { get; set; } = new();
     public List<string> Stikkord { get; set; } = new();
     public List<string> Org { get; set; } = new();
+    public List<string> Ikt { get; set; } = new();
+
+    /// <summary>Ta med prosjekter som er inaktive fordi de ikke er bekreftet på 12 måneder.</summary>
+    public bool Inaktive { get; set; }
 
     /// <summary>opp (sist oppdatert), kommune eller tittel.</summary>
     public string Sort { get; set; } = "opp";
@@ -23,7 +27,7 @@ public class ProsjektFilter
     /// <summary>Sortering av kommunelisten i filteret: alfa eller antall.</summary>
     public string Ksort { get; set; } = "alfa";
 
-    public bool HarFilter => !string.IsNullOrWhiteSpace(Q) || Kommune.Count + Sektor.Count + Fase.Count + Stikkord.Count + Org.Count > 0;
+    public bool HarFilter => Inaktive || !string.IsNullOrWhiteSpace(Q) || Kommune.Count + Sektor.Count + Fase.Count + Stikkord.Count + Org.Count + Ikt.Count > 0;
 
     public bool Passer(Prosjekt p) =>
         (Kommune.Count == 0 || p.Deltakere.Any(Kommune.Contains))
@@ -31,6 +35,7 @@ public class ProsjektFilter
         && (Fase.Count == 0 || Fase.Contains(p.Fase))
         && (Org.Count == 0 || Org.Contains(p.Organisering))
         && (Stikkord.Count == 0 || Stikkord.All(p.Stikkord.Contains))
+        && (Ikt.Count == 0 || p.IktSamarbeid.Any(Ikt.Contains))
         && ProsjektLogikk.Treffer(p, Q);
 
     public IEnumerable<Prosjekt> Sorter(IEnumerable<Prosjekt> liste)
@@ -54,7 +59,8 @@ public class ProsjektFilter
             foreach (var v in verdier)
                 if (!(fjernNokkel == navn && fjernVerdi == v)) qb.Add(navn, v);
         }
-        Legg("org", Org); Legg("kommune", Kommune); Legg("sektor", Sektor); Legg("fase", Fase); Legg("stikkord", Stikkord);
+        Legg("org", Org); Legg("kommune", Kommune); Legg("sektor", Sektor); Legg("fase", Fase); Legg("ikt", Ikt); Legg("stikkord", Stikkord);
+        if (Inaktive && fjernNokkel != "inaktive") qb.Add("inaktive", "true");
         if (Sort != "opp") qb.Add("sort", Sort);
         if (Ksort != "alfa") qb.Add("ksort", Ksort);
         return "/Prosjekter" + qb.ToQueryString();
@@ -63,9 +69,10 @@ public class ProsjektFilter
     /// <summary>Alle valgte filterverdier som «chips» med lenke som fjerner dem.</summary>
     public IEnumerable<(string Etikett, string FjernUrl)> Valgte()
     {
-        foreach (var (navn, liste) in new[] { ("org", Org), ("kommune", Kommune), ("sektor", Sektor), ("fase", Fase), ("stikkord", Stikkord) })
+        foreach (var (navn, liste) in new[] { ("org", Org), ("kommune", Kommune), ("sektor", Sektor), ("fase", Fase), ("ikt", Ikt), ("stikkord", Stikkord) })
             foreach (var v in liste)
                 yield return (navn == "stikkord" ? "#" + v : v, Url(navn, v));
+        if (Inaktive) yield return ("Med inaktive", Url("inaktive"));
     }
 }
 
@@ -78,4 +85,5 @@ public class ProsjekterViewModel
     public required ProsjektFilter Filter { get; init; }
     public required IReadOnlyList<Prosjekt> Resultat { get; init; }
     public required List<FilterGruppe> Grupper { get; init; }
+    public DateOnly Idag { get; init; }
 }

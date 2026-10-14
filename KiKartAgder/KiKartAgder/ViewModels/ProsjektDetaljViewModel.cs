@@ -14,7 +14,7 @@ public class ProsjektDetaljViewModel
     /// <summary>«samarbeid» eller «blimed» åpner det skjemaet med en gang.</summary>
     public string? Apne { get; init; }
 
-    public (ProsjektLogikk.Livsstatus Status, string Tekst) Livssyklus { get; init; }
+    public required ProsjektLogikk.AktualitetInfo Aktualitet { get; init; }
 }
 
 public class SamarbeidViewModel

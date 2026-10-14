@@ -38,7 +38,8 @@
       "apen": false,
       "fungerte": "Koble chatboten til fagsystemene, ikke bare til nettsiden.",
       "annerledes": "Måle antall henvendelser før start, så gevinsten kan dokumenteres.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 2,
@@ -83,7 +84,10 @@
       "apen": true,
       "fungerte": "Felles personvernvurdering for alle fire kommunene sparte mye tid.",
       "annerledes": "Teste i områder med dårlig mobildekning tidligere.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "IKT Agder"
+      ]
     },
     {
       "id": 3,
@@ -125,7 +129,8 @@
       "apen": false,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 4,
@@ -172,7 +177,10 @@
       "apen": true,
       "fungerte": "Superbrukere i hver kommune som viser konkrete eksempler fra eget arbeid.",
       "annerledes": "Avklare regler for hva som ikke skal limes inn, før lisensene deles ut.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "Digi Agder"
+      ]
     },
     {
       "id": 5,
@@ -214,7 +222,8 @@
       "apen": false,
       "fungerte": "Elevene var motivert, særlig de som strevde mest.",
       "annerledes": "Personvernvurderingen burde vært ferdig før oppstart.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 6,
@@ -256,7 +265,8 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 7,
@@ -295,7 +305,8 @@
       "apen": false,
       "fungerte": "Enkel løsning som lærerne tok i bruk raskt.",
       "annerledes": "Lage en liste over ord som alltid skal kontrolleres, som navn på tjenester.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 8,
@@ -336,7 +347,8 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 9,
@@ -375,7 +387,8 @@
       "apen": false,
       "fungerte": "Brukerne satte pris på å få svar utenfor åpningstid.",
       "annerledes": "De fleste spørsmålene gjaldt egen sak, som chatboten ikke kunne svare på. Vi burde kartlagt hva folk faktisk spør om før vi startet.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 10,
@@ -417,7 +430,8 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 11,
@@ -456,7 +470,10 @@
       "apen": false,
       "fungerte": "Starte med ett saksområde og utvide.",
       "annerledes": "Rydde i tilgangsstyringen i arkivet først.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "IKT Agder"
+      ]
     },
     {
       "id": 12,
@@ -488,7 +505,7 @@
         "epost": "eva@eksempel.no"
       },
       "registrert": "2024-06-01",
-      "oppdatert": "2025-07-20",
+      "oppdatert": "2026-08-20",
       "sistEndret": "Gjerstad og Vegårshei ble med",
       "soker": [],
       "tilbyr": [
@@ -498,7 +515,8 @@
       "apen": true,
       "fungerte": "Planleggerne kunne alltid overstyre forslaget.",
       "annerledes": "Involvere tillitsvalgte tidligere.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 13,
@@ -538,7 +556,8 @@
       "apen": true,
       "fungerte": "Utkastene var gode nok til at sekretæren sparte rundt en time per møte.",
       "annerledes": "Avklare med politikerne på forhånd at møtene tas opp.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 14,
@@ -578,7 +597,8 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 15,
@@ -617,7 +637,8 @@
       "apen": false,
       "fungerte": "Færre unødvendige tilsyn om natten.",
       "annerledes": "Flere falske alarmer enn ventet de første månedene. Sett av tid til justering.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 16,
@@ -657,7 +678,8 @@
       "apen": false,
       "fungerte": "Driftsteknikerne kunne overstyre systemet.",
       "annerledes": "Sikre tilgang til data fra byggautomasjonen før innkjøp.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 17,
@@ -700,7 +722,8 @@
       "apen": true,
       "fungerte": "Planleggerne stolte på oppsummeringen fordi hvert punkt lenket til innspillet.",
       "annerledes": "Starte med en mindre høring.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 18,
@@ -738,7 +761,8 @@
       "apen": false,
       "fungerte": "Fant enkelte dobbeltfakturaer.",
       "annerledes": "For få avvik til å forsvare kostnaden. Regelbasert kontroll i økonomisystemet var nok.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 19,
@@ -777,7 +801,8 @@
       "apen": false,
       "fungerte": "God dialog med elevråd og foreldre om hva som var akseptabelt.",
       "annerledes": "Personvernvurderingen konkluderte med at profilering av barn ikke var forholdsmessig. Den burde vært gjort helt i starten.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 20,
@@ -820,7 +845,8 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 21,
@@ -858,7 +884,8 @@
       "apen": false,
       "fungerte": "Populært blant unge lånere.",
       "annerledes": "Avbrutt fordi leverandøren la ned tjenesten. Velg løsninger der dataene kan tas med videre.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 22,
@@ -898,7 +925,8 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 23,
@@ -938,7 +966,8 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 24,
@@ -991,7 +1020,11 @@
       "apen": true,
       "fungerte": "Én felles personvernvurdering i stedet for tolv.",
       "annerledes": "Involvere de minste kommunene i kravene tidligere.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "Digi Agder",
+        "IKT Agder"
+      ]
     },
     {
       "id": 25,
@@ -1034,7 +1067,8 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 26,
@@ -1072,7 +1106,8 @@
       "apen": false,
       "fungerte": "Analysetiden gikk fra uker til dager.",
       "annerledes": "Burde blitt en fast rutine, ikke et prosjekt som ble avsluttet.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 27,
@@ -1113,7 +1148,8 @@
       "apen": true,
       "fungerte": "Korte samlinger med oppgaver fra egen skole.",
       "annerledes": "Invitere nabokommunene fra start.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 28,
@@ -1155,7 +1191,8 @@
       "apen": false,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 29,
@@ -1196,7 +1233,10 @@
       "apen": false,
       "fungerte": "Ansatte ble mer bevisste på hva som skal journalføres.",
       "annerledes": "Treffsikkerheten var for lav på korte e-poster. Test på egne data før avtale inngås.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "DDV"
+      ]
     },
     {
       "id": 30,
@@ -1236,7 +1276,8 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 31,
@@ -1279,7 +1320,8 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 32,
@@ -1318,7 +1360,8 @@
       "apen": false,
       "fungerte": "Referater og informasjonsskriv gikk mye raskere.",
       "annerledes": "Ta del i Copilot-nettverket fra start, i stedet for å finne ut av alt selv.",
-      "tilGodkjenning": false
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
     },
     {
       "id": 33,
@@ -1357,7 +1400,10 @@
       "apen": true,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": true
+      "tilGodkjenning": true,
+      "iktSamarbeid": [
+        "Digi Agder"
+      ]
     },
     {
       "id": 34,
@@ -1396,7 +1442,8 @@
       "apen": false,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": true
+      "tilGodkjenning": true,
+      "iktSamarbeid": []
     },
     {
       "id": 35,
@@ -1434,7 +1481,8 @@
       "apen": false,
       "fungerte": null,
       "annerledes": null,
-      "tilGodkjenning": true
+      "tilGodkjenning": true,
+      "iktSamarbeid": []
     }
   ],
   "innmeldinger": [

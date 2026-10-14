@@ -23,7 +23,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var liste = _repo.Publiserte();
+        var liste = _repo.Aktive();
         var idag = _dato.Idag;
         var samarbeid = liste.Where(p => p.Samarbeid).ToList();
 

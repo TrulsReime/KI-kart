@@ -50,6 +50,9 @@ public class MeldInnSkjema : IValidatableObject
     public List<string> Deltakere { get; set; } = new();
     public bool Apen { get; set; } = true;
 
+    /// <summary>Valgfritt: IKT-samarbeid prosjektet er en del av.</summary>
+    public List<string> IktSamarbeid { get; set; } = new();
+
     [Required(ErrorMessage = "Skriv navnet på kontaktpersonen")]
     [Display(Name = "Navn")]
     public string? KontaktNavn { get; set; }
@@ -89,6 +92,8 @@ public class MeldInnSkjema : IValidatableObject
             yield return new ValidationResult("Ukjent sektor", new[] { nameof(Sektor) });
         if (Fase != null && !Katalog.Faser.Contains(Fase))
             yield return new ValidationResult("Ukjent fase", new[] { nameof(Fase) });
+        if (IktSamarbeid.Any(s => !Katalog.IktSamarbeid.Contains(s)))
+            yield return new ValidationResult("Ukjent IKT-samarbeid", new[] { nameof(IktSamarbeid) });
         if (Organisering == "Samarbeid" && Deltakere.Distinct().Count() < 2)
             yield return new ValidationResult("Velg minst to kommuner når flere er med", new[] { nameof(Deltakere) });
     }
@@ -126,6 +131,7 @@ public class MeldInnSkjema : IValidatableObject
             Kommune = Kommune!,
             Deltakere = deltakere,
             Apen = Organisering == "Samarbeid" && Apen,
+            IktSamarbeid = IktSamarbeid.Distinct().ToList(),
             Kontakt = new Kontaktperson { Navn = KontaktNavn!.Trim(), Rolle = KontaktRolle?.Trim() ?? "", Epost = KontaktEpost!.Trim() },
             Soker = soker, Tilbyr = tilbyr,
             Mal = Mal, Status = Status, Gevinst = Gevinst, Fungerte = Fungerte, Annerledes = Annerledes,
@@ -158,6 +164,7 @@ public class MeldInnSkjema : IValidatableObject
             Kommune = p.Kommune,
             Deltakere = p.Deltakere.ToList(),
             Apen = p.Apen,
+            IktSamarbeid = p.IktSamarbeid.ToList(),
             KontaktNavn = p.Kontakt.Navn,
             KontaktRolle = p.Kontakt.Rolle,
             KontaktEpost = p.Kontakt.Epost,
@@ -181,7 +188,7 @@ public class MeldInnSkjema : IValidatableObject
     public static readonly string[][] FeltPerSteg =
     {
         new[] { nameof(Tittel), nameof(Beskrivelse), nameof(Sektor), nameof(Fase), nameof(Stopp), nameof(Stikkord) },
-        new[] { nameof(Organisering), nameof(Eier), nameof(Kommune), nameof(Deltakere), nameof(KontaktNavn), nameof(KontaktRolle), nameof(KontaktEpost) },
+        new[] { nameof(Organisering), nameof(Eier), nameof(Kommune), nameof(Deltakere), nameof(IktSamarbeid), nameof(KontaktNavn), nameof(KontaktRolle), nameof(KontaktEpost) },
     };
 }
 

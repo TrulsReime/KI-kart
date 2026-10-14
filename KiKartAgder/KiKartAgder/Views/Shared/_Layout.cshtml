@@ -1,7 +1,7 @@
 @inject KiKartAgder.Data.IKiKartRepository Repo
 @{
     var fane = ViewData["Fane"] as string ?? "";
-    var publiserte = Repo.Publiserte();
+    var publiserte = Repo.Aktive();
     var tilBehandling = Repo.Innmeldinger().Count(i => i.Status == InnmeldingStatus.Ny);
     string? Aktiv(string navn) => fane == navn ? "page" : null;
 }
@@ -57,7 +57,7 @@
 
     <div class="pagefoot">
         <div><strong>Ansvarlig for KI-kartet:</strong> DigiAgder, samarbeidet mellom kommunene og fylkeskommunen i Agder</div>
-        <div>Hvert prosjekt viser når det sist ble oppdatert og hva som ble endret. Oppføringene bekreftes av prosjekteier minst hver 12. måned.</div>
+        <div>Hvert prosjekt viser når det sist ble oppdatert og hva som ble endret. Prosjekteieren må bekrefte prosjektet minst hver 12. måned. Prosjekter som ikke bekreftes, blir inaktive og skjules fra oversikten.</div>
         <div class="pflinks"><span>Kart: kommunegrenser 2024, forenklet</span></div>
     </div>
 </div>

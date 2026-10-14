@@ -12,6 +12,12 @@ public interface IKiKartRepository
     /// <summary>Godkjente prosjekter som vises for alle.</summary>
     IReadOnlyList<Prosjekt> Publiserte();
 
+    /// <summary>
+    /// Publiserte prosjekter som ikke er inaktive. Det er disse som vises på oversikten, i kartet og i listene.
+    /// Et prosjekt blir inaktivt når eieren ikke har bekreftet det på 12 måneder.
+    /// </summary>
+    IReadOnlyList<Prosjekt> Aktive();
+
     /// <summary>Alle prosjekter, også de som venter på godkjenning.</summary>
     IReadOnlyList<Prosjekt> Alle();
 
@@ -35,4 +41,7 @@ public interface IKiKartRepository
     bool BeOmEndring(int innmeldingId, string kommentar);
     bool Avvis(int innmeldingId, string kommentar);
     void MarkerPaminnelseSendt(int prosjektId);
+
+    /// <summary>Eieren bekrefter at alt stemmer. Datoen settes til i dag, og et inaktivt prosjekt blir aktivt igjen.</summary>
+    bool Bekreft(int prosjektId);
 }

@@ -15,7 +15,7 @@ public class SamarbeidController : Controller
     // GET /Samarbeid?valgt=8
     public IActionResult Index(int? valgt)
     {
-        var alle = _repo.Publiserte();
+        var alle = _repo.Aktive();
         var samarbeid = alle.Where(p => p.Samarbeid)
             .OrderByDescending(p => p.ErApenForFlere).ThenByDescending(p => p.Deltakere.Count).ToList();
         var sokere = alle.Where(p => p.ErApenForFlere && p.Soker.Count > 0).OrderByDescending(p => p.Oppdatert).ToList();
