@@ -14,7 +14,7 @@
     <a class="stat kbtn" asp-controller="Prosjekter" asp-action="Index">
         <div class="sv num">@Model.AntallProsjekter</div>
         <div class="sl">KI-prosjekter</div>
-        <div class="sn">@Model.AntallIDrift er tatt i bruk</div>
+        <div class="sn">@Model.AntallIDrift i drift</div>
     </a>
     <div class="stat">
         <div class="sv num">@Model.AntallKommuner<small> av 25</small></div>
@@ -119,7 +119,7 @@
                 @foreach (var p in Model.SistOppdatert)
                 {
                     <li>
-                        <div class="when">@Datoformat.Kort(p.Oppdatert)</div>
+                        <div class="when akt @ProsjektLogikk.Aktualitetsstatus(p, Model.Idag).Klasse">@Datoformat.Kort(p.Oppdatert)</div>
                         <div>
                             <a class="linkbtn t" href="@Lenker.Prosjekt(Context, p.Id)">@p.Tittel</a>
                             <div class="what">@p.SistEndret · @p.Eier</div>

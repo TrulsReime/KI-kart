@@ -1,16 +1,20 @@
 @model Prosjekt
+@inject IDatoTjeneste Dato
 @{
+    var akt = ProsjektLogikk.Aktualitetsstatus(Model, Dato.Idag);
+    var inaktiv = akt.Niva == ProsjektLogikk.Aktualitet.Inaktiv;
     var ekstra = Model.Deltakere.Count - 1;
     var forhandsvisning = ViewData["Forhandsvisning"] is true;
 }
-<a class="card c2@(forhandsvisning ? " preview" : "")" href="@(forhandsvisning ? null : Lenker.Prosjekt(Context, Model.Id))">
+<a class="card c2@(forhandsvisning ? " preview" : "")@(inaktiv ? " inaktiv" : "")" href="@(forhandsvisning ? null : Lenker.Prosjekt(Context, Model.Id))">
     <div class="c-top">
         <div class="c-pills">
             <partial name="_FasePill" model="Model" />
             @if (Model.Samarbeid) { <span class="pill collab">Samarbeid</span> }
             @if (Model.TilGodkjenning) { <span class="pill new">Til godkjenning</span> }
+            @if (inaktiv) { <span class="pill">Inaktiv</span> }
         </div>
-        <span class="upd">@Datoformat.Lang(Model.Oppdatert)</span>
+        <span class="upd akt @(forhandsvisning ? "akt-fersk" : akt.Klasse)" title="@(forhandsvisning ? "" : akt.Tekst)">@Datoformat.Lang(Model.Oppdatert)</span>
     </div>
     <h3>@Model.Tittel</h3>
     @if (Model.Stopp != null)

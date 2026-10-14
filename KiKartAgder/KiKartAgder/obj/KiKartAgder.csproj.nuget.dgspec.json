@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\truls_no5o882\\Downloads\\KiKartAgder\\KiKartAgder\\KiKartAgder.csproj": {}
+    "C:\\Users\\truls_no5o882\\OneDrive - Universitetet i Agder\\Documents\\IS-218-GIS\\KI-kart\\KiKartAgder\\KiKartAgder\\KiKartAgder.csproj": {}
   },
   "projects": {
-    "C:\\Users\\truls_no5o882\\Downloads\\KiKartAgder\\KiKartAgder\\KiKartAgder.csproj": {
+    "C:\\Users\\truls_no5o882\\OneDrive - Universitetet i Agder\\Documents\\IS-218-GIS\\KI-kart\\KiKartAgder\\KiKartAgder\\KiKartAgder.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\truls_no5o882\\Downloads\\KiKartAgder\\KiKartAgder\\KiKartAgder.csproj",
+        "projectUniqueName": "C:\\Users\\truls_no5o882\\OneDrive - Universitetet i Agder\\Documents\\IS-218-GIS\\KI-kart\\KiKartAgder\\KiKartAgder\\KiKartAgder.csproj",
         "projectName": "KiKartAgder",
-        "projectPath": "C:\\Users\\truls_no5o882\\Downloads\\KiKartAgder\\KiKartAgder\\KiKartAgder.csproj",
+        "projectPath": "C:\\Users\\truls_no5o882\\OneDrive - Universitetet i Agder\\Documents\\IS-218-GIS\\KI-kart\\KiKartAgder\\KiKartAgder\\KiKartAgder.csproj",
         "packagesPath": "C:\\Users\\truls_no5o882\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\truls_no5o882\\Downloads\\KiKartAgder\\KiKartAgder\\obj\\",
+        "outputPath": "C:\\Users\\truls_no5o882\\OneDrive - Universitetet i Agder\\Documents\\IS-218-GIS\\KI-kart\\KiKartAgder\\KiKartAgder\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

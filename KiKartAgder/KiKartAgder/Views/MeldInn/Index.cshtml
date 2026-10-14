@@ -153,7 +153,18 @@
                     <input type="hidden" name="Apen" value="false" />
                     @if (Feil("Deltakere") is string feilDeltakere) {<span class="ferr">@feilDeltakere</span>}
                 </div>
-                <div class="subhead">Kontaktperson<span>Vises for andre som vil ta kontakt</span></div>
+                <fieldset class="f choice">
+                    <legend class="lab">Er prosjektet en del av et IKT-samarbeid? <span style="font-weight:400;color:var(--ink-3)">Valgfritt</span></legend>
+                    <div class="choices">
+                        @foreach (var x in Katalog.IktSamarbeid)
+                        {
+                            <label class="choicebox"><input type="checkbox" name="IktSamarbeid" value="@x" checked="@s.IktSamarbeid.Contains(x)" /><span class="ct">@x</span><span class="ch">@Katalog.IktSamarbeidHjelp[x]</span></label>
+                        }
+                    </div>
+                    <span class="hint">Velg ett eller flere, eller la det stå tomt.</span>
+                </fieldset>
+                <div class="subhead">Kontaktperson og prosjekteier<span>Vises for andre som vil ta kontakt</span></div>
+                <p class="hint" style="margin:-6px 0 0;font-size:13px;color:var(--ink-3)">@(p != null ? "Prosjekteieren endres ikke når du oppdaterer." : "Du som melder inn, blir eier av prosjektet. Eieren kan oppdatere det og får en påminnelse om å bekrefte det minst én gang i året.")</p>
                 <div class="row2">
                     <div class="f">
                         <label for="KontaktNavn">Navn<span class="req"> *</span></label>

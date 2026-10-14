@@ -5,7 +5,7 @@ namespace KiKartAgder.ViewModels;
 
 public record InnmeldingRad(Innmelding Innmelding, Prosjekt Prosjekt, IReadOnlyList<Prosjekt> MuligeDuplikater);
 
-public record PaminnelseRad(Prosjekt Prosjekt, bool Utlopt, string Epost);
+public record PaminnelseRad(Prosjekt Prosjekt, bool Inaktiv, ProsjektLogikk.AktualitetInfo Aktualitet, string Epost);
 
 public record HenvendelseRad(Henvendelse Henvendelse, string ProsjektTittel);
 
@@ -36,9 +36,22 @@ public class ForvaltningViewModel
         _ => 0
     };
 
-    public static string EpostTekst(Prosjekt p) =>
-        $"Til: {p.Kontakt.Epost}\nEmne: Er «{p.Tittel}» fortsatt oppdatert?\n\nHei {p.Kontakt.Fornavn}!\n\n" +
-        $"Prosjektet ditt i KI-kartet ble sist oppdatert {Datoformat.Lang(p.Oppdatert)} («{p.SistEndret}»). " +
-        "Bekreft at informasjonen stemmer, eller oppdater den. Datoen i kartet oppdateres når du svarer.\n\n" +
-        "[ Alt stemmer ]   [ Oppdater prosjektet ]\n\nHilsen DigiAgder";
+    /// <summary>Påminnelsen som går til prosjekteieren. Teksten er litt annerledes hvis prosjektet allerede er inaktivt.</summary>
+    public static string EpostTekst(Prosjekt p, ProsjektLogikk.AktualitetInfo a, bool inaktiv)
+    {
+        var eier = p.Eierperson;
+        var start = $"Til: {eier.Epost}\n";
+        if (inaktiv)
+            return start + $"Emne: Påminnelse: «{p.Tittel}» er ikke lenger synlig i KI-kartet\n\nHei {eier.Fornavn}!\n\n" +
+                   $"Du er eier av prosjektet, og det er ikke bekreftet siden {Datoformat.Lang(p.Oppdatert)}. " +
+                   $"Derfor ble det inaktivt {Datoformat.Lang(a.Frist)} og vises ikke lenger på oversikten eller i kartet. " +
+                   "Bekreft at informasjonen stemmer, eller oppdater den, så blir prosjektet synlig igjen med en gang. " +
+                   "Er prosjektet avsluttet, kan du sette fasen til Fullført eller Avbrutt.\n\n" +
+                   "[ Alt stemmer ]   [ Oppdater prosjektet ]\n\nHilsen DigiAgder";
+        return start + $"Emne: Påminnelse: Er «{p.Tittel}» fortsatt oppdatert?\n\nHei {eier.Fornavn}!\n\n" +
+               $"Du er eier av prosjektet i KI-kartet. Det ble sist oppdatert {Datoformat.Lang(p.Oppdatert)} («{p.SistEndret}»). " +
+               $"Bekreft at informasjonen stemmer, eller oppdater den, innen {Datoformat.Lang(a.Frist)}. " +
+               "Ellers blir prosjektet inaktivt og skjules fra oversikten.\n\n" +
+               "[ Alt stemmer ]   [ Oppdater prosjektet ]\n\nHilsen DigiAgder";
+    }
 }

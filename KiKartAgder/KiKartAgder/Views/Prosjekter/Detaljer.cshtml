@@ -12,6 +12,8 @@
         _ => "prosjekter"
     };
     var erfaringTittel = p.Fase is Katalog.Pilot or Katalog.Ide ? "Erfaringer så langt" : "Erfaringer";
+    var akt = Model.Aktualitet;
+    var inaktiv = akt.Niva == ProsjektLogikk.Aktualitet.Inaktiv;
 }
 
 <article class="detail">
@@ -29,15 +31,29 @@
             }
             <span class="pill">@p.Sektor</span>
             @if (p.TilGodkjenning) { <span class="pill new">Til godkjenning</span> }
+            @if (inaktiv) { <span class="pill">Inaktiv</span> }
         </div>
         <h2 id="dTitle" tabindex="-1">@p.Tittel</h2>
         <div class="dmeta">
             <span>@p.Eier</span>
             <span class="upd strong">Sist oppdatert @Datoformat.Lang(p.Oppdatert): @p.SistEndret</span>
+            <span class="akt @akt.Klasse aktline">@akt.Tekst@(akt.Niva is ProsjektLogikk.Aktualitet.Fersk or ProsjektLogikk.Aktualitet.Eldre ? $". Må bekreftes av eier innen {Datoformat.Lang(akt.Frist)}" : "")</span>
         </div>
     </header>
 
     <div class="dmain">
+        @if (inaktiv)
+        {
+            <div class="inaktivbox">
+                <div class="eyebrow">Prosjektet er inaktivt</div>
+                <p style="margin:4px 0 10px">Prosjekteieren har ikke bekreftet prosjektet på over @ProsjektLogikk.MndInaktiv måneder. Derfor vises det ikke på oversikten, i kartet eller i listene. Informasjonen kan være utdatert.</p>
+                <form asp-action="Bekreft" asp-route-id="@p.Id" method="post" style="display:flex;gap:8px;flex-wrap:wrap">
+                    <input type="hidden" name="tilbake" value="@Model.TilbakeUrl" />
+                    <button class="btn primary small" type="submit">Alt stemmer, gjør prosjektet aktivt (for eier)</button>
+                    <a class="btn small" asp-controller="MeldInn" asp-action="Index" asp-route-id="@p.Id">Oppdater prosjektet</a>
+                </form>
+            </div>
+        }
         @if (p.Stopp != null)
         {
             <div class="stopbox">
@@ -124,6 +140,13 @@
                 </form>
             </details>
             <a class="btn" asp-controller="MeldInn" asp-action="Index" asp-route-id="@p.Id">Oppdater (for eier)</a>
+            @if (!inaktiv && !p.ErAvsluttet && !p.TilGodkjenning)
+            {
+                <form asp-action="Bekreft" asp-route-id="@p.Id" method="post">
+                    <input type="hidden" name="tilbake" value="@Model.TilbakeUrl" />
+                    <button class="btn" type="submit">Bekreft at alt stemmer (for eier)</button>
+                </form>
+            }
         </div>
     </div>
 
@@ -152,6 +175,7 @@
                     <div class="tags">@foreach (var s in p.Tilbyr) {<span class="tag plain">@s</span>}</div>
                 </div>
             }
+            <div class="muted" style="font-size:12.5px">Prosjekteier: @p.Eierperson.Navn</div>
             <details open="@(Model.Apne == "samarbeid")">
                 <summary class="btn teal" style="list-style:none">Ta kontakt om samarbeid</summary>
                 <form class="inlineform" asp-action="Henvendelse" asp-route-id="@p.Id" method="post" novalidate>
@@ -171,6 +195,13 @@
                     <span class="mem@(i == 0 ? " lead" : "")">@p.Deltakere[i]@(i == 0 && p.Samarbeid ? " (leder)" : "")</span>
                 }
             </div>
+            @if (p.IktSamarbeid.Count > 0)
+            {
+                <div style="margin-top:12px">
+                    <div class="muted" style="font-size:12.5px;margin-bottom:4px">IKT-samarbeid</div>
+                    <div class="tags">@foreach (var s in p.IktSamarbeid) {<a class="tag" href="/Prosjekter?ikt=@Uri.EscapeDataString(s)" title="@Katalog.IktSamarbeidHjelp[s]">@s</a>}</div>
+                </div>
+            }
             @if (p.ErApenForFlere)
             {
                 <p class="sub" style="margin:10px 0 8px">@(p.Samarbeid ? "Prosjektet er åpent for flere kommuner." : "Kommunen er åpen for å gjøre dette sammen med andre.")</p>

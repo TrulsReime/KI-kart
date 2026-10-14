@@ -43,11 +43,16 @@ public class ForvaltningController : Controller
                 x.i.Type == InnmeldingType.NyttProsjekt ? ProsjektLogikk.MuligeDuplikater(x.p!, publiserte) : new List<Prosjekt>()))
             .ToList();
 
+        // Prosjekter som snart må bekreftes, og som er blitt inaktive
         var paminnelser = publiserte
-            .Select(p => (p, l: ProsjektLogikk.Livssyklus(p, idag).Status))
-            .Where(x => x.l is ProsjektLogikk.Livsstatus.Utlopt or ProsjektLogikk.Livsstatus.Snart)
+            .Select(p => (p, a: ProsjektLogikk.Aktualitetsstatus(p, idag)))
+            .Where(x => x.a.Niva is ProsjektLogikk.Aktualitet.Inaktiv or ProsjektLogikk.Aktualitet.Snart)
             .OrderBy(x => x.p.Oppdatert)
-            .Select(x => new PaminnelseRad(x.p, x.l == ProsjektLogikk.Livsstatus.Utlopt, ForvaltningViewModel.EpostTekst(x.p)))
+            .Select(x =>
+            {
+                var inaktiv = x.a.Niva == ProsjektLogikk.Aktualitet.Inaktiv;
+                return new PaminnelseRad(x.p, inaktiv, x.a, ForvaltningViewModel.EpostTekst(x.p, x.a, inaktiv));
+            })
             .ToList();
 
         var henvendelser = _repo.Henvendelser()
@@ -101,13 +106,17 @@ public class ForvaltningController : Controller
         return RedirectToAction(nameof(Index), new { fane });
     }
 
+    /// <summary>
+    /// Sender påminnelse til prosjekteieren om å bekrefte eller oppdatere prosjektet.
+    /// I ferdig løsning sendes disse automatisk av en planlagt jobb, og knappen brukes bare ved behov.
+    /// </summary>
     [HttpPost]
     public IActionResult Paminnelse(int id)
     {
         var p = _repo.Finn(id);
         if (p == null) return NotFound();
         _repo.MarkerPaminnelseSendt(id);
-        TempData["Melding"] = $"Prototype: påminnelse ville blitt sendt til {p.Kontakt.Epost}";
+        TempData["Melding"] = $"Prototype: påminnelse ville blitt sendt til {p.Eierperson.Epost}";
         return RedirectToAction(nameof(Index), new { fane = "pam" });
     }
 }

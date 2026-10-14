@@ -22,19 +22,38 @@ public static class ProsjektLogikk
         return q.Split(' ', StringSplitOptions.RemoveEmptyEntries).All(h.Contains);
     }
 
-    // ---------- livssyklus ----------
-    public enum Livsstatus { Ok, Snart, Utlopt, Arkiv }
+    // ---------- aktualitet ----------
+    /// <summary>Etter så mange måneder uten oppdatering skifter fargen fra grønn til gul.</summary>
+    public const int MndFersk = 6;
+    /// <summary>Etter så mange måneder sendes en påminnelse til prosjekteieren.</summary>
+    public const int MndPaminnelse = 11;
+    /// <summary>Etter så mange måneder uten bekreftelse blir prosjektet inaktivt.</summary>
+    public const int MndInaktiv = 12;
 
-    /// <summary>Prosjekter må bekreftes av eier minst hver 12. måned.</summary>
-    public static (Livsstatus Status, string Tekst) Livssyklus(Prosjekt p, DateOnly idag)
+    public enum Aktualitet { Fersk, Eldre, Snart, Inaktiv, Arkiv }
+
+    /// <summary>Hvor oppdatert et prosjekt er. Klasse er CSS-klassen som gir fargen.</summary>
+    public record AktualitetInfo(Aktualitet Niva, string Tekst, string Klasse, DateOnly Frist);
+
+    /// <summary>
+    /// Prosjekter må bekreftes av eier minst hver 12. måned. Grønn de første 6 månedene, gul fram til
+    /// påminnelsen ved 11 måneder, oransje den siste måneden og inaktiv etter fristen.
+    /// Fullførte og avbrutte prosjekter arkiveres og blir aldri inaktive.
+    /// </summary>
+    public static AktualitetInfo Aktualitetsstatus(Prosjekt p, DateOnly idag)
     {
-        if (p.ErAvsluttet) return (Livsstatus.Arkiv, "Arkivert med erfaringer");
-        var utloper = p.Oppdatert.AddMonths(12);
-        var igjen = utloper.DayNumber - idag.DayNumber;
-        if (igjen < 0) return (Livsstatus.Utlopt, "Ikke bekreftet på over 12 måneder");
-        if (igjen <= 45) return (Livsstatus.Snart, $"Må bekreftes innen {igjen} dager");
-        return (Livsstatus.Ok, $"Gyldig til {Datoformat.Lang(utloper)}");
+        var frist = p.Oppdatert.AddMonths(MndInaktiv);
+        if (p.ErAvsluttet) return new(Aktualitet.Arkiv, "Avsluttet og arkivert med erfaringer", "akt-arkiv", frist);
+        var igjen = frist.DayNumber - idag.DayNumber;
+        if (igjen < 0) return new(Aktualitet.Inaktiv, $"Inaktiv siden {Datoformat.Lang(frist)}", "akt-inaktiv", frist);
+        if (idag >= p.Oppdatert.AddMonths(MndPaminnelse))
+            return new(Aktualitet.Snart, $"Må bekreftes innen {igjen} {(igjen == 1 ? "dag" : "dager")}", "akt-snart", frist);
+        if (idag >= p.Oppdatert.AddMonths(MndFersk))
+            return new(Aktualitet.Eldre, "Oppdatert for over et halvt år siden", "akt-eldre", frist);
+        return new(Aktualitet.Fersk, "Oppdatert siste 6 måneder", "akt-fersk", frist);
     }
+
+    public static bool ErInaktiv(Prosjekt p, DateOnly idag) => Aktualitetsstatus(p, idag).Niva == Aktualitet.Inaktiv;
 
     // ---------- partnerforslag ----------
     public record Partnertreff(Prosjekt Prosjekt, int Poeng, List<string> Grunner);

@@ -15,8 +15,8 @@
 <div class="kpis" style="margin:16px 0">
     <div class="kpi"><div class="eyebrow">Til behandling</div><div class="value num">@Model.AntallNye</div></div>
     <div class="kpi"><div class="eyebrow">Venter på innsender</div><div class="value num">@Model.AntallVenter</div></div>
-    <div class="kpi"><div class="eyebrow">Godkjent</div><div class="value num">@Model.AntallGodkjent</div></div>
-    <div class="kpi"><div class="eyebrow">Må bekreftes</div><div class="value num" style="@(Model.Paminnelser.Any(x => x.Utlopt) ? "color:var(--crit-ink)" : null)">@Model.Paminnelser.Count</div></div>
+    <div class="kpi"><div class="eyebrow">Må bekreftes snart</div><div class="value num">@Model.Paminnelser.Count(x => !x.Inaktiv)</div></div>
+    <div class="kpi"><div class="eyebrow">Inaktive</div><div class="value num" style="@(Model.Paminnelser.Any(x => x.Inaktiv) ? "color:var(--crit-ink)" : null)">@Model.Paminnelser.Count(x => x.Inaktiv)</div></div>
 </div>
 
 <nav class="segtabs" aria-label="Status">
@@ -29,30 +29,36 @@
 <section class="panel qpanel">
     @if (Model.Fane == "pam")
     {
-        <p class="sub" style="margin-top:0">Sendes automatisk etter 11 måneder uten oppdatering. Her kan de også sendes manuelt.</p>
-        <ul class="alist">
-            @foreach (var r in Model.Paminnelser)
-            {
-                var p = r.Prosjekt;
-                <li>
-                    <div>
-                        <a class="linkbtn t" href="@Lenker.Prosjekt(Context, p.Id)">@p.Tittel</a>
-                        <div class="w" style="@(r.Utlopt ? "color:var(--crit-ink)" : null)">Sist oppdatert @Datoformat.Lang(p.Oppdatert) · @p.Kontakt.Navn@(p.PaminnelseSendt is DateOnly d ? $" · påminnelse sendt {Datoformat.Kort(d)}" : "")</div>
-                    </div>
-                    <form asp-action="Paminnelse" asp-route-id="@p.Id" method="post">
-                        <button class="btn small" type="submit" disabled="@(p.PaminnelseSendt != null)">@(p.PaminnelseSendt != null ? "Sendt" : "Send påminnelse")</button>
-                    </form>
-                    <details style="grid-column:1/-1">
-                        <summary style="font-size:12.5px;color:var(--ink-3);cursor:pointer">Se e-posten</summary>
-                        <div class="mail">@r.Epost</div>
-                    </details>
-                </li>
-            }
-            @if (Model.Paminnelser.Count == 0)
-            {
-                <li><span class="muted">Alle prosjekter er oppdatert.</span></li>
-            }
-        </ul>
+        <p class="sub" style="margin-top:0">Prosjekteieren får en påminnelse etter @ProsjektLogikk.MndPaminnelse måneder uten oppdatering. Bekreftes ikke prosjektet innen @ProsjektLogikk.MndInaktiv måneder, blir det inaktivt og skjules fra oversikten. I ferdig løsning sendes påminnelsen automatisk. Her kan du også sende den manuelt, for eksempel til eiere av inaktive prosjekter.</p>
+        @foreach (var (tittel, inaktive) in new[] { ("Inaktive prosjekter", true), ("Må bekreftes snart", false) })
+        {
+            var rader = Model.Paminnelser.Where(r => r.Inaktiv == inaktive).ToList();
+            <h3 class="eyebrow" style="margin:14px 0 4px">@tittel (@rader.Count)</h3>
+            <ul class="alist">
+                @foreach (var r in rader)
+                {
+                    var p = r.Prosjekt;
+                    var sendt = p.PaminnelseSendt;
+                    <li>
+                        <div>
+                            <a class="linkbtn t" href="@Lenker.Prosjekt(Context, p.Id)">@p.Tittel</a>
+                            <div class="w"><span class="akt @r.Aktualitet.Klasse">@r.Aktualitet.Tekst</span> · eier @p.Eierperson.Navn@(sendt is DateOnly d ? $" · påminnelse sendt {Datoformat.Kort(d)}" : "")</div>
+                        </div>
+                        <form asp-action="Paminnelse" asp-route-id="@p.Id" method="post">
+                            <button class="btn small" type="submit">@(sendt != null ? "Send på nytt" : "Send påminnelse")</button>
+                        </form>
+                        <details style="grid-column:1/-1">
+                            <summary style="font-size:12.5px;color:var(--ink-3);cursor:pointer">Se e-posten</summary>
+                            <div class="mail">@r.Epost</div>
+                        </details>
+                    </li>
+                }
+                @if (rader.Count == 0)
+                {
+                    <li><span class="muted">Ingen.</span></li>
+                }
+            </ul>
+        }
     }
     else
     {
@@ -79,6 +85,7 @@
                         <dl class="kv">
                             <dt>Ansvarlig</dt><dd>@p.Eier</dd>
                             <dt>Organisering</dt><dd>@(p.Samarbeid ? "Samarbeid: " + string.Join(", ", p.Deltakere) : "Én kommune")</dd>
+                            <dt>IKT-samarbeid</dt><dd>@(p.IktSamarbeid.Count > 0 ? string.Join(", ", p.IktSamarbeid) : "Ikke oppgitt")</dd>
                             <dt>Sektor og fase</dt><dd>@p.Sektor · @p.Fase</dd>
                             <dt>Hva løsningen gjør</dt><dd>@p.Beskrivelse</dd>
                             <dt>Stikkord</dt><dd>@string.Join(" ", p.Stikkord.Select(t => "#" + t))</dd>
