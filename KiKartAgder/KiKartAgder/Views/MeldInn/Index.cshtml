@@ -177,14 +177,37 @@
             <fieldset class="step" data-steg="3">
                 <legend class="sr-only">Del mer</legend>
                 <p class="sub" style="margin-top:0">Alt her er valgfritt, men det gjør prosjektet mye nyttigere for andre.</p>
+                
                 <div class="f">
                     <span class="lab">Vi ser etter</span>
-                    <div class="checks">@foreach (var b in Katalog.Behov) {<label><input type="checkbox" name="Soker" value="@b" checked="@s.Soker.Contains(b)" />@b</label>}</div>
+                    <div class="checks">
+                        @foreach (var b in Katalog.Behov)
+                        {
+                            <label><input type="checkbox" name="Soker" value="@b" checked="@s.Soker.Contains(b)" />@b</label>
+                        }
+                        <label class="other-option">
+                            <input type="text" id="SokerAnnet" name="SokerAnnet"
+                                value="@s.SokerAnnet" placeholder="Annet"
+                                aria-label="Annet dere ser etter" />
+                        </label>
+                    </div>
                 </div>
+
                 <div class="f">
                     <span class="lab">Vi kan tilby</span>
-                    <div class="checks">@foreach (var b in Katalog.Behov) {<label><input type="checkbox" name="Tilbyr" value="@b" checked="@s.Tilbyr.Contains(b)" />@b</label>}</div>
+                    <div class="checks">
+                        @foreach (var b in Katalog.Behov)
+                        {
+                            <label><input type="checkbox" name="Tilbyr" value="@b" checked="@s.Tilbyr.Contains(b)" />@b</label>
+                        }
+                        <label class="other-option">
+                            <input type="text" id="TilbyrAnnet" name="TilbyrAnnet"
+                                value="@s.TilbyrAnnet" placeholder="Annet"
+                                aria-label="Annet dere kan tilby" />
+                        </label>
+                    </div>
                 </div>
+                
                 <div class="f"><label for="Mal">Mål</label><textarea id="Mal" name="Mal">@s.Mal</textarea></div>
                 <div class="row2">
                     <div class="f"><label for="Status">Status nå</label><textarea id="Status" name="Status">@s.Status</textarea></div>

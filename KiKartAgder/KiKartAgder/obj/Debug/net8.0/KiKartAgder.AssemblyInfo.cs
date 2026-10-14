@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KiKartAgder")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6b0aa8385c3fb953c14c290101c0942969bb7ea6")]
 [assembly: System.Reflection.AssemblyProductAttribute("KiKartAgder")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KiKartAgder")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
