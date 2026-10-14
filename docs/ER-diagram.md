@@ -183,15 +183,18 @@ erDiagram
         char4 KommuneNr PK, FK
         bool ErLeder
         date BleMed
+        int Rekkefolge "lederkommunen først"
     }
     PROSJEKT_STIKKORD {
         int ProsjektId PK, FK
         int StikkordId PK, FK
+        int Rekkefolge "kartet viser ofte bare de første"
     }
     PROSJEKT_BEHOV {
         int ProsjektId PK, FK
         int BehovId PK, FK
         string Retning PK "Soker eller Tilbyr"
+        int Rekkefolge
     }
     PROSJEKT_BILDE {
         int BildeId PK "ny"
@@ -299,3 +302,4 @@ Tabellnavnene i SQL Server blir flertall av klassenavnene, som `Prosjekter`, `Ko
 | `ErAktiv` og `Rekkefolge` på kodelistene | En verdi kan skjules fra filtrene uten at gamle prosjekter mister koblingen |
 | Kolonnenavn i PascalCase (`ProsjektId`, ikke `prosjekt_id`) | Samme navn som i C#, så EF Core trenger ikke ekstra oppsett |
 | Kommunenummer i kartet | `agder.json` bruker navn, databasen bruker nummer |
+| `Rekkefolge` på `PROSJEKT_DELTAKER`, `PROSJEKT_STIKKORD` og `PROSJEKT_BEHOV` | Kartet viser ofte bare de første stikkordene og kommunene. Rekkefølgen innsenderen valgte må tas vare på |

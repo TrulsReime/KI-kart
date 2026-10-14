@@ -675,6 +675,9 @@ namespace KiKartAgder.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
 
+                    b.Property<int>("Rekkefolge")
+                        .HasColumnType("integer");
+
                     b.HasKey("ProsjektId", "BehovId", "Retning");
 
                     b.HasIndex("BehovId");
@@ -730,6 +733,9 @@ namespace KiKartAgder.Migrations
                     b.Property<bool>("ErLeder")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("Rekkefolge")
+                        .HasColumnType("integer");
+
                     b.HasKey("ProsjektId", "KommuneNr");
 
                     b.HasIndex("KommuneNr");
@@ -743,6 +749,9 @@ namespace KiKartAgder.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("StikkordId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Rekkefolge")
                         .HasColumnType("integer");
 
                     b.HasKey("ProsjektId", "StikkordId");

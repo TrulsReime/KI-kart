@@ -100,16 +100,18 @@ public static class Testdata
                 {
                     KommuneNr = kommuner[navn],
                     ErLeder = i == 0,
-                    BleMed = p.Registrert
+                    BleMed = p.Registrert,
+                    Rekkefolge = i
                 }).ToList(),
 
-                Stikkord = p.Stikkord.Distinct().Select(ord => new ProsjektStikkord
+                Stikkord = p.Stikkord.Distinct().Select((ord, i) => new ProsjektStikkord
                 {
-                    Stikkord = stikkord.TryGetValue(ord, out var s) ? s : stikkord[ord] = new Stikkord { Navn = ord }
+                    Stikkord = stikkord.TryGetValue(ord, out var s) ? s : stikkord[ord] = new Stikkord { Navn = ord },
+                    Rekkefolge = i
                 }).ToList(),
 
-                Behov = p.Soker.Distinct().Select(b => new ProsjektBehov { Behov = behov[b], Retning = BehovRetning.Soker })
-                    .Concat(p.Tilbyr.Distinct().Select(b => new ProsjektBehov { Behov = behov[b], Retning = BehovRetning.Tilbyr }))
+                Behov = p.Soker.Distinct().Select((b, i) => new ProsjektBehov { Behov = behov[b], Retning = BehovRetning.Soker, Rekkefolge = i })
+                    .Concat(p.Tilbyr.Distinct().Select((b, i) => new ProsjektBehov { Behov = behov[b], Retning = BehovRetning.Tilbyr, Rekkefolge = i }))
                     .ToList(),
 
                 Logg = new() { new LoggOppforing { Dato = p.Registrert, Tekst = "Lagt inn i kartet" } }

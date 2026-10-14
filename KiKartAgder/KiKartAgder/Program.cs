@@ -10,10 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 // MVC med automatisk sjekk av antiforgery-token på alle POST-skjema
 builder.Services.AddControllersWithViews(o => o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
-// Tjenester. Repository er singleton fordi dataene ligger i minnet i prototypen.
+// Tjenester. Repository er scoped, samme levetid som KiKartDbContext (én per forespørsel).
 builder.Services.AddSingleton<IDatoTjeneste, DatoTjeneste>();
 builder.Services.AddSingleton<KartData>();
-builder.Services.AddSingleton<IKiKartRepository, MinneRepository>();
+builder.Services.AddScoped<IKiKartRepository, EfRepository>();
 
 // Databasen. Connection string ligger i User Secrets lokalt (ConnectionStrings:KiKart).
 var kiKartDb = builder.Configuration.GetConnectionString("KiKart")
@@ -45,7 +45,6 @@ builder.Services.Configure<CookieTempDataProviderOptions>(o =>
 var app = builder.Build();
 
 // Lokalt: kjør nye migrasjoner og legg inn testdata fra prosjekter.json hvis databasen er tom.
-// Kartet bruker fortsatt MinneRepository, så appen starter selv om databasen ikke kjører.
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
@@ -57,7 +56,8 @@ if (app.Environment.IsDevelopment())
     }
     catch (Exception ex) when (ex is Npgsql.NpgsqlException or InvalidOperationException { InnerException: Npgsql.NpgsqlException })
     {
-        app.Logger.LogWarning(ex, "Fikk ikke kontakt med databasen. Er den startet? (docker compose up -d db)");
+        app.Logger.LogCritical(ex, "Fikk ikke kontakt med databasen. Er den startet? (docker compose up -d db)");
+        throw;
     }
 }
 
