@@ -31,37 +31,36 @@ C:\Users\truls_no5o882\Downloads\KiKartAgder\KiKartAgder\obj\Debug\net8.0\refint
 C:\Users\truls_no5o882\Downloads\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.pdb
 C:\Users\truls_no5o882\Downloads\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.genruntimeconfig.cache
 C:\Users\truls_no5o882\Downloads\KiKartAgder\KiKartAgder\obj\Debug\net8.0\ref\KiKartAgder.dll
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\appsettings.Development.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\appsettings.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\Data\agder.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\Data\prosjekter.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.staticwebassets.runtime.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.staticwebassets.endpoints.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.exe
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.deps.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.runtimeconfig.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.dll
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.pdb
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\rpswa.dswa.cache.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.AssemblyInfoInputs.cache
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.AssemblyInfo.cs
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.csproj.CoreCompileInputs.cache
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.RazorAssemblyInfo.cache
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.RazorAssemblyInfo.cs
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.sourcelink.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\rjimswa.dswa.cache.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\scopedcss\bundle\KiKartAgder.styles.css
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\staticwebassets.build.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\staticwebassets.build.json.cache
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\staticwebassets.development.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\swae.build.ex.cache
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.dll
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\refint\KiKartAgder.dll
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.pdb
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.genruntimeconfig.cache
-C:\Users\truls_no5o882\OneDrive - Universitetet i Agder\Documents\IS-218-GIS\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\ref\KiKartAgder.dll
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\appsettings.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\Data\agder.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\Data\prosjekter.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.staticwebassets.runtime.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.staticwebassets.endpoints.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.exe
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.deps.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.runtimeconfig.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.dll
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\bin\Debug\net8.0\KiKartAgder.pdb
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.AssemblyInfoInputs.cache
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.AssemblyInfo.cs
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.csproj.CoreCompileInputs.cache
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.RazorAssemblyInfo.cache
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.RazorAssemblyInfo.cs
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.sourcelink.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\scopedcss\bundle\KiKartAgder.styles.css
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.dll
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\refint\KiKartAgder.dll
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.pdb
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\KiKartAgder.genruntimeconfig.cache
+C:\Users\helle\2026-IS-302\KI-kart\KiKartAgder\KiKartAgder\obj\Debug\net8.0\ref\KiKartAgder.dll
