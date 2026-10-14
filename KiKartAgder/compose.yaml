@@ -8,3 +8,18 @@ services:
       dockerfile: KiKartAgder/Dockerfile
     ports:
       - 5270:5270
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    container_name: kikart-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${DB_SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - kikart-data:/var/opt/mssql
+
+volumes:
+  kikart-data:
