@@ -44,6 +44,23 @@ builder.Services.Configure<CookieTempDataProviderOptions>(o =>
 
 var app = builder.Build();
 
+// Lokalt: kjør nye migrasjoner og legg inn testdata fra prosjekter.json hvis databasen er tom.
+// Kartet bruker fortsatt MinneRepository, så appen starter selv om databasen ikke kjører.
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<KiKartDbContext>();
+    try
+    {
+        await db.Database.MigrateAsync();
+        await Testdata.LeggInnAsync(db, app.Environment.ContentRootPath);
+    }
+    catch (Exception ex) when (ex is Npgsql.NpgsqlException or InvalidOperationException { InnerException: Npgsql.NpgsqlException })
+    {
+        app.Logger.LogWarning(ex, "Fikk ikke kontakt med databasen. Er den startet? (docker compose up -d db)");
+    }
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Feil");
