@@ -46,8 +46,11 @@ public class Prosjekt
     public string SistEndret { get; set; } = "Lagt inn i kartet";
     public DateOnly? PaminnelseSendt { get; set; }
 
-    /// <summary>Hindrer at to forvaltere overskriver hverandres endringer.</summary>
-    public byte[] RowVersion { get; set; } = null!;
+    /// <summary>
+    /// Hindrer at to forvaltere overskriver hverandres endringer.
+    /// I PostgreSQL er dette systemkolonnen xmin, som endres automatisk ved hver oppdatering.
+    /// </summary>
+    public uint RowVersion { get; set; }
 
     public List<ProsjektDeltaker> Deltakere { get; set; } = new();
     public List<ProsjektStikkord> Stikkord { get; set; } = new();

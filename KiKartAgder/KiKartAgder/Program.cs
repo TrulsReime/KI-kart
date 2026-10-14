@@ -3,6 +3,7 @@ using KiKartAgder.Data;
 using KiKartAgder.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,11 @@ builder.Services.AddControllersWithViews(o => o.Filters.Add(new AutoValidateAnti
 builder.Services.AddSingleton<IDatoTjeneste, DatoTjeneste>();
 builder.Services.AddSingleton<KartData>();
 builder.Services.AddSingleton<IKiKartRepository, MinneRepository>();
+
+// Databasen. Connection string ligger i User Secrets lokalt (ConnectionStrings:KiKart).
+var kiKartDb = builder.Configuration.GetConnectionString("KiKart")
+    ?? throw new InvalidOperationException("Mangler ConnectionStrings:KiKart. Kjør: dotnet user-secrets set \"ConnectionStrings:KiKart\" \"<connection string>\"");
+builder.Services.AddDbContext<KiKartDbContext>(o => o.UseNpgsql(kiKartDb));
 
 // KI-kartet vises i en iframe på digiagder.no. Da må cookies tillates på tvers av nettsteder
 // (krever HTTPS), og standardhodet som blokkerer iframe må slås av.

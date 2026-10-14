@@ -5,6 +5,7 @@ public class VarselAbonnent
 {
     public int AbonnentId { get; set; }
     public string Epost { get; set; } = "";
+    // Alle tidspunkter lagres i UTC (PostgreSQL timestamptz krever DateTimeKind.Utc).
     public DateTime Opprettet { get; set; }
 
     /// <summary>Tom til e-posten er bekreftet.</summary>

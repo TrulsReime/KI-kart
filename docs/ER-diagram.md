@@ -176,7 +176,7 @@ erDiagram
         date Oppdatert
         string SistEndret
         date PaminnelseSendt
-        rowversion RowVersion "hindrer at to forvaltere overskriver hverandre"
+        uint RowVersion "xmin i PostgreSQL, hindrer at to forvaltere overskriver hverandre"
     }
     PROSJEKT_DELTAKER {
         int ProsjektId PK, FK

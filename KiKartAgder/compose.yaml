@@ -10,16 +10,16 @@ services:
       - 5270:5270
 
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    platform: linux/amd64
+    image: postgres:16
     container_name: kikart-db
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${DB_SA_PASSWORD}
+      POSTGRES_DB: KiKart
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "127.0.0.1:1433:1433"
+      - "127.0.0.1:5432:5432"
     volumes:
-      - kikart-data:/var/opt/mssql
+      - kikart-pgdata:/var/lib/postgresql/data
 
 volumes:
-  kikart-data:
+  kikart-pgdata:
