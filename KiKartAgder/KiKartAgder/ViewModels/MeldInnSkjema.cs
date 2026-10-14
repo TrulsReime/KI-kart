@@ -65,6 +65,10 @@ public class MeldInnSkjema : IValidatableObject
     // Steg 3: Del mer (valgfritt)
     public List<string> Soker { get; set; } = new();
     public List<string> Tilbyr { get; set; } = new();
+
+    public string? SokerAnnet { get; set; }
+    public string? TilbyrAnnet { get; set; }
+
     [Display(Name = "Mål")] public string? Mal { get; set; }
     [Display(Name = "Status nå")] public string? Status { get; set; }
     [Display(Name = "Gevinst, forventet eller oppnådd")] public string? Gevinst { get; set; }
@@ -96,6 +100,19 @@ public class MeldInnSkjema : IValidatableObject
             ? new[] { Kommune! }.Concat(Deltakere.Where(k => k != Kommune)).Distinct().ToList()
             : new List<string> { Kommune! };
         var harNytt = !string.IsNullOrWhiteSpace(SistEndret);
+
+        var soker = Soker.ToList();
+            if (!string.IsNullOrWhiteSpace(SokerAnnet))
+            {
+                soker.Add(SokerAnnet.Trim());
+            }
+
+        var tilbyr = Tilbyr.ToList();
+            if (!string.IsNullOrWhiteSpace(TilbyrAnnet))
+            {
+                tilbyr.Add(TilbyrAnnet.Trim());
+            }
+
         return new Prosjekt
         {
             Id = Id ?? 0,
@@ -110,21 +127,55 @@ public class MeldInnSkjema : IValidatableObject
             Deltakere = deltakere,
             Apen = Organisering == "Samarbeid" && Apen,
             Kontakt = new Kontaktperson { Navn = KontaktNavn!.Trim(), Rolle = KontaktRolle?.Trim() ?? "", Epost = KontaktEpost!.Trim() },
-            Soker = Soker, Tilbyr = Tilbyr,
+            Soker = soker, Tilbyr = tilbyr,
             Mal = Mal, Status = Status, Gevinst = Gevinst, Fungerte = Fungerte, Annerledes = Annerledes,
             SistEndret = harNytt ? SistEndret!.Trim() : (Id.HasValue ? "Oppdatert" : "Lagt inn i kartet")
         };
     }
 
     /// <summary>Fyller skjemaet med verdiene til et eksisterende prosjekt.</summary>
-    public static MeldInnSkjema Fra(Prosjekt p) => new()
+    public static MeldInnSkjema Fra(Prosjekt p)
     {
-        Id = p.Id, Tittel = p.Tittel, Beskrivelse = p.Beskrivelse, Sektor = p.Sektor, Fase = p.Fase, Stopp = p.Stopp,
-        Stikkord = string.Join(", ", p.Stikkord), Organisering = p.Organisering, Eier = p.Eier, Kommune = p.Kommune,
-        Deltakere = p.Deltakere.ToList(), Apen = p.Apen, KontaktNavn = p.Kontakt.Navn, KontaktRolle = p.Kontakt.Rolle,
-        KontaktEpost = p.Kontakt.Epost, Soker = p.Soker.ToList(), Tilbyr = p.Tilbyr.ToList(), Mal = p.Mal, Status = p.Status,
-        Gevinst = p.Gevinst, Fungerte = p.Fungerte, Annerledes = p.Annerledes, SistEndret = ""
-    };
+        var sokerAnnet = p.Soker
+        .Where(value => !Katalog.Behov.Contains(value))
+        .ToList();
+
+        var tilbyrAnnet = p.Tilbyr
+        .Where(value => !Katalog.Behov.Contains(value))
+        .ToList();
+
+        return new MeldInnSkjema
+        {
+            Id = p.Id,
+            Tittel = p.Tittel,
+            Beskrivelse = p.Beskrivelse,
+            Sektor = p.Sektor,
+            Fase = p.Fase,
+            Stopp = p.Stopp,
+            Stikkord = string.Join(", ", p.Stikkord),
+            Organisering = p.Organisering,
+            Eier = p.Eier,
+            Kommune = p.Kommune,
+            Deltakere = p.Deltakere.ToList(),
+            Apen = p.Apen,
+            KontaktNavn = p.Kontakt.Navn,
+            KontaktRolle = p.Kontakt.Rolle,
+            KontaktEpost = p.Kontakt.Epost,
+
+            Soker = p.Soker.Where(Katalog.Behov.Contains).ToList(),
+            SokerAnnet = string.Join(", ", sokerAnnet),
+
+            Tilbyr = p.Tilbyr.Where(Katalog.Behov.Contains).ToList(),
+            TilbyrAnnet = string.Join(", ", tilbyrAnnet),
+
+            Mal = p.Mal,
+            Status = p.Status,
+            Gevinst = p.Gevinst,
+            Fungerte = p.Fungerte,
+            Annerledes = p.Annerledes,
+            SistEndret = ""
+        };
+    }   
 
     /// <summary>Hvilke felt som hører til hvert steg, så riktig steg kan vises når noe mangler.</summary>
     public static readonly string[][] FeltPerSteg =
