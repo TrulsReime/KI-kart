@@ -50,13 +50,15 @@ public static class Katalog
     };
 
     /// <summary>IKT-samarbeidene i Agder som et prosjekt kan være en del av. Valgfritt ved innmelding.</summary>
-    public static readonly string[] IktSamarbeid = { "IKT Agder", "DDV", "Digi Agder" };
+    public static readonly string[] IktSamarbeid = { "IKT Agder", "DDV", "Digi Agder", "Kristiansand", "Lillesand og Birkenes" };
 
     public static readonly Dictionary<string, string> IktSamarbeidHjelp = new()
     {
         ["IKT Agder"] = "Interkommunalt IKT-selskap",
         ["DDV"] = "Det Digitale Vestre Agder",
         ["Digi Agder"] = "Digitaliseringssamarbeidet i Agder",
+        ["Kristiansand"] = "Kristiansand kommunes egen IKT-tjeneste",
+        ["Lillesand og Birkenes"] = "Felles IT-tjeneste for Lillesand og Birkenes",
     };
 
     public static readonly string[] Organiseringer = { "Samarbeid", "Enkeltkommune" };

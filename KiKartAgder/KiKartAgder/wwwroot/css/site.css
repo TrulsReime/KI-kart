@@ -786,3 +786,7 @@ body{margin:0}
 .card.inaktiv{background:#F7F9FA;border-style:dashed}
 .card.inaktiv h3{color:var(--ink-2)}
 .inaktivbox{background:#EEF1F4;border-left:4px solid #8A96A3;padding:12px 14px;margin:0 0 12px;font-size:14px}
+
+/* Tom forside før noen prosjekter er lagt inn */
+.spotcard.tomkart h2{color:var(--navy)}
+.spotcard.tomkart .spot-foot{margin-top:8px}

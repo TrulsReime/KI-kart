@@ -21,7 +21,7 @@
         <div class="sl">kommuner er med</div>
         <div class="sn">alene eller i samarbeid</div>
     </div>
-    <a class="stat kbtn" asp-controller="Samarbeid" asp-action="Index">
+    <a class="stat kbtn" href="/Prosjekter?org=Samarbeid">
         <div class="sv num">@Model.AntallSamarbeid</div>
         <div class="sl">samarbeidsprosjekter</div>
         <div class="sn">@Model.AntallApneSamarbeid er åpne for flere</div>
@@ -35,6 +35,17 @@
 
 @* 2. Utvalgte prosjekter (karusell) og nye i kartet *@
 <div class="spot">
+    @if (Model.Utvalgte.Count == 0)
+    {
+        <section class="spotcard tomkart">
+            <div class="spot-top"><span class="spot-label">Kartet er tomt</span></div>
+            <h2>Ingen prosjekter er lagt inn ennå</h2>
+            <p class="spot-desc">Bli den første kommunen som deler et KI-prosjekt. Idéer, piloter og prosjekter som ble avbrutt teller like mye som det som er i drift.</p>
+            <div class="spot-foot"><a class="btn primary" asp-controller="MeldInn" asp-action="Index">+ Meld inn prosjekt</a></div>
+        </section>
+    }
+    else
+    {
     <section class="carousel" aria-roledescription="karusell" aria-label="Utvalgte prosjekter" data-karusell>
         <div class="slides" aria-live="off">
             @for (var i = 0; i < Model.Utvalgte.Count; i++)
@@ -43,7 +54,7 @@
                 var lenke = Lenker.Prosjekt(Context, sp.Id);
                 <article class="spotcard slide@(i == 0 ? " on" : "")" aria-roledescription="lysbilde" aria-label="@(i + 1) av @Model.Utvalgte.Count: @sp.Tittel" aria-hidden="@(i == 0 ? "false" : "true")">
                     <div class="spot-top">
-                        <span class="spot-label">★ Utvalgt av DigiAgder</span>
+                        <span class="spot-label">@(Model.UtvalgtAvDigiAgder ? "★ Utvalgt av DigiAgder" : "Nytt i kartet")</span>
                         <partial name="_FasePill" model="sp" />
                         @if (sp.Samarbeid) { <span class="pill collab">Samarbeid · @sp.Deltakere.Count kommuner</span> }
                     </div>
@@ -83,10 +94,15 @@
             </div>
         }
     </section>
+    }
 
     <section class="panel newpanel">
         <h2>Nye i kartet</h2>
         <p class="sub">Disse kommunene har nylig delt prosjektene sine</p>
+        @if (Model.Nyeste.Count == 0)
+        {
+            <p class="muted" style="margin:6px 0 14px">Ingen prosjekter er meldt inn ennå.</p>
+        }
         <ul class="newlist">
             @foreach (var p in Model.Nyeste)
             {
@@ -115,6 +131,10 @@
         <section class="panel grow">
             <h2>Sist oppdatert</h2>
             <p class="sub">Hva som er endret, og når</p>
+            @if (Model.SistOppdatert.Count == 0)
+            {
+                <p class="muted" style="margin:6px 0 0">Her vises endringer når prosjekter blir lagt inn eller oppdatert.</p>
+            }
             <ul class="feed">
                 @foreach (var p in Model.SistOppdatert)
                 {

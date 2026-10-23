@@ -40,12 +40,11 @@
 </div></div>
 
 <div class="wrap">
-    <div class="alert" role="note"><strong>Prototype.</strong> Prosjektene, personene og e-postadressene på denne siden er fiktive og ikke knyttet til de navngitte kommunene.</div>
+    <div class="alert" role="note"><strong>Prototype under testing.</strong> Løsningen er under utvikling. Prosjekter som legges inn nå, kan bli slettet når løsningen startes på nytt.</div>
 
     <nav class="tabs" aria-label="Visninger i KI-kartet">
         <a asp-controller="Home" asp-action="Index" aria-current="@Aktiv("oversikt")">Oversikt</a>
         <a asp-controller="Prosjekter" asp-action="Index" aria-current="@Aktiv("prosjekter")">Prosjekter<span class="count">@publiserte.Count</span></a>
-        <a asp-controller="Samarbeid" asp-action="Index" aria-current="@Aktiv("samarbeid")">Samarbeid<span class="count">@publiserte.Count(p => p.Samarbeid)</span></a>
         <a asp-controller="Erfaringer" asp-action="Index" aria-current="@Aktiv("erfaringer")">Erfaringer<span class="count">@publiserte.Count(p => p.HarErfaringer)</span></a>
         <a asp-controller="MeldInn" asp-action="Index" aria-current="@Aktiv("meldinn")">Meld inn</a>
         <a asp-controller="Forvaltning" asp-action="Index" aria-current="@Aktiv("forvaltning")" class="tab-adm">Forvaltning<span class="count alert" hidden="@(tilBehandling == 0)">@tilBehandling</span></a>

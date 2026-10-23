@@ -36,7 +36,11 @@ public class HomeController : Controller
             AntallSamarbeid = samarbeid.Count,
             AntallApneSamarbeid = samarbeid.Count(p => p.ErApenForFlere),
             AntallNye = liste.Count(p => Datoformat.DagerSiden(p.Registrert, idag) <= 30),
-            Utvalgte = _repo.Utvalgte(),
+            // Har DigiAgder ikke valgt ut prosjekter, vises de nyeste, med samarbeid først
+            Utvalgte = _repo.Utvalgte().Count > 0
+                ? _repo.Utvalgte()
+                : liste.OrderByDescending(p => p.Samarbeid).ThenByDescending(p => p.Registrert).Take(5).ToList(),
+            UtvalgtAvDigiAgder = _repo.Utvalgte().Count > 0,
             Nyeste = liste.OrderByDescending(p => p.Registrert).Take(4).ToList(),
             SistOppdatert = liste.OrderByDescending(p => p.Oppdatert).Take(6).ToList(),
             Kart = KartViewModel.Lag(_kart, liste),

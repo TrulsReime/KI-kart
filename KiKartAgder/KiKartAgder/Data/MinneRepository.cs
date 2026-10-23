@@ -112,7 +112,7 @@ public class MinneRepository : IKiKartRepository
     {
         lock (_las)
         {
-            p.Id = _prosjekter.Max(x => x.Id) + 1;
+            p.Id = _prosjekter.Count == 0 ? 1 : _prosjekter.Max(x => x.Id) + 1;
             p.Registrert = p.Oppdatert = Idag;
             p.TilGodkjenning = true;
             p.Prosjekteier = p.Kontakt; // den som melder inn, blir eier

@@ -1,7 +1,7 @@
 # KI-kart for Agder (ASP.NET Core MVC)
 
 Prototypen av KI-kartet, bygget om til en ASP.NET Core MVC-applikasjon (.NET 8, C#).
-Prosjektene, personene og e-postadressene i dataene er fiktive.
+Løsningen starter uten data. Prosjektene legges inn via «Meld inn» og godkjennes under «Forvaltning».
 
 ## Kom i gang i Visual Studio Code
 
@@ -25,7 +25,7 @@ eller `dotnet watch run` for å laste siden på nytt automatisk når du endrer f
 | `Data/` | `IKiKartRepository` (grensesnittet for all datatilgang), `MinneRepository` (data i minnet) og startdataene `prosjekter.json` og kartet `agder.json`. |
 | `Services/` | Regler som brukes flere steder: søk, partnerforslag, lignende prosjekter, påminnelser (`ProsjektLogikk`), datoformat, kartdata og lenker. |
 | `ViewModels/` | Det hver visning trenger, f.eks. `OversiktViewModel`, `ProsjektFilter` og skjemamodellen `MeldInnSkjema` med validering. |
-| `Controllers/` | Én kontroller per fane: `Home` (Oversikt), `Prosjekter`, `Samarbeid`, `Erfaringer`, `MeldInn` og `Forvaltning`. |
+| `Controllers/` | Én kontroller per fane: `Home` (Oversikt), `Prosjekter`, `Erfaringer`, `MeldInn` og `Forvaltning`. |
 | `Views/` | Razor-visningene. Felles deler ligger i `Views/Shared` (meny, prosjektkort, kart, stolpediagram, søkefelt). |
 | `wwwroot/` | `css/site.css` (utseendet fra prototypen) og `js/site.js` (karusell, søkeforslag, skjema i steg, iframe-høyde). |
 
@@ -44,7 +44,6 @@ Alle filtre ligger i adressen, så et filtrert utvalg kan deles som lenke. Skjem
 | Oversikt | `/` |
 | Prosjekter med filter | `/Prosjekter?org=Samarbeid&fase=Pilot` |
 | Ett prosjekt | `/Prosjekter/Detaljer/24` |
-| Samarbeid | `/Samarbeid` |
 | Erfaringer | `/Erfaringer?status=stoppet` |
 | Meld inn / oppdater | `/MeldInn`, `/MeldInn?id=12` |
 | Forvaltning | `/Forvaltning`, `/Forvaltning?fane=pam` |
@@ -52,7 +51,7 @@ Alle filtre ligger i adressen, så et filtrert utvalg kan deles som lenke. Skjem
 ## Viktig å vite
 
 - **Data forsvinner ved omstart.** Alt ligger i minnet. Nye prosjekter og godkjenninger nullstilles når applikasjonen startes på nytt.
-- **Datoen er låst** til 7. oktober 2026 i `appsettings.json` (`KiKart:Dato`), fordi eksempeldataene er laget rundt den datoen. Fjern verdien for å bruke dagens dato.
+- **Dato for testing:** `KiKart:Dato` i `appsettings.json` er tom, så løsningen bruker dagens dato. Sett en dato der (f.eks. `2027-10-01`) for å teste påminnelser og inaktive prosjekter.
 - **Forvaltning krever ingen innlogging** i prototypen. I en ferdig løsning bør `ForvaltningController` få `[Authorize]`, for eksempel med kommunenes Microsoft Entra ID (tidligere Azure AD).
 - **Fonten Inter** hentes fra Google Fonts. Uten nett brukes systemfonten.
 

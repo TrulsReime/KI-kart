@@ -17,15 +17,6 @@ public class ProsjektDetaljViewModel
     public required ProsjektLogikk.AktualitetInfo Aktualitet { get; init; }
 }
 
-public class SamarbeidViewModel
-{
-    public int AntallKommunerISamarbeid { get; init; }
-    public required IReadOnlyList<Prosjekt> Samarbeidsprosjekter { get; init; }
-    public required IReadOnlyList<Prosjekt> SerEtterNoe { get; init; }
-    public Prosjekt? Valgt { get; init; }
-    public required IReadOnlyList<ProsjektLogikk.Partnertreff> Treff { get; init; }
-}
-
 public class ErfaringerViewModel
 {
     public string? Q { get; init; }

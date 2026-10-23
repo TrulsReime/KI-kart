@@ -35,7 +35,7 @@
             }
         </ol>
 
-        @if (p == null)
+        @if (p == null && Model.Publiserte.Count > 0)
         {
             @* Eget GET-skjema for å bytte til et eksisterende prosjekt. Kan ikke ligge inne i hovedskjemaet. *@
             <form method="get" action="/MeldInn" class="f" data-autosend data-bare-steg="1" style="margin-bottom:18px">
