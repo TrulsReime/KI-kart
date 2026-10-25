@@ -1,11 +1,11 @@
 # KI-kart for Agder (ASP.NET Core MVC)
 
-Prototypen av KI-kartet, bygget om til en ASP.NET Core MVC-applikasjon (.NET 8, C#).
+Prototypen av KI-kartet, bygget om til en ASP.NET Core MVC-applikasjon (.NET 10, C#).
 Løsningen starter uten data. Prosjektene legges inn via «Meld inn» og godkjennes under «Forvaltning».
 
 ## Kom i gang i Visual Studio Code
 
-1. Installer **.NET 8 SDK** (Software Development Kit) fra https://dotnet.microsoft.com/download/dotnet/8.0
+1. Installer **.NET 10 SDK** (Software Development Kit) fra https://dotnet.microsoft.com/download/dotnet/10.0
 2. Åpne mappen `KiKartAgder` i VS Code. Godta forslaget om å installere utvidelsen **C# Dev Kit**.
 3. Trykk **F5** (eller velg «KI-kart (start og åpne i nettleser)» under Run and Debug). Siden åpnes på http://localhost:5270
 
