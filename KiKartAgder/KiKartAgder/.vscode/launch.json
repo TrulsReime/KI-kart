@@ -6,7 +6,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/bin/Debug/net8.0/KiKartAgder.dll",
+      "program": "${workspaceFolder}/bin/Debug/net10.0/KiKartAgder.dll",
       "cwd": "${workspaceFolder}",
       "env": { "ASPNETCORE_ENVIRONMENT": "Development", "ASPNETCORE_URLS": "http://localhost:5270" },
       "serverReadyAction": { "action": "openExternally", "pattern": "\\bNow listening on:\\s+(https?://\\S+)" }
