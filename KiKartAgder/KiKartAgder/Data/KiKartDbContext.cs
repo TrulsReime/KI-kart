@@ -23,10 +23,12 @@ public class KiKartDbContext : DbContext
     public DbSet<Stopparsak> Stopparsaker => Set<Stopparsak>();
     public DbSet<Behov> Behov => Set<Behov>();
     public DbSet<Stikkord> Stikkord => Set<Stikkord>();
+    public DbSet<IktSamarbeid> IktSamarbeider => Set<IktSamarbeid>();
     public DbSet<Prosjekt> Prosjekter => Set<Prosjekt>();
     public DbSet<ProsjektDeltaker> ProsjektDeltakere => Set<ProsjektDeltaker>();
     public DbSet<ProsjektStikkord> ProsjektStikkord => Set<ProsjektStikkord>();
     public DbSet<ProsjektBehov> ProsjektBehov => Set<ProsjektBehov>();
+    public DbSet<ProsjektIktSamarbeid> ProsjektIktSamarbeid => Set<ProsjektIktSamarbeid>();
     public DbSet<ProsjektBilde> ProsjektBilder => Set<ProsjektBilde>();
     public DbSet<LoggOppforing> Logg => Set<LoggOppforing>();
     public DbSet<Innmelding> Innmeldinger => Set<Innmelding>();
@@ -103,6 +105,18 @@ public class KiKartDbContext : DbContext
                 new Behov { BehovId = i + 1, Navn = navn, Rekkefolge = i + 1, ErAktiv = true }));
         });
 
+        mb.Entity<IktSamarbeid>(e =>
+        {
+            e.Property(x => x.Navn).HasMaxLength(50);
+            e.Property(x => x.Beskrivelse).HasMaxLength(200);
+            e.HasIndex(x => x.Navn).IsUnique();
+            e.HasData(Katalog.IktSamarbeid.Select((navn, i) => new IktSamarbeid
+            {
+                IktSamarbeidId = i + 1, Navn = navn, Beskrivelse = Katalog.IktSamarbeidHjelp.GetValueOrDefault(navn),
+                Rekkefolge = i + 1, ErAktiv = true
+            }));
+        });
+
         mb.Entity<Stikkord>(e =>
         {
             e.Property(x => x.Navn).HasMaxLength(100);
@@ -114,12 +128,15 @@ public class KiKartDbContext : DbContext
         {
             e.Property(p => p.Tittel).HasMaxLength(200);
             e.Property(p => p.SistEndret).HasMaxLength(200);
+            e.Property(p => p.SokerAnnet).HasMaxLength(200);
+            e.Property(p => p.TilbyrAnnet).HasMaxLength(200);
             e.Property(p => p.RowVersion).IsRowVersion();
             KommuneNr(e.Property(p => p.KartKommuneNr));
 
             e.HasOne(p => p.EierOrganisasjon).WithMany(o => o.Prosjekter).HasForeignKey(p => p.EierOrganisasjonId);
             e.HasOne(p => p.KartKommune).WithMany().HasForeignKey(p => p.KartKommuneNr);
             e.HasOne(p => p.Kontaktperson).WithMany(k => k.Prosjekter).HasForeignKey(p => p.KontaktpersonId);
+            e.HasOne(p => p.Prosjekteier).WithMany(k => k.EidProsjekter).HasForeignKey(p => p.ProsjekteierId);
 
             e.HasIndex(p => p.Publiseringsstatus);
         });
@@ -143,6 +160,13 @@ public class KiKartDbContext : DbContext
         {
             e.HasKey(b => new { b.ProsjektId, b.BehovId, b.Retning });
             e.HasOne(b => b.Prosjekt).WithMany(p => p.Behov).HasForeignKey(b => b.ProsjektId);
+        });
+
+        mb.Entity<ProsjektIktSamarbeid>(e =>
+        {
+            e.HasKey(s => new { s.ProsjektId, s.IktSamarbeidId });
+            e.HasOne(s => s.Prosjekt).WithMany(p => p.IktSamarbeid).HasForeignKey(s => s.ProsjektId);
+            e.HasOne(s => s.IktSamarbeid).WithMany(i => i.Prosjekter).HasForeignKey(s => s.IktSamarbeidId);
         });
 
         mb.Entity<ProsjektBilde>(e =>

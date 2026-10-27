@@ -42,3 +42,14 @@ public class ProsjektBehov
     /// <summary>Rekkefølgen innenfor samme retning.</summary>
     public int Rekkefolge { get; set; }
 }
+
+public class ProsjektIktSamarbeid
+{
+    public int ProsjektId { get; set; }
+    public Prosjekt Prosjekt { get; set; } = null!;
+
+    public int IktSamarbeidId { get; set; }
+    public IktSamarbeid IktSamarbeid { get; set; } = null!;
+
+    public int Rekkefolge { get; set; }
+}

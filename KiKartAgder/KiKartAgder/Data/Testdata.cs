@@ -28,6 +28,7 @@ public static class Testdata
         var faser = await db.Faser.ToDictionaryAsync(f => f.Navn);
         var stopparsaker = await db.Stopparsaker.ToDictionaryAsync(s => s.Navn);
         var behov = await db.Behov.ToDictionaryAsync(b => b.Navn);
+        var iktSamarbeid = await db.IktSamarbeider.ToDictionaryAsync(i => i.Navn);
 
         var organisasjoner = new Dictionary<string, Organisasjon>();
         var kontakter = new Dictionary<string, Kontaktperson>();
@@ -84,6 +85,7 @@ public static class Testdata
                 EierOrganisasjon = eier,
                 KartKommuneNr = kommuner[p.Kommune],
                 Kontaktperson = kontakt,
+                Prosjekteier = kontakt, // som i prototypen: den som meldte inn, er eier
                 Sektor = sektorer[p.Sektor],
                 Fase = faser[p.Fase],
                 Stopparsak = p.Stopp != null ? stopparsaker[p.Stopp] : null,
@@ -113,6 +115,12 @@ public static class Testdata
                 Behov = p.Soker.Distinct().Select((b, i) => new ProsjektBehov { Behov = behov[b], Retning = BehovRetning.Soker, Rekkefolge = i })
                     .Concat(p.Tilbyr.Distinct().Select((b, i) => new ProsjektBehov { Behov = behov[b], Retning = BehovRetning.Tilbyr, Rekkefolge = i }))
                     .ToList(),
+
+                IktSamarbeid = p.IktSamarbeid.Distinct().Select((navn, i) => new ProsjektIktSamarbeid
+                {
+                    IktSamarbeid = iktSamarbeid[navn],
+                    Rekkefolge = i
+                }).ToList(),
 
                 Logg = new() { new LoggOppforing { Dato = p.Registrert, Tekst = "Lagt inn i kartet" } }
             };

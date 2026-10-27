@@ -32,12 +32,16 @@ public class EfRepository : IKiKartRepository
     public IReadOnlyList<M.Prosjekt> Publiserte() =>
         LastAlle().Where(x => x.Status == Publiseringsstatus.Publisert).Select(x => x.Prosjekt).ToList();
 
+    /// <summary>Publiserte prosjekter som ikke er inaktive (ikke bekreftet på 12 måneder).</summary>
+    public IReadOnlyList<M.Prosjekt> Aktive() =>
+        Publiserte().Where(p => !ProsjektLogikk.ErInaktiv(p, Idag)).ToList();
+
     public IReadOnlyList<M.Prosjekt> Alle() => LastAlle().Select(x => x.Prosjekt).ToList();
 
     public M.Prosjekt? Finn(int id) => LastAlle().Select(x => x.Prosjekt).FirstOrDefault(p => p.Id == id);
 
     public IReadOnlyList<M.Prosjekt> Utvalgte() =>
-        LastAlle().Where(x => x.Status == Publiseringsstatus.Publisert && x.Utvalgt != null)
+        LastAlle().Where(x => x.Status == Publiseringsstatus.Publisert && x.Utvalgt != null && !ProsjektLogikk.ErInaktiv(x.Prosjekt, Idag))
             .OrderBy(x => x.Utvalgt).Select(x => x.Prosjekt).ToList();
 
     public IReadOnlyList<M.Innmelding> Innmeldinger() =>
@@ -78,12 +82,14 @@ public class EfRepository : IKiKartRepository
         .Include(p => p.EierOrganisasjon)
         .Include(p => p.KartKommune)
         .Include(p => p.Kontaktperson)
+        .Include(p => p.Prosjekteier)
         .Include(p => p.Sektor)
         .Include(p => p.Fase)
         .Include(p => p.Stopparsak)
         .Include(p => p.Deltakere).ThenInclude(d => d.Kommune)
         .Include(p => p.Stikkord).ThenInclude(s => s.Stikkord)
         .Include(p => p.Behov).ThenInclude(b => b.Behov)
+        .Include(p => p.IktSamarbeid).ThenInclude(i => i.IktSamarbeid)
         .Include(p => p.Logg)
         .AsSplitQuery();
 
@@ -98,6 +104,7 @@ public class EfRepository : IKiKartRepository
         Fase = p.Fase.Navn,
         Stopp = p.Stopparsak?.Navn,
         Stikkord = p.Stikkord.OrderBy(s => s.Rekkefolge).Select(s => s.Stikkord.Navn).ToList(),
+        IktSamarbeid = p.IktSamarbeid.OrderBy(i => i.Rekkefolge).Select(i => i.IktSamarbeid.Navn).ToList(),
         Mal = p.Mal,
         Beskrivelse = p.Beskrivelse,
         Status = p.StatusNaa,
@@ -105,12 +112,13 @@ public class EfRepository : IKiKartRepository
         Teknologi = p.Teknologi,
         Gevinst = p.Gevinst,
         // TODO: vis bare navn og e-post når Kontaktperson.SamtykkePublisering er satt (krever samtykke i skjemaet)
-        Kontakt = new M.Kontaktperson { Navn = p.Kontaktperson.Navn, Rolle = p.Kontaktperson.Rolle, Epost = p.Kontaktperson.Epost },
+        Kontakt = TilModell(p.Kontaktperson),
+        Prosjekteier = p.Prosjekteier == null ? null : TilModell(p.Prosjekteier),
         Registrert = p.Registrert,
         Oppdatert = p.Oppdatert,
         SistEndret = p.SistEndret,
-        Soker = p.Behov.Where(b => b.Retning == BehovRetning.Soker).OrderBy(b => b.Rekkefolge).Select(b => b.Behov.Navn).ToList(),
-        Tilbyr = p.Behov.Where(b => b.Retning == BehovRetning.Tilbyr).OrderBy(b => b.Rekkefolge).Select(b => b.Behov.Navn).ToList(),
+        Soker = Behovliste(p, BehovRetning.Soker, p.SokerAnnet),
+        Tilbyr = Behovliste(p, BehovRetning.Tilbyr, p.TilbyrAnnet),
         Apen = p.ApenForFlere,
         Fungerte = p.Fungerte,
         Annerledes = p.Annerledes,
@@ -118,6 +126,14 @@ public class EfRepository : IKiKartRepository
         PaminnelseSendt = p.PaminnelseSendt,
         Logg = p.Logg.OrderBy(l => l.Dato).ThenBy(l => l.LoggId).Select(l => new M.LoggOppforing(l.Dato, l.Tekst)).ToList()
     };
+
+    /// <summary>Behovene fra kodelisten i valgt rekkefølge, med «Annet»-teksten til slutt (som i skjemaet).</summary>
+    private static List<string> Behovliste(Prosjekt p, BehovRetning retning, string? annet) =>
+        p.Behov.Where(b => b.Retning == retning).OrderBy(b => b.Rekkefolge).Select(b => b.Behov.Navn)
+            .Concat(string.IsNullOrWhiteSpace(annet) ? Array.Empty<string>() : new[] { annet })
+            .ToList();
+
+    private static M.Kontaktperson TilModell(Kontaktperson k) => new() { Navn = k.Navn, Rolle = k.Rolle, Epost = k.Epost };
 
     /// <summary>Slik innsenderen vises i Forvaltning: «Navn, e-post», bare én av dem, eller «Anonym».</summary>
     private static string Fra(string? navn, string? epost)
@@ -141,6 +157,7 @@ public class EfRepository : IKiKartRepository
             Publiseringsstatus = Publiseringsstatus.TilGodkjenning
         };
         KopierVerdier(p, ny, godkjent: false);
+        ny.Prosjekteier = ny.Kontaktperson; // den som melder inn, blir eier
         ny.Beskrivelse = p.Beskrivelse;
         ny.NesteSteg = p.NesteSteg;
         ny.Teknologi = p.Teknologi;
@@ -269,11 +286,22 @@ public class EfRepository : IKiKartRepository
         Lagre();
     }
 
+    public bool Bekreft(int prosjektId)
+    {
+        var p = _db.Prosjekter.Include(x => x.Logg).FirstOrDefault(x => x.ProsjektId == prosjektId);
+        if (p == null || p.Publiseringsstatus != Publiseringsstatus.Publisert) return false;
+        Merk(p, "Eier bekreftet at informasjonen stemmer");
+        Lagre();
+        return true;
+    }
+
     private static bool KanBehandles(Innmelding i) =>
         i.Status is M.InnmeldingStatus.Ny or M.InnmeldingStatus.VenterPaInnsender;
 
+    /// <summary>Registrerer en endring. En ny endring nullstiller påminnelsen.</summary>
     private void Merk(Prosjekt p, string hva)
     {
+        p.PaminnelseSendt = null;
         p.Oppdatert = Idag;
         p.SistEndret = hva;
         p.Logg.Add(new LoggOppforing { Dato = Idag, Tekst = hva });
@@ -329,13 +357,29 @@ public class EfRepository : IKiKartRepository
             s.Rekkefolge = i;
         }
 
-        OppdaterBehov(til, fra.Soker, BehovRetning.Soker);
-        OppdaterBehov(til, fra.Tilbyr, BehovRetning.Tilbyr);
+        var ikt = fra.IktSamarbeid.Distinct().ToList();
+        til.IktSamarbeid.RemoveAll(x => !ikt.Contains(x.IktSamarbeid.Navn));
+        for (var i = 0; i < ikt.Count; i++)
+        {
+            var x = til.IktSamarbeid.FirstOrDefault(y => y.IktSamarbeid.Navn == ikt[i]);
+            if (x == null) til.IktSamarbeid.Add(x = new ProsjektIktSamarbeid { IktSamarbeid = _db.IktSamarbeider.Single(y => y.Navn == ikt[i]) });
+            x.Rekkefolge = i;
+        }
+
+        til.SokerAnnet = OppdaterBehov(til, fra.Soker, BehovRetning.Soker);
+        til.TilbyrAnnet = OppdaterBehov(til, fra.Tilbyr, BehovRetning.Tilbyr);
     }
 
-    private void OppdaterBehov(Prosjekt til, List<string> navn, BehovRetning retning)
+    /// <summary>
+    /// Kobler prosjektet til behovene fra kodelisten. Det som ikke står i kodelisten («Annet» i skjemaet)
+    /// returneres som tekst og lagres i SokerAnnet/TilbyrAnnet.
+    /// </summary>
+    private string? OppdaterBehov(Prosjekt til, List<string> verdier, BehovRetning retning)
     {
-        navn = navn.Distinct().ToList();
+        var kodeliste = _db.Behov.Select(b => b.Navn).ToHashSet();
+        var navn = verdier.Distinct().Where(kodeliste.Contains).ToList();
+        var annet = verdier.Where(v => !kodeliste.Contains(v) && !string.IsNullOrWhiteSpace(v)).Select(v => v.Trim()).Distinct().ToList();
+
         til.Behov.RemoveAll(b => b.Retning == retning && !navn.Contains(b.Behov.Navn));
         for (var i = 0; i < navn.Count; i++)
         {
@@ -343,6 +387,7 @@ public class EfRepository : IKiKartRepository
             if (b == null) til.Behov.Add(b = new ProsjektBehov { Behov = _db.Behov.Single(x => x.Navn == navn[i]), Retning = retning });
             b.Rekkefolge = i;
         }
+        return annet.Count > 0 ? string.Join(", ", annet) : null;
     }
 
     private string KommuneNr(string navn) =>

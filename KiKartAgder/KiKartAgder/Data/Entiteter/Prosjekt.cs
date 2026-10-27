@@ -25,6 +25,13 @@ public class Prosjekt
     public int KontaktpersonId { get; set; }
     public Kontaktperson Kontaktperson { get; set; } = null!;
 
+    /// <summary>
+    /// Den som meldte inn prosjektet. Kan oppdatere og bekrefte prosjektet, og får påminnelser.
+    /// Tom = kontaktpersonen er eier.
+    /// </summary>
+    public int? ProsjekteierId { get; set; }
+    public Kontaktperson? Prosjekteier { get; set; }
+
     public int SektorId { get; set; }
     public Sektor Sektor { get; set; } = null!;
 
@@ -34,6 +41,12 @@ public class Prosjekt
     /// <summary>Brukes bare når fasen er «Avbrutt».</summary>
     public int? StopparsakId { get; set; }
     public Stopparsak? Stopparsak { get; set; }
+
+    /// <summary>Fritekst under «Annet» når prosjektet søker noe som ikke står i kodelisten Behov.</summary>
+    public string? SokerAnnet { get; set; }
+
+    /// <summary>Fritekst under «Annet» når prosjektet tilbyr noe som ikke står i kodelisten Behov.</summary>
+    public string? TilbyrAnnet { get; set; }
 
     public bool ApenForFlere { get; set; }
     public Publiseringsstatus Publiseringsstatus { get; set; } = Publiseringsstatus.TilGodkjenning;
@@ -55,6 +68,7 @@ public class Prosjekt
     public List<ProsjektDeltaker> Deltakere { get; set; } = new();
     public List<ProsjektStikkord> Stikkord { get; set; } = new();
     public List<ProsjektBehov> Behov { get; set; } = new();
+    public List<ProsjektIktSamarbeid> IktSamarbeid { get; set; } = new();
     public List<ProsjektBilde> Bilder { get; set; } = new();
     public List<LoggOppforing> Logg { get; set; } = new();
     public List<Innmelding> Innmeldinger { get; set; } = new();

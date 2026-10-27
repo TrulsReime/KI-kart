@@ -15,4 +15,5 @@ public class Kontaktperson
     public DateOnly? SamtykkeDato { get; set; }
 
     public List<Prosjekt> Prosjekter { get; set; } = new();
+    public List<Prosjekt> EidProsjekter { get; set; } = new();
 }

@@ -14,7 +14,7 @@ I prototypen ligger alt i minnet og leses inn fra `Data/prosjekter.json`. Den ha
 erDiagram
     PROSJEKT ||--o{ INNMELDING : "får"
     PROSJEKT ||--o{ HENVENDELSE : "får"
-    PROSJEKT ||--|| KONTAKTPERSON : "har (innebygd)"
+    PROSJEKT ||--|| KONTAKTPERSON : "har kontakt og eier (innebygd)"
     PROSJEKT ||--o{ LOGGOPPFORING : "har (innebygd liste)"
 
     PROSJEKT {
@@ -27,8 +27,10 @@ erDiagram
         string Fase "tekst fra Katalog"
         string Stopp "tekst, bare ved Avbrutt"
         list Stikkord "liste med tekst"
+        list IktSamarbeid "IKT Agder, DDV, Digi Agder"
         list Soker "liste med behov"
         list Tilbyr "liste med behov"
+        object Prosjekteier "den som meldte inn, innebygd Kontaktperson"
         bool Apen
         string Mal_Beskrivelse_Status_osv "flere tekstfelt"
         string Fungerte
@@ -85,6 +87,7 @@ erDiagram
     ORGANISASJON ||--o{ PROSJEKT : "eier"
     ORGANISASJON ||--o{ KONTAKTPERSON : "ansetter"
     KONTAKTPERSON ||--o{ PROSJEKT : "er kontakt for"
+    KONTAKTPERSON |o--o{ PROSJEKT : "er eier av"
     KOMMUNE ||--o{ PROSJEKT : "plassering i kartet"
     SEKTOR ||--o{ PROSJEKT : "tilhører"
     FASE ||--o{ PROSJEKT : "er i"
@@ -96,6 +99,8 @@ erDiagram
     STIKKORD ||--o{ PROSJEKT_STIKKORD : "brukes i"
     PROSJEKT ||--o{ PROSJEKT_BEHOV : "søker eller tilbyr"
     BEHOV ||--o{ PROSJEKT_BEHOV : "brukes i"
+    PROSJEKT ||--o{ PROSJEKT_IKT_SAMARBEID : "er del av"
+    IKT_SAMARBEID ||--o{ PROSJEKT_IKT_SAMARBEID : "brukes i"
     PROSJEKT ||--o{ PROSJEKT_BILDE : "har"
 
     PROSJEKT ||--o{ LOGGOPPFORING : "har historikk"
@@ -148,6 +153,13 @@ erDiagram
         int Rekkefolge
         bool ErAktiv
     }
+    IKT_SAMARBEID {
+        int IktSamarbeidId PK "ny"
+        string Navn UK "IKT Agder, DDV, Digi Agder"
+        string Beskrivelse "Det Digitale Vestre Agder"
+        int Rekkefolge
+        bool ErAktiv
+    }
     STIKKORD {
         int StikkordId PK
         string Navn UK
@@ -166,9 +178,12 @@ erDiagram
         int EierOrganisasjonId FK
         char4 KartKommuneNr FK
         int KontaktpersonId FK
+        int ProsjekteierId FK "den som meldte inn, tom = kontaktpersonen"
         int SektorId FK
         int FaseId FK
         int StopparsakId FK "bare ved Avbrutt"
+        string SokerAnnet "fritekst under Annet i skjemaet"
+        string TilbyrAnnet "fritekst under Annet i skjemaet"
         bool ApenForFlere
         string Publiseringsstatus "TilGodkjenning, Publisert, Avvist"
         int UtvalgtRekkefolge "tom = ikke i karusellen"
@@ -184,6 +199,11 @@ erDiagram
         bool ErLeder
         date BleMed
         int Rekkefolge "lederkommunen først"
+    }
+    PROSJEKT_IKT_SAMARBEID {
+        int ProsjektId PK, FK
+        int IktSamarbeidId PK, FK
+        int Rekkefolge
     }
     PROSJEKT_STIKKORD {
         int ProsjektId PK, FK
@@ -261,7 +281,9 @@ Tabellnavnene i SQL Server blir flertall av klassenavnene, som `Prosjekter`, `Ko
 | `Prosjekt.Deltakere` (liste) | `PROSJEKT_DELTAKER`, med `ErLeder` for kommunen som leder |
 | `Prosjekt.Sektor`, `Fase`, `Stopp` (tekst) | `SEKTOR`, `FASE`, `STOPPARSAK` |
 | `Prosjekt.Stikkord` (liste) | `STIKKORD` og `PROSJEKT_STIKKORD` |
-| `Prosjekt.Soker` og `Tilbyr` (to lister) | `PROSJEKT_BEHOV` med `Retning` |
+| `Prosjekt.Soker` og `Tilbyr` (to lister) | `PROSJEKT_BEHOV` med `Retning`. Fritekst under «Annet» i `SokerAnnet` og `TilbyrAnnet` |
+| `Prosjekt.IktSamarbeid` (liste) | `IKT_SAMARBEID` og `PROSJEKT_IKT_SAMARBEID` |
+| `Prosjekt.Prosjekteier` (innebygd) | `ProsjekteierId` mot `KONTAKTPERSON` |
 | `Prosjekt.Kontakt` (innebygd) | `KONTAKTPERSON`, kan være kontakt for flere prosjekter |
 | `Prosjekt.TilGodkjenning` (ja/nei) | `Publiseringsstatus` |
 | `Utvalgte` i JSON-filen | `UtvalgtRekkefolge` på prosjektet |
@@ -303,3 +325,6 @@ Tabellnavnene i SQL Server blir flertall av klassenavnene, som `Prosjekter`, `Ko
 | Kolonnenavn i PascalCase (`ProsjektId`, ikke `prosjekt_id`) | Samme navn som i C#, så EF Core trenger ikke ekstra oppsett |
 | Kommunenummer i kartet | `agder.json` bruker navn, databasen bruker nummer |
 | `Rekkefolge` på `PROSJEKT_DELTAKER`, `PROSJEKT_STIKKORD` og `PROSJEKT_BEHOV` | Kartet viser ofte bare de første stikkordene og kommunene. Rekkefølgen innsenderen valgte må tas vare på |
+| Ny kodeliste `IKT_SAMARBEID` med `PROSJEKT_IKT_SAMARBEID` | Prosjekter kan være en del av IKT Agder, DDV eller Digi Agder (fra PR #3) |
+| `ProsjekteierId` på `PROSJEKT` | Den som meldte inn, kan bekrefte prosjektet og får påminnelser (fra PR #3) |
+| `SokerAnnet` og `TilbyrAnnet` på `PROSJEKT` | Skjemaet har «Annet» med fritekst. Kodelisten `BEHOV` holdes ren (fra PR #2) |

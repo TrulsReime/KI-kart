@@ -17,7 +17,7 @@ namespace KiKartAgder.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.32")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -197,6 +197,63 @@ namespace KiKartAgder.Migrations
                     b.HasIndex("ProsjektId");
 
                     b.ToTable("Henvendelser");
+                });
+
+            modelBuilder.Entity("KiKartAgder.Data.Entiteter.IktSamarbeid", b =>
+                {
+                    b.Property<int>("IktSamarbeidId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IktSamarbeidId"));
+
+                    b.Property<string>("Beskrivelse")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("ErAktiv")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Navn")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("Rekkefolge")
+                        .HasColumnType("integer");
+
+                    b.HasKey("IktSamarbeidId");
+
+                    b.HasIndex("Navn")
+                        .IsUnique();
+
+                    b.ToTable("IktSamarbeider");
+
+                    b.HasData(
+                        new
+                        {
+                            IktSamarbeidId = 1,
+                            Beskrivelse = "Interkommunalt IKT-selskap",
+                            ErAktiv = true,
+                            Navn = "IKT Agder",
+                            Rekkefolge = 1
+                        },
+                        new
+                        {
+                            IktSamarbeidId = 2,
+                            Beskrivelse = "Det Digitale Vestre Agder",
+                            ErAktiv = true,
+                            Navn = "DDV",
+                            Rekkefolge = 2
+                        },
+                        new
+                        {
+                            IktSamarbeidId = 3,
+                            Beskrivelse = "Digitaliseringssamarbeidet i Agder",
+                            ErAktiv = true,
+                            Navn = "Digi Agder",
+                            Rekkefolge = 3
+                        });
                 });
 
             modelBuilder.Entity("KiKartAgder.Data.Entiteter.Innmelding", b =>
@@ -605,6 +662,9 @@ namespace KiKartAgder.Migrations
                     b.Property<DateOnly?>("PaminnelseSendt")
                         .HasColumnType("date");
 
+                    b.Property<int?>("ProsjekteierId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Publiseringsstatus")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -627,6 +687,10 @@ namespace KiKartAgder.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<string>("SokerAnnet")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<string>("StatusNaa")
                         .HasColumnType("text");
 
@@ -635,6 +699,10 @@ namespace KiKartAgder.Migrations
 
                     b.Property<string>("Teknologi")
                         .HasColumnType("text");
+
+                    b.Property<string>("TilbyrAnnet")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Tittel")
                         .IsRequired()
@@ -653,6 +721,8 @@ namespace KiKartAgder.Migrations
                     b.HasIndex("KartKommuneNr");
 
                     b.HasIndex("KontaktpersonId");
+
+                    b.HasIndex("ProsjekteierId");
 
                     b.HasIndex("Publiseringsstatus");
 
@@ -741,6 +811,24 @@ namespace KiKartAgder.Migrations
                     b.HasIndex("KommuneNr");
 
                     b.ToTable("ProsjektDeltakere");
+                });
+
+            modelBuilder.Entity("KiKartAgder.Data.Entiteter.ProsjektIktSamarbeid", b =>
+                {
+                    b.Property<int>("ProsjektId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IktSamarbeidId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Rekkefolge")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ProsjektId", "IktSamarbeidId");
+
+                    b.HasIndex("IktSamarbeidId");
+
+                    b.ToTable("ProsjektIktSamarbeid");
                 });
 
             modelBuilder.Entity("KiKartAgder.Data.Entiteter.ProsjektStikkord", b =>
@@ -1034,6 +1122,11 @@ namespace KiKartAgder.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("KiKartAgder.Data.Entiteter.Kontaktperson", "Prosjekteier")
+                        .WithMany("EidProsjekter")
+                        .HasForeignKey("ProsjekteierId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("KiKartAgder.Data.Entiteter.Sektor", "Sektor")
                         .WithMany()
                         .HasForeignKey("SektorId")
@@ -1052,6 +1145,8 @@ namespace KiKartAgder.Migrations
                     b.Navigation("KartKommune");
 
                     b.Navigation("Kontaktperson");
+
+                    b.Navigation("Prosjekteier");
 
                     b.Navigation("Sektor");
 
@@ -1107,6 +1202,25 @@ namespace KiKartAgder.Migrations
                     b.Navigation("Prosjekt");
                 });
 
+            modelBuilder.Entity("KiKartAgder.Data.Entiteter.ProsjektIktSamarbeid", b =>
+                {
+                    b.HasOne("KiKartAgder.Data.Entiteter.IktSamarbeid", "IktSamarbeid")
+                        .WithMany("Prosjekter")
+                        .HasForeignKey("IktSamarbeidId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KiKartAgder.Data.Entiteter.Prosjekt", "Prosjekt")
+                        .WithMany("IktSamarbeid")
+                        .HasForeignKey("ProsjektId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("IktSamarbeid");
+
+                    b.Navigation("Prosjekt");
+                });
+
             modelBuilder.Entity("KiKartAgder.Data.Entiteter.ProsjektStikkord", b =>
                 {
                     b.HasOne("KiKartAgder.Data.Entiteter.Prosjekt", "Prosjekt")
@@ -1126,6 +1240,11 @@ namespace KiKartAgder.Migrations
                     b.Navigation("Stikkord");
                 });
 
+            modelBuilder.Entity("KiKartAgder.Data.Entiteter.IktSamarbeid", b =>
+                {
+                    b.Navigation("Prosjekter");
+                });
+
             modelBuilder.Entity("KiKartAgder.Data.Entiteter.Kommune", b =>
                 {
                     b.Navigation("Deltakelser");
@@ -1135,6 +1254,8 @@ namespace KiKartAgder.Migrations
 
             modelBuilder.Entity("KiKartAgder.Data.Entiteter.Kontaktperson", b =>
                 {
+                    b.Navigation("EidProsjekter");
+
                     b.Navigation("Prosjekter");
                 });
 
@@ -1154,6 +1275,8 @@ namespace KiKartAgder.Migrations
                     b.Navigation("Deltakere");
 
                     b.Navigation("Henvendelser");
+
+                    b.Navigation("IktSamarbeid");
 
                     b.Navigation("Innmeldinger");
 

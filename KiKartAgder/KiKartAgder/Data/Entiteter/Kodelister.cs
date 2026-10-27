@@ -42,3 +42,20 @@ public class Stikkord
 
     public List<ProsjektStikkord> Prosjekter { get; set; } = new();
 }
+
+/// <summary>IKT-samarbeid i Agder som et prosjekt kan være en del av, f.eks. «IKT Agder» eller «DDV».</summary>
+public class IktSamarbeid
+{
+    public int IktSamarbeidId { get; set; }
+
+    /// <summary>Kortnavnet som vises i kartet, f.eks. «DDV».</summary>
+    public string Navn { get; set; } = "";
+
+    /// <summary>Forklaring, f.eks. «Det Digitale Vestre Agder».</summary>
+    public string? Beskrivelse { get; set; }
+
+    public int Rekkefolge { get; set; }
+    public bool ErAktiv { get; set; } = true;
+
+    public List<ProsjektIktSamarbeid> Prosjekter { get; set; } = new();
+}
