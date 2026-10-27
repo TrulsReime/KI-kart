@@ -53,6 +53,14 @@ if (app.Environment.IsDevelopment())
     {
         await db.Database.MigrateAsync();
         await Testdata.LeggInnAsync(db, app.Environment.ContentRootPath);
+
+        // Kartet og databasen må ha samme kommunenummer og navn
+        var iKartet = app.Services.GetRequiredService<KartData>().KommuneNr.Select(kv => (Navn: kv.Key, Nr: kv.Value));
+        var iDatabasen = await db.Kommuner.Select(k => new { k.Navn, k.KommuneNr }).ToListAsync();
+        var avvik = iKartet.Except(iDatabasen.Select(k => (k.Navn, Nr: k.KommuneNr)))
+            .Concat(iDatabasen.Select(k => (k.Navn, Nr: k.KommuneNr)).Except(iKartet)).ToList();
+        if (avvik.Count > 0)
+            app.Logger.LogWarning("agder.json og Kommuner-tabellen er ulike: {Avvik}", string.Join(", ", avvik.Select(a => $"{a.Nr} {a.Navn}")));
     }
     catch (Exception ex) when (ex is Npgsql.NpgsqlException or InvalidOperationException { InnerException: Npgsql.NpgsqlException })
     {
