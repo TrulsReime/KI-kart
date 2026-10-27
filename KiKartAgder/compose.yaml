@@ -8,3 +8,18 @@ services:
       dockerfile: KiKartAgder/Dockerfile
     ports:
       - 5270:5270
+
+  db:
+    image: postgres:16
+    container_name: kikart-db
+    environment:
+      POSTGRES_DB: KiKart
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - kikart-pgdata:/var/lib/postgresql/data
+
+volumes:
+  kikart-pgdata:

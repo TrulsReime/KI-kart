@@ -3,16 +3,22 @@ using KiKartAgder.Data;
 using KiKartAgder.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // MVC med automatisk sjekk av antiforgery-token på alle POST-skjema
 builder.Services.AddControllersWithViews(o => o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
-// Tjenester. Repository er singleton fordi dataene ligger i minnet i prototypen.
+// Tjenester. Repository er scoped, samme levetid som KiKartDbContext (én per forespørsel).
 builder.Services.AddSingleton<IDatoTjeneste, DatoTjeneste>();
 builder.Services.AddSingleton<KartData>();
-builder.Services.AddSingleton<IKiKartRepository, MinneRepository>();
+builder.Services.AddScoped<IKiKartRepository, EfRepository>();
+
+// Databasen. Connection string ligger i User Secrets lokalt (ConnectionStrings:KiKart).
+var kiKartDb = builder.Configuration.GetConnectionString("KiKart")
+    ?? throw new InvalidOperationException("Mangler ConnectionStrings:KiKart. Kjør: dotnet user-secrets set \"ConnectionStrings:KiKart\" \"<connection string>\"");
+builder.Services.AddDbContext<KiKartDbContext>(o => o.UseNpgsql(kiKartDb));
 
 // KI-kartet vises i en iframe på digiagder.no. Da må cookies tillates på tvers av nettsteder
 // (krever HTTPS), og standardhodet som blokkerer iframe må slås av.
@@ -37,6 +43,31 @@ builder.Services.Configure<CookieTempDataProviderOptions>(o =>
 });
 
 var app = builder.Build();
+
+// Lokalt: kjør nye migrasjoner og legg inn testdata fra prosjekter.json hvis databasen er tom.
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<KiKartDbContext>();
+    try
+    {
+        await db.Database.MigrateAsync();
+        await Testdata.LeggInnAsync(db, app.Environment.ContentRootPath);
+
+        // Kartet og databasen må ha samme kommunenummer og navn
+        var iKartet = app.Services.GetRequiredService<KartData>().KommuneNr.Select(kv => (Navn: kv.Key, Nr: kv.Value));
+        var iDatabasen = await db.Kommuner.Select(k => new { k.Navn, k.KommuneNr }).ToListAsync();
+        var avvik = iKartet.Except(iDatabasen.Select(k => (k.Navn, Nr: k.KommuneNr)))
+            .Concat(iDatabasen.Select(k => (k.Navn, Nr: k.KommuneNr)).Except(iKartet)).ToList();
+        if (avvik.Count > 0)
+            app.Logger.LogWarning("agder.json og Kommuner-tabellen er ulike: {Avvik}", string.Join(", ", avvik.Select(a => $"{a.Nr} {a.Navn}")));
+    }
+    catch (Exception ex) when (ex is Npgsql.NpgsqlException or InvalidOperationException { InnerException: Npgsql.NpgsqlException })
+    {
+        app.Logger.LogCritical(ex, "Fikk ikke kontakt med databasen. Er den startet? (docker compose up -d db)");
+        throw;
+    }
+}
 
 if (!app.Environment.IsDevelopment())
 {
