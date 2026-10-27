@@ -5,8 +5,9 @@ using KiKartAgder.Services;
 namespace KiKartAgder.Data;
 
 /// <summary>
-/// Holder alle data i minnet. Startdataene leses fra Data/prosjekter.json (fiktive eksempelprosjekter).
-/// Endringer forsvinner når applikasjonen startes på nytt.
+/// Holder alle data i minnet og lagrer dem til en JSON-fil etter hver endring.
+/// Finnes ikke filen, brukes startdataene i Data/prosjekter.json.
+/// Filen ligger utenfor wwwroot, så den blir ikke overskrevet når appen publiseres på nytt.
 /// </summary>
 public class MinneRepository : IKiKartRepository
 {
@@ -16,14 +17,34 @@ public class MinneRepository : IKiKartRepository
     private readonly List<Henvendelse> _henvendelser = new();
     private readonly List<int> _utvalgte;
     private readonly IDatoTjeneste _dato;
+    private readonly string _datafil;
+    private readonly JsonSerializerOptions _opsjoner;
 
-    public MinneRepository(IWebHostEnvironment env, IDatoTjeneste dato)
+    public MinneRepository(IWebHostEnvironment env, IDatoTjeneste dato, IConfiguration config, ILogger<MinneRepository> logg)
     {
         _dato = dato;
+        _opsjoner = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping // æøå lagres som tekst
+        };
+        _opsjoner.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+        _datafil = FinnDatafil(env, config);
+        logg.LogInformation("Data lagres i {Datafil}", _datafil);
+
+        if (File.Exists(_datafil))
+        {
+            var lagret = JsonSerializer.Deserialize<Lagret>(File.ReadAllText(_datafil), _opsjoner)
+                         ?? throw new InvalidOperationException("Kunne ikke lese " + _datafil);
+            _prosjekter = lagret.Prosjekter;
+            _innmeldinger = lagret.Innmeldinger;
+            _henvendelser = lagret.Henvendelser;
+            _utvalgte = lagret.Utvalgte;
+            return;
+        }
+
         var sti = Path.Combine(env.ContentRootPath, "Data", "prosjekter.json");
-        var opsjoner = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-        opsjoner.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-        var seed = JsonSerializer.Deserialize<Startdata>(File.ReadAllText(sti), opsjoner)
+        var seed = JsonSerializer.Deserialize<Startdata>(File.ReadAllText(sti), _opsjoner)
                    ?? throw new InvalidOperationException("Fant ikke startdata");
 
         _prosjekter = seed.Prosjekter;
@@ -44,6 +65,44 @@ public class MinneRepository : IKiKartRepository
             });
         }
         foreach (var i in seed.Innmeldinger) LeggTilInnmelding(i);
+        Lagre();
+    }
+
+    /// <summary>
+    /// KiKart:Datafil i appsettings vinner. På Azure App Service brukes %HOME%/data, som beholdes
+    /// ved omstart og ny publisering. Lokalt brukes App_Data i prosjektmappen.
+    /// </summary>
+    private static string FinnDatafil(IWebHostEnvironment env, IConfiguration config)
+    {
+        var valgt = config["KiKart:Datafil"];
+        if (!string.IsNullOrWhiteSpace(valgt)) return Path.GetFullPath(valgt, env.ContentRootPath);
+
+        var azureHjem = Environment.GetEnvironmentVariable("HOME");
+        if (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") != null && !string.IsNullOrEmpty(azureHjem))
+            return Path.Combine(azureHjem, "data", "kikart", "kikart-data.json");
+
+        return Path.Combine(env.ContentRootPath, "App_Data", "kikart-data.json");
+    }
+
+    /// <summary>Skriver alt til fil. Kalles inne i lock, og skriver først til en midlertidig fil så filen aldri blir halvskrevet.</summary>
+    private void Lagre()
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(_datafil)!);
+        var tmp = _datafil + ".tmp";
+        File.WriteAllText(tmp, JsonSerializer.Serialize(new Lagret
+        {
+            Prosjekter = _prosjekter, Innmeldinger = _innmeldinger,
+            Henvendelser = _henvendelser, Utvalgte = _utvalgte
+        }, _opsjoner));
+        File.Move(tmp, _datafil, overwrite: true);
+    }
+
+    private sealed class Lagret
+    {
+        public List<Prosjekt> Prosjekter { get; set; } = new();
+        public List<Innmelding> Innmeldinger { get; set; } = new();
+        public List<Henvendelse> Henvendelser { get; set; } = new();
+        public List<int> Utvalgte { get; set; } = new();
     }
 
     private sealed class Startdata
@@ -123,40 +182,57 @@ public class MinneRepository : IKiKartRepository
                 Type = InnmeldingType.NyttProsjekt, ProsjektId = p.Id, Dato = Idag,
                 Fra = $"{p.Kontakt.Navn}, {p.Eier}", Tekst = p.Beskrivelse
             });
+            Lagre();
             return p.Id;
         }
     }
 
     public void MeldInnOppdatering(int prosjektId, Prosjekt nye, string hvaErNytt, string fra)
     {
-        lock (_las) LeggTilInnmelding(new Innmelding
+        lock (_las)
         {
-            Type = InnmeldingType.Oppdatering, ProsjektId = prosjektId, Dato = Idag,
-            Fra = fra, Tekst = "Oppdatering fra eier: " + hvaErNytt, NyeVerdier = nye
-        });
+            LeggTilInnmelding(new Innmelding
+            {
+                Type = InnmeldingType.Oppdatering, ProsjektId = prosjektId, Dato = Idag,
+                Fra = fra, Tekst = "Oppdatering fra eier: " + hvaErNytt, NyeVerdier = nye
+            });
+            Lagre();
+        }
     }
 
     public void ForeslaRettelse(int prosjektId, string tekst, string? fra)
     {
-        lock (_las) LeggTilInnmelding(new Innmelding
+        lock (_las)
         {
-            Type = InnmeldingType.Rettelse, ProsjektId = prosjektId, Dato = Idag,
-            Fra = string.IsNullOrWhiteSpace(fra) ? "Anonym" : fra, Tekst = tekst
-        });
+            LeggTilInnmelding(new Innmelding
+            {
+                Type = InnmeldingType.Rettelse, ProsjektId = prosjektId, Dato = Idag,
+                Fra = string.IsNullOrWhiteSpace(fra) ? "Anonym" : fra, Tekst = tekst
+            });
+            Lagre();
+        }
     }
 
     public void BeOmABliMed(int prosjektId, string kommune, string navn, string melding)
     {
-        lock (_las) LeggTilInnmelding(new Innmelding
+        lock (_las)
         {
-            Type = InnmeldingType.BliMed, ProsjektId = prosjektId, Dato = Idag,
-            Fra = navn, Kommune = kommune, Tekst = melding
-        });
+            LeggTilInnmelding(new Innmelding
+            {
+                Type = InnmeldingType.BliMed, ProsjektId = prosjektId, Dato = Idag,
+                Fra = navn, Kommune = kommune, Tekst = melding
+            });
+            Lagre();
+        }
     }
 
     public void SendHenvendelse(int prosjektId, string fra, string melding)
     {
-        lock (_las) _henvendelser.Add(new Henvendelse(prosjektId, fra, melding, Idag));
+        lock (_las)
+        {
+            _henvendelser.Add(new Henvendelse(prosjektId, fra, melding, Idag));
+            Lagre();
+        }
     }
 
     // ---------- forvaltning ----------
@@ -189,6 +265,7 @@ public class MinneRepository : IKiKartRepository
             }
             i.Status = InnmeldingStatus.Godkjent;
             i.BehandletDato = Idag;
+            Lagre();
             return true;
         }
     }
@@ -205,6 +282,7 @@ public class MinneRepository : IKiKartRepository
             i.Status = status;
             i.Kommentar = kommentar;
             i.BehandletDato = Idag;
+            Lagre();
             return true;
         }
     }
@@ -214,7 +292,9 @@ public class MinneRepository : IKiKartRepository
         lock (_las)
         {
             var p = _prosjekter.FirstOrDefault(x => x.Id == prosjektId);
-            if (p != null) p.PaminnelseSendt = Idag;
+            if (p == null) return;
+            p.PaminnelseSendt = Idag;
+            Lagre();
         }
     }
 
@@ -225,6 +305,7 @@ public class MinneRepository : IKiKartRepository
             var p = _prosjekter.FirstOrDefault(x => x.Id == prosjektId);
             if (p == null || p.TilGodkjenning) return false;
             Merk(p, Idag, "Eier bekreftet at informasjonen stemmer");
+            Lagre();
             return true;
         }
     }

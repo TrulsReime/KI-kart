@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // MVC med automatisk sjekk av antiforgery-token på alle POST-skjema
 builder.Services.AddControllersWithViews(o => o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
-// Tjenester. Repository er singleton fordi dataene ligger i minnet i prototypen.
+// Tjenester. Repository er singleton fordi dataene holdes i minnet og lagres til én JSON-fil.
 builder.Services.AddSingleton<IDatoTjeneste, DatoTjeneste>();
 builder.Services.AddSingleton<KartData>();
 builder.Services.AddSingleton<IKiKartRepository, MinneRepository>();
