@@ -31,6 +31,7 @@ public class MinneRepository : IKiKartRepository
         foreach (var p in _prosjekter)
         {
             if (p.Deltakere.Count == 0) p.Deltakere.Add(p.Kommune);
+            p.Prosjekteier ??= p.Kontakt;
             p.Logg = new() { new(p.Registrert, "Lagt inn i kartet") };
             if (p.Oppdatert != p.Registrert) p.Logg.Add(new(p.Oppdatert, p.SistEndret));
             if (p.TilGodkjenning) LeggTilInnmelding(new Innmelding
@@ -62,6 +63,7 @@ public class MinneRepository : IKiKartRepository
 
     private static void Merk(Prosjekt p, DateOnly dato, string hva)
     {
+        p.PaminnelseSendt = null;
         p.Oppdatert = dato;
         p.SistEndret = hva;
         p.Logg.Add(new(dato, hva));
@@ -71,6 +73,11 @@ public class MinneRepository : IKiKartRepository
     public IReadOnlyList<Prosjekt> Publiserte()
     {
         lock (_las) return _prosjekter.Where(p => !p.TilGodkjenning).ToList();
+    }
+
+    public IReadOnlyList<Prosjekt> Aktive()
+    {
+        lock (_las) return _prosjekter.Where(p => !p.TilGodkjenning && !ProsjektLogikk.ErInaktiv(p, Idag)).ToList();
     }
 
     public IReadOnlyList<Prosjekt> Alle()
@@ -86,7 +93,7 @@ public class MinneRepository : IKiKartRepository
     public IReadOnlyList<Prosjekt> Utvalgte()
     {
         lock (_las)
-            return _utvalgte.Select(id => _prosjekter.FirstOrDefault(p => p.Id == id && !p.TilGodkjenning))
+            return _utvalgte.Select(id => _prosjekter.FirstOrDefault(p => p.Id == id && !p.TilGodkjenning && !ProsjektLogikk.ErInaktiv(p, Idag)))
                 .Where(p => p != null).Cast<Prosjekt>().ToList();
     }
 
@@ -108,6 +115,7 @@ public class MinneRepository : IKiKartRepository
             p.Id = _prosjekter.Max(x => x.Id) + 1;
             p.Registrert = p.Oppdatert = Idag;
             p.TilGodkjenning = true;
+            p.Prosjekteier = p.Kontakt; // den som melder inn, blir eier
             p.Logg = new() { new(Idag, p.SistEndret) };
             _prosjekter.Add(p);
             LeggTilInnmelding(new Innmelding
@@ -210,10 +218,21 @@ public class MinneRepository : IKiKartRepository
         }
     }
 
+    public bool Bekreft(int prosjektId)
+    {
+        lock (_las)
+        {
+            var p = _prosjekter.FirstOrDefault(x => x.Id == prosjektId);
+            if (p == null || p.TilGodkjenning) return false;
+            Merk(p, Idag, "Eier bekreftet at informasjonen stemmer");
+            return true;
+        }
+    }
+
     private static void KopierVerdier(Prosjekt fra, Prosjekt til)
     {
         til.Tittel = fra.Tittel; til.Eier = fra.Eier; til.Kommune = fra.Kommune;
-        til.Deltakere = fra.Deltakere; til.Apen = fra.Apen; til.Sektor = fra.Sektor;
+        til.Deltakere = fra.Deltakere; til.Apen = fra.Apen; til.IktSamarbeid = fra.IktSamarbeid; til.Sektor = fra.Sektor;
         til.Fase = fra.Fase; til.Stopp = fra.Stopp; til.Beskrivelse = fra.Beskrivelse;
         til.Mal = fra.Mal; til.Status = fra.Status; til.Gevinst = fra.Gevinst;
         til.Stikkord = fra.Stikkord; til.Kontakt = fra.Kontakt; til.Soker = fra.Soker;

@@ -49,5 +49,15 @@ public static class Katalog
         "Erfaringer fra andre", "Personvernvurdering", "Finansiering"
     };
 
+    /// <summary>IKT-samarbeidene i Agder som et prosjekt kan være en del av. Valgfritt ved innmelding.</summary>
+    public static readonly string[] IktSamarbeid = { "IKT Agder", "DDV", "Digi Agder" };
+
+    public static readonly Dictionary<string, string> IktSamarbeidHjelp = new()
+    {
+        ["IKT Agder"] = "Interkommunalt IKT-selskap",
+        ["DDV"] = "Det Digitale Vestre Agder",
+        ["Digi Agder"] = "Digitaliseringssamarbeidet i Agder",
+    };
+
     public static readonly string[] Organiseringer = { "Samarbeid", "Enkeltkommune" };
 }

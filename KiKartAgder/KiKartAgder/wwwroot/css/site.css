@@ -187,6 +187,35 @@ details.fold>.body{padding-bottom:14px}
 .checks label{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line-2);border-radius:2px;padding:4px 11px;font-size:13px;cursor:pointer;font-weight:500;color:var(--ink)}
 .checks input{margin:0;accent-color:var(--navy)}
 .checks label:has(input:checked){background:var(--accent-soft);border-color:var(--navy)}
+.checks label.other-option 
+{
+    cursor: text;
+}
+
+.checks label.other-option input[type="text"] 
+{
+    width: 84px;
+    height: 16px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+    box-shadow: none;
+}
+
+.checks label.other-option input[type="text"]:focus 
+{
+    outline: none;
+    box-shadow: none;
+}
+
+.checks label.other-option:focus-within 
+{
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(0, 168, 216, .18);
+}
 .tagin{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid var(--line-2);border-radius:2px;padding:6px 8px;background:var(--surface)}
 .tagin input{border:0;outline:0;flex:1;min-width:140px;padding:4px}
 .sugg{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
@@ -738,3 +767,22 @@ html.framed .dabar{display:none}
 body{margin:0}
 .slides{overflow-x:clip;overflow-clip-margin:14px}
 .checks label{white-space:nowrap}
+
+/* Aktualitet: fargen viser hvor lenge siden prosjektet ble oppdatert */
+.akt{display:inline-flex;align-items:center;gap:6px}
+.akt::before{content:"";width:9px;height:9px;border-radius:50%;flex:none;background:var(--line-2)}
+.akt-fersk::before{background:#1E9E46}
+.akt-eldre::before{background:#E6B800}
+.akt-snart::before{background:#E8590C}
+.akt-inaktiv::before{background:#8A96A3}
+.akt-arkiv::before{display:none}
+.akt-snart.aktline{color:#A8430A;font-weight:600}
+.akt-inaktiv.aktline{color:var(--ink-3);font-weight:600}
+.aktline{font-size:13px;color:var(--ink-2)}
+.aktlegend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--ink-3);margin:-4px 0 12px}
+.feed li{grid-template-columns:78px minmax(0,1fr)}
+.feed .when.akt{align-items:flex-start;gap:5px}
+.feed .when.akt::before{margin-top:4px;width:8px;height:8px}
+.card.inaktiv{background:#F7F9FA;border-style:dashed}
+.card.inaktiv h3{color:var(--ink-2)}
+.inaktivbox{background:#EEF1F4;border-left:4px solid #8A96A3;padding:12px 14px;margin:0 0 12px;font-size:14px}

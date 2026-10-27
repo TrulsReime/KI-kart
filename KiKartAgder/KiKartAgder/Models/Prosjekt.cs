@@ -25,6 +25,9 @@ public class Prosjekt
 
     public List<string> Stikkord { get; set; } = new();
 
+    /// <summary>IKT-samarbeid prosjektet er en del av, f.eks. IKT Agder, DDV eller Digi Agder. Kan være tom.</summary>
+    public List<string> IktSamarbeid { get; set; } = new();
+
     public string? Mal { get; set; }
     public string? Beskrivelse { get; set; }
     public string? Status { get; set; }
@@ -33,6 +36,12 @@ public class Prosjekt
     public string? Gevinst { get; set; }
 
     public Kontaktperson Kontakt { get; set; } = new();
+
+    /// <summary>
+    /// Den som meldte inn prosjektet. Eieren kan oppdatere og bekrefte prosjektet og får påminnelser.
+    /// I prototypen er eieren den samme som kontaktpersonen da prosjektet ble meldt inn.
+    /// </summary>
+    public Kontaktperson? Prosjekteier { get; set; }
 
     public DateOnly Registrert { get; set; }
     public DateOnly Oppdatert { get; set; }
@@ -55,6 +64,7 @@ public class Prosjekt
     /// <summary>Sant når prosjektet er meldt inn, men ikke godkjent av DigiAgder ennå.</summary>
     public bool TilGodkjenning { get; set; }
 
+    /// <summary>Når eieren sist fikk påminnelse om å bekrefte prosjektet.</summary>
     public DateOnly? PaminnelseSendt { get; set; }
 
     public List<LoggOppforing> Logg { get; set; } = new();
@@ -65,6 +75,9 @@ public class Prosjekt
     public bool ErApenForFlere => Apen && !ErAvsluttet;
     public bool HarErfaringer => !string.IsNullOrWhiteSpace(Fungerte);
     public string Organisering => Samarbeid ? "Samarbeid" : "Enkeltkommune";
+
+    /// <summary>Eieren, eller kontaktpersonen hvis eier ikke er registrert.</summary>
+    public Kontaktperson Eierperson => Prosjekteier ?? Kontakt;
 }
 
 public class Kontaktperson

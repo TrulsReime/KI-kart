@@ -24,7 +24,9 @@ public class ProsjekterController : Controller
     // GET /Prosjekter?kommune=Arendal&fase=Pilot&q=chatbot
     public IActionResult Index([FromQuery] ProsjektFilter filter)
     {
-        var alle = _repo.Publiserte();
+        // Inaktive prosjekter vises bare når brukeren ber om det
+        var alle = filter.Inaktive ? _repo.Publiserte() : _repo.Aktive();
+        var antallInaktive = _repo.Publiserte().Count - _repo.Aktive().Count;
         var resultat = filter.Sorter(alle.Where(filter.Passer)).ToList();
 
         int Antall(Func<Prosjekt, bool> f) => alle.Count(f);
@@ -43,10 +45,16 @@ public class ProsjekterController : Controller
             new("Kommune", "kommune", kommuner, filter.Kommune.Count > 0),
             new("Sektor", "sektor", Katalog.Sektorer.Select(s => new FilterValg(s, s, Antall(p => p.Sektor == s), filter.Sektor.Contains(s))).ToList(), true),
             new("Fase", "fase", Katalog.Faser.Select(f => new FilterValg(f, f, Antall(p => p.Fase == f), filter.Fase.Contains(f))).ToList(), true),
+            new("IKT-samarbeid", "ikt", Katalog.IktSamarbeid.Select(s => new FilterValg(s, s == "DDV" ? "DDV (Det Digitale Vestre Agder)" : s, Antall(p => p.IktSamarbeid.Contains(s)), filter.Ikt.Contains(s))).ToList(), filter.Ikt.Count > 0),
             new("Stikkord", "stikkord", ProsjektLogikk.Stikkord(alle).Select(t => new FilterValg(t.Stikkord, "#" + t.Stikkord, t.Antall, filter.Stikkord.Contains(t.Stikkord))).ToList(), filter.Stikkord.Count > 0),
         };
 
-        return View(new ProsjekterViewModel { Filter = filter, Resultat = resultat, Grupper = grupper });
+        grupper.Add(new("Inaktive", "inaktive", new()
+        {
+            new("true", "Vis også inaktive prosjekter", antallInaktive, filter.Inaktive)
+        }, true));
+
+        return View(new ProsjekterViewModel { Filter = filter, Resultat = resultat, Grupper = grupper, Idag = _dato.Idag });
     }
 
     // GET /Prosjekter/Detaljer/5?tilbake=/Samarbeid
@@ -64,7 +72,7 @@ public class ProsjekterController : Controller
             TilbakeUrl = tilbakeUrl,
             TilbakeTekst = Lenker.TilbakeTekst(tilbakeUrl),
             Apne = apne,
-            Livssyklus = ProsjektLogikk.Livssyklus(p, _dato.Idag)
+            Aktualitet = ProsjektLogikk.Aktualitetsstatus(p, _dato.Idag)
         });
     }
 
@@ -74,7 +82,7 @@ public class ProsjekterController : Controller
         var sok = (q ?? "").Trim();
         if (sok.Length < 2) return Json(Array.Empty<object>());
         var ql = sok.ToLowerInvariant().TrimStart('#');
-        var treff = _repo.Publiserte().Where(p => ProsjektLogikk.Treffer(p, sok))
+        var treff = _repo.Aktive().Where(p => ProsjektLogikk.Treffer(p, sok))
             .OrderByDescending(p => p.Tittel.ToLowerInvariant().Contains(ql))
             .Take(6)
             .Select(p => new
@@ -129,6 +137,23 @@ public class ProsjekterController : Controller
         var m = (melding ?? "").Trim();
         _repo.BeOmABliMed(id, kommune, navn.Trim(), m.Length > 80 ? m[..80] : m);
         TempData["Melding"] = $"Forespørselen er sendt til {p.Kontakt.Navn} og DigiAgder";
+        return TilbakeTilProsjekt(id, tilbake);
+    }
+
+    /// <summary>
+    /// Eieren bekrefter at informasjonen stemmer. I ferdig løsning må dette kreve innlogging som eier
+    /// (eller en personlig lenke fra påminnelses-e-posten).
+    /// </summary>
+    [HttpPost]
+    public IActionResult Bekreft(int id, string? tilbake)
+    {
+        var p = _repo.Finn(id);
+        if (p == null) return NotFound();
+        var varInaktiv = ProsjektLogikk.ErInaktiv(p, _dato.Idag);
+        _repo.Bekreft(id);
+        TempData["Melding"] = varInaktiv
+            ? "Takk! Prosjektet er aktivt igjen og vises i kartet"
+            : "Takk! Prosjektet er bekreftet med dagens dato";
         return TilbakeTilProsjekt(id, tilbake);
     }
 
