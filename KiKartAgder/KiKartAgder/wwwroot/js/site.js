@@ -64,6 +64,34 @@
     if (sti === location.pathname) scrollTo(0, +y);
     sessionStorage_set('kikart-scroll', null);
   }
+
+  // ---------- faner: etter klikk på en fane rulles siden rolig forbi det blå banneret ----------
+  const faner = $('nav.tabs');
+  if (faner && !FRAMED) {
+    $$('a', faner).forEach(a => a.addEventListener('click', () => sessionStorage_set('kikart-fane', '1')));
+    if (sessionStorage_get('kikart-fane')) {
+      sessionStorage_set('kikart-fane', null);
+      if (!lagret) {
+        const rolig = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const mal = faner.getBoundingClientRect().top + scrollY - 12;
+        if (rolig) scrollTo(0, mal);
+        else setTimeout(() => {
+          // Samme følelse som nettleserens smooth (rask start, myk slutt), men litt roligere
+          const fra = scrollY, varighet = 550, start = performance.now();
+          const myk = t => 1 - Math.pow(1 - t, 3);
+          let avbrutt = false;
+          ['wheel', 'touchstart', 'keydown'].forEach(e => addEventListener(e, () => { avbrutt = true; }, { once: true, passive: true }));
+          const steg = na => {
+            if (avbrutt) return;
+            const t = Math.min(1, (na - start) / varighet);
+            scrollTo(0, fra + (mal - fra) * myk(t));
+            if (t < 1) requestAnimationFrame(steg);
+          };
+          requestAnimationFrame(steg);
+        }, 80);
+      }
+    }
+  }
   // Tomme felt og standardverdier tas ikke med, så adressen blir kort og lesbar.
   const STANDARD = { sort: 'opp', ksort: 'alfa', status: 'alle' };
   function ryddOgSend(f) {

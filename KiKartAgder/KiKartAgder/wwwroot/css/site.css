@@ -822,3 +822,20 @@ nav.tabs a{padding:10px 16px;font-size:15px}
 .sl{font-size:14px;margin-top:4px}
 .sn{font-size:13px}
 @media (max-width:520px){.sv{font-size:34px}}
+
+/* Varsel-boksen: e-post og knapp på samme linje */
+#varsel .inlineform{grid-template-columns:1fr auto;align-items:center}
+@media (max-width:560px){#varsel .inlineform{grid-template-columns:1fr}}
+
+/* Fase og sektor: stolpene fyller hele boksen i høyden */
+.grid.halves>.panel:has(>.bars){display:flex;flex-direction:column}
+.grid.halves>.panel>.bars{flex:1;grid-auto-rows:minmax(0,40px);align-content:start;gap:4px;margin-top:4px}
+.grid.halves .bar{font-size:14px;grid-template-columns:minmax(120px,205px) 1fr 30px}
+.grid.halves .bar .track{height:16px}
+
+/* Forklaringen under kartet: litt lenger ned, så den fyller mer av boksen */
+.map-legend{margin-top:28px}
+/* Kartet og forklaringen flyttes litt ned i boksen: en sjettedel av den ledige plassen over, resten under */
+.topprad>.panel{display:flex;flex-direction:column}
+.topprad>.panel>.sub{flex:1 0 auto}
+.topprad>.panel::after{content:"";flex:5 0 0}

@@ -119,8 +119,8 @@
     </div>
 </div>
 
-@* 3. Nye i kartet og varsel *@
-<div class="grid ov sym" style="margin-top:20px">
+@* 3. Nye i kartet og sektor *@
+<div class="grid halves ov" style="margin-top:20px">
     <section class="panel newpanel">
         <h2>Nye i kartet</h2>
         <p class="sub">Disse kommunene har nylig delt prosjektene sine</p>
@@ -143,29 +143,27 @@
         </ul>
         <a class="btn ghost small" asp-controller="Prosjekter" asp-action="Index">Se alle prosjekter →</a>
     </section>
-    <div class="stackcol">
-        <section class="panel grow" id="varsel">
-            <h2>Få varsel om nye prosjekter</h2>
-            <p class="sub">E-post når noen legger inn eller oppdaterer et prosjekt.</p>
-            <form class="inlineform" asp-controller="Home" asp-action="Folg" method="post" novalidate>
-                <input type="email" name="epost" placeholder="navn@kommune.no" aria-label="E-post for varsler" />
-                <button class="btn teal" type="submit">Følg</button>
-            </form>
-        </section>
-    </div>
+    <section class="panel">
+        <h2>Sektor</h2>
+        <p class="sub">Klikk for å se prosjektene</p>
+        <partial name="_Stolper" model="Model.Sektorer" />
+    </section>
 </div>
 
-@* 4. Fase og sektor, like brede og like høye *@
+@* 4. Fase og varsel *@
 <div class="grid halves ov" style="margin-top:20px">
     <section class="panel">
         <h2>Fase</h2>
         <p class="sub">Klikk for å se prosjektene</p>
         <partial name="_Stolper" model="Model.Faser" />
     </section>
-    <section class="panel">
-        <h2>Sektor</h2>
-        <p class="sub">Klikk for å se prosjektene</p>
-        <partial name="_Stolper" model="Model.Sektorer" />
+    <section class="panel grow" id="varsel">
+        <h2>Få varsel om nye prosjekter</h2>
+        <p class="sub">E-post når noen legger inn eller oppdaterer et prosjekt.</p>
+        <form class="inlineform" asp-controller="Home" asp-action="Folg" method="post" novalidate>
+            <input type="email" name="epost" placeholder="navn@kommune.no" aria-label="E-post for varsler" />
+            <button class="btn teal" type="submit">Følg</button>
+        </form>
     </section>
 </div>
 
