@@ -16,25 +16,3 @@ public class ProsjektDetaljViewModel
 
     public required ProsjektLogikk.AktualitetInfo Aktualitet { get; init; }
 }
-
-public class ErfaringerViewModel
-{
-    public string? Q { get; init; }
-    public string Status { get; init; } = "alle";
-    public string? Sektor { get; init; }
-    public string? Kommune { get; init; }
-    public string? Dato { get; init; }
-
-    public required IReadOnlyList<Prosjekt> Liste { get; init; }
-    public required Dictionary<string, int> AntallPerStatus { get; init; }
-    public required IReadOnlyList<string> Kommuner { get; init; }
-
-    public bool HarFilter => !string.IsNullOrWhiteSpace(Q) || Status != "alle" || !string.IsNullOrEmpty(Sektor)
-                             || !string.IsNullOrEmpty(Kommune) || !string.IsNullOrEmpty(Dato);
-
-    public static readonly (string Verdi, string Etikett)[] Statuser =
-        { ("alle", "Alle"), ("aktive", "Pågående og i drift"), ("avsluttet", "Fullført"), ("stoppet", "Avbrutt") };
-
-    public static readonly (string Verdi, string Etikett)[] Datoer =
-        { ("30", "Siste 30 dager"), ("180", "Siste 6 måneder"), ("365", "Siste 12 måneder"), ("old", "Eldre enn ett år") };
-}

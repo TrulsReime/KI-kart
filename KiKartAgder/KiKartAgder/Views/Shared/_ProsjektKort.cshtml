@@ -11,6 +11,7 @@
         <div class="c-pills">
             <partial name="_FasePill" model="Model" />
             @if (Model.Samarbeid) { <span class="pill collab">Samarbeid</span> }
+            @if (Model.HarErfaringer) { <span class="pill">Erfaringer</span> }
             @if (Model.TilGodkjenning) { <span class="pill new">Til godkjenning</span> }
             @if (inaktiv) { <span class="pill">Inaktiv</span> }
         </div>

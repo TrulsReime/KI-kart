@@ -615,7 +615,7 @@ main>.grid,main>section,main>div{margin-top:0}
 .hero :focus-visible{outline-color:#fff}
 
 /* v14: forside som fanger oppmerksomheten */
-.statband{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--navy);border-bottom:1px solid var(--line);margin-bottom:28px}
+.statband{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--navy);border-bottom:1px solid var(--line);margin-bottom:28px}
 .stat{padding:18px 18px 20px;text-align:left;border:0;background:none;font:inherit;color:inherit;border-left:1px solid var(--line);display:grid;gap:2px}
 .stat:first-child{border-left:0;padding-left:0}
 .stat.kbtn{cursor:pointer}.stat.kbtn:hover{background:#F2F8FB}
@@ -674,8 +674,6 @@ main>.grid,main>section,main>div{margin-top:0}
 /* større kart */
 .grid.ov{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
 .map-wrap svg{max-height:760px;margin-inline:auto}
-.grid.ov>.panel:first-child{padding:24px 26px}
-.grid.ov>.panel:first-child h2{font-size:22px}
 
 /* symmetri: like høye kolonner, felles bunnlinje */
 .grid.ov.sym{align-items:stretch}
@@ -790,3 +788,37 @@ body{margin:0}
 /* Tom forside før noen prosjekter er lagt inn */
 .spotcard.tomkart h2{color:var(--navy)}
 .spotcard.tomkart .spot-foot{margin-top:8px}
+
+/* Meld inn: knappen og avkrysningen skal ikke strekkes i full bredde */
+.f [data-velg-alle]{align-self:flex-start;justify-self:start;width:max-content;padding:4px 10px;font-size:13px}
+.f .opt{font-weight:500}
+.f .opt input{width:15px;padding:0;flex:none}
+
+/* Forsiden: kartet øverst til venstre, utvalgte prosjekter til høyre */
+.topprad{align-items:stretch}
+.toppkort{min-width:0;display:flex;flex-direction:column;gap:20px}
+.toppkort>.grow{flex:1}
+.toppkort>.carousel,.toppkort>.spotcard{width:100%}
+.toppkort .cnav{position:static;transform:none;align-self:center;background:none;padding:0}
+
+/* Forsiden: alle radene bruker samme kolonner, så kantene står på linje */
+@media (min-width:981px){.grid.halves.ov{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}}
+
+/* Toppen av siden litt mer kompakt, så mer av innholdet vises uten å scrolle */
+.hero{margin-bottom:18px}
+.hero .wrap{padding-block:2px 22px}
+.crumbs{padding-top:14px;font-size:13px}
+.pagehead{padding-block:6px 10px}
+.pagehead h1{font-size:clamp(24px,2.9vw,31px)}
+.ingress{font-size:16.5px;margin-top:8px}
+.btn.outline-cta,.hero .pagehead .btn.primary.big.outline-cta{padding:11px 18px;font-size:13px}
+.alert{padding:9px 14px;font-size:13.5px;margin-bottom:16px}
+nav.tabs a{padding:10px 16px;font-size:15px}
+.herosearch{margin-bottom:18px}
+.herosearch .searchbox input{padding:11px 14px 11px 40px;font-size:16px}
+.statband{margin-bottom:22px}
+.stat{padding:14px 16px 16px}
+.sv{font-size:40px}
+.sl{font-size:14px;margin-top:4px}
+.sn{font-size:13px}
+@media (max-width:520px){.sv{font-size:34px}}

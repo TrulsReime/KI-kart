@@ -16,11 +16,6 @@
         <div class="sl">KI-prosjekter</div>
         <div class="sn">@Model.AntallIDrift i drift</div>
     </a>
-    <div class="stat">
-        <div class="sv num">@Model.AntallKommuner<small> av 25</small></div>
-        <div class="sl">kommuner er med</div>
-        <div class="sn">alene eller i samarbeid</div>
-    </div>
     <a class="stat kbtn" href="/Prosjekter?org=Samarbeid">
         <div class="sv num">@Model.AntallSamarbeid</div>
         <div class="sl">samarbeidsprosjekter</div>
@@ -33,69 +28,99 @@
     </a>
 </div>
 
-@* 2. Utvalgte prosjekter (karusell) og nye i kartet *@
-<div class="spot">
-    @if (Model.Utvalgte.Count == 0)
-    {
-        <section class="spotcard tomkart">
-            <div class="spot-top"><span class="spot-label">Kartet er tomt</span></div>
-            <h2>Ingen prosjekter er lagt inn ennå</h2>
-            <p class="spot-desc">Bli den første kommunen som deler et KI-prosjekt. Idéer, piloter og prosjekter som ble avbrutt teller like mye som det som er i drift.</p>
-            <div class="spot-foot"><a class="btn primary" asp-controller="MeldInn" asp-action="Index">+ Meld inn prosjekt</a></div>
-        </section>
-    }
-    else
-    {
-    <section class="carousel" aria-roledescription="karusell" aria-label="Utvalgte prosjekter" data-karusell>
-        <div class="slides" aria-live="off">
-            @for (var i = 0; i < Model.Utvalgte.Count; i++)
-            {
-                var sp = Model.Utvalgte[i];
-                var lenke = Lenker.Prosjekt(Context, sp.Id);
-                <article class="spotcard slide@(i == 0 ? " on" : "")" aria-roledescription="lysbilde" aria-label="@(i + 1) av @Model.Utvalgte.Count: @sp.Tittel" aria-hidden="@(i == 0 ? "false" : "true")">
-                    <div class="spot-top">
-                        <span class="spot-label">@(Model.UtvalgtAvDigiAgder ? "★ Utvalgt av DigiAgder" : "Nytt i kartet")</span>
-                        <partial name="_FasePill" model="sp" />
-                        @if (sp.Samarbeid) { <span class="pill collab">Samarbeid · @sp.Deltakere.Count kommuner</span> }
-                    </div>
-                    <h2><a class="linkbtn" href="@lenke" tabindex="@(i == 0 ? null : "-1")">@sp.Tittel</a></h2>
-                    <p class="spot-desc">@sp.Beskrivelse</p>
-                    @if (sp.Gevinst != null)
-                    {
-                        <div class="spot-result"><span>Resultat</span><strong>@sp.Gevinst</strong></div>
-                    }
-                    @if (sp.Fungerte != null)
-                    {
-                        <blockquote class="spot-quote">«@sp.Fungerte»<cite>@sp.Kontakt.Navn, @sp.Kontakt.Rolle.ToLowerInvariant(), @sp.Eier</cite></blockquote>
-                    }
-                    <div class="spot-foot">
-                        <div class="badges">
-                            @foreach (var k in sp.Deltakere.Take(5))
-                            {
-                                <span class="kb" title="@k">@ProsjektLogikk.Initialer(k)</span>
-                            }
-                            @if (sp.Deltakere.Count > 5) { <span class="kb more">+@(sp.Deltakere.Count - 5)</span> }
-                        </div>
-                        <a class="btn primary" href="@lenke" tabindex="@(i == 0 ? null : "-1")">Les om prosjektet</a>
-                    </div>
-                </article>
-            }
-        </div>
-        @if (Model.Utvalgte.Count > 1)
-        {
-            <div class="cnav">
-                <div class="dots">
-                    @for (var i = 0; i < Model.Utvalgte.Count; i++)
-                    {
-                        <button type="button" class="dot" aria-label="Vis @Model.Utvalgte[i].Tittel" aria-current="@(i == 0 ? "true" : "false")" data-til="@i"></button>
-                    }
-                </div>
-                <button type="button" class="cbtn" aria-label="Pause" data-pause>❚❚</button>
-            </div>
-        }
+@* 2. Kartet, og til høyre utvalgte prosjekter (karusell) og sist oppdatert *@
+<div class="grid ov topprad">
+    <section class="panel">
+        <h2>Prosjekter per kommune</h2>
+        <p class="sub">Samarbeidsprosjekter teller i alle kommunene som er med. Klikk for å se prosjektene.</p>
+        <partial name="_Kart" model="Model.Kart" />
     </section>
-    }
+    <div class="toppkort">
+        @if (Model.Utvalgte.Count == 0)
+        {
+            <section class="spotcard tomkart">
+                <div class="spot-top"><span class="spot-label">Kartet er tomt</span></div>
+                <h2>Ingen prosjekter er lagt inn ennå</h2>
+                <p class="spot-desc">Bli den første kommunen som deler et KI-prosjekt. Idéer, piloter og prosjekter som ble avbrutt teller like mye som det som er i drift.</p>
+                <div class="spot-foot"><a class="btn primary" asp-controller="MeldInn" asp-action="Index">+ Meld inn prosjekt</a></div>
+            </section>
+        }
+        else
+        {
+        <section class="carousel" aria-roledescription="karusell" aria-label="Utvalgte prosjekter" data-karusell>
+            <div class="slides" aria-live="off">
+                @for (var i = 0; i < Model.Utvalgte.Count; i++)
+                {
+                    var sp = Model.Utvalgte[i];
+                    var lenke = Lenker.Prosjekt(Context, sp.Id);
+                    <article class="spotcard slide@(i == 0 ? " on" : "")" aria-roledescription="lysbilde" aria-label="@(i + 1) av @Model.Utvalgte.Count: @sp.Tittel" aria-hidden="@(i == 0 ? "false" : "true")">
+                        <div class="spot-top">
+                            <span class="spot-label">@(Model.UtvalgtAvDigiAgder ? "★ Utvalgt av DigiAgder" : "Nytt i kartet")</span>
+                            <partial name="_FasePill" model="sp" />
+                            @if (sp.Samarbeid) { <span class="pill collab">Samarbeid · @sp.Deltakere.Count kommuner</span> }
+                        </div>
+                        <h2><a class="linkbtn" href="@lenke" tabindex="@(i == 0 ? null : "-1")">@sp.Tittel</a></h2>
+                        <p class="spot-desc">@sp.Beskrivelse</p>
+                        @if (sp.Gevinst != null)
+                        {
+                            <div class="spot-result"><span>Resultat</span><strong>@sp.Gevinst</strong></div>
+                        }
+                        @if (sp.Fungerte != null)
+                        {
+                            <blockquote class="spot-quote">«@sp.Fungerte»<cite>@sp.Kontakt.Navn, @sp.Kontakt.Rolle.ToLowerInvariant(), @sp.Eier</cite></blockquote>
+                        }
+                        <div class="spot-foot">
+                            <div class="badges">
+                                @foreach (var k in sp.Deltakere.Take(5))
+                                {
+                                    <span class="kb" title="@k">@ProsjektLogikk.Initialer(k)</span>
+                                }
+                                @if (sp.Deltakere.Count > 5) { <span class="kb more">+@(sp.Deltakere.Count - 5)</span> }
+                            </div>
+                            <a class="btn primary" href="@lenke" tabindex="@(i == 0 ? null : "-1")">Les om prosjektet</a>
+                        </div>
+                    </article>
+                }
+            </div>
+            @if (Model.Utvalgte.Count > 1)
+            {
+                <div class="cnav">
+                    <div class="dots">
+                        @for (var i = 0; i < Model.Utvalgte.Count; i++)
+                        {
+                            <button type="button" class="dot" aria-label="Vis @Model.Utvalgte[i].Tittel" aria-current="@(i == 0 ? "true" : "false")" data-til="@i"></button>
+                        }
+                    </div>
+                    <button type="button" class="cbtn" aria-label="Pause" data-pause>❚❚</button>
+                </div>
+            }
+        </section>
+        }
+        <section class="panel grow">
+            <h2>Sist oppdatert</h2>
+            <p class="sub">Hva som er endret, og når</p>
+            @if (Model.SistOppdatert.Count == 0)
+            {
+                <p class="muted" style="margin:6px 0 0">Her vises endringer når prosjekter blir lagt inn eller oppdatert.</p>
+            }
+            <ul class="feed">
+                @foreach (var p in Model.SistOppdatert)
+                {
+                    <li>
+                        <div class="when akt @ProsjektLogikk.Aktualitetsstatus(p, Model.Idag).Klasse">@Datoformat.Kort(p.Oppdatert)</div>
+                        <div>
+                            <a class="linkbtn t" href="@Lenker.Prosjekt(Context, p.Id)">@p.Tittel</a>
+                            <div class="what">@p.SistEndret · @p.Eier</div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </section>
+    </div>
+</div>
 
+@* 3. Nye i kartet og varsel *@
+<div class="grid ov sym" style="margin-top:20px">
     <section class="panel newpanel">
         <h2>Nye i kartet</h2>
         <p class="sub">Disse kommunene har nylig delt prosjektene sine</p>
@@ -118,37 +143,8 @@
         </ul>
         <a class="btn ghost small" asp-controller="Prosjekter" asp-action="Index">Se alle prosjekter →</a>
     </section>
-</div>
-
-@* 3. Kart, sist oppdatert og varsel. Kolonnene har lik høyde. *@
-<div class="grid ov sym" style="margin-top:24px">
-    <section class="panel">
-        <h2>Prosjekter per kommune</h2>
-        <p class="sub">Samarbeidsprosjekter teller i alle kommunene som er med. Klikk for å se prosjektene.</p>
-        <partial name="_Kart" model="Model.Kart" />
-    </section>
     <div class="stackcol">
-        <section class="panel grow">
-            <h2>Sist oppdatert</h2>
-            <p class="sub">Hva som er endret, og når</p>
-            @if (Model.SistOppdatert.Count == 0)
-            {
-                <p class="muted" style="margin:6px 0 0">Her vises endringer når prosjekter blir lagt inn eller oppdatert.</p>
-            }
-            <ul class="feed">
-                @foreach (var p in Model.SistOppdatert)
-                {
-                    <li>
-                        <div class="when akt @ProsjektLogikk.Aktualitetsstatus(p, Model.Idag).Klasse">@Datoformat.Kort(p.Oppdatert)</div>
-                        <div>
-                            <a class="linkbtn t" href="@Lenker.Prosjekt(Context, p.Id)">@p.Tittel</a>
-                            <div class="what">@p.SistEndret · @p.Eier</div>
-                        </div>
-                    </li>
-                }
-            </ul>
-        </section>
-        <section class="panel" id="varsel">
+        <section class="panel grow" id="varsel">
             <h2>Få varsel om nye prosjekter</h2>
             <p class="sub">E-post når noen legger inn eller oppdaterer et prosjekt.</p>
             <form class="inlineform" asp-controller="Home" asp-action="Folg" method="post" novalidate>
@@ -160,7 +156,7 @@
 </div>
 
 @* 4. Fase og sektor, like brede og like høye *@
-<div class="grid halves" style="margin-top:24px">
+<div class="grid halves ov" style="margin-top:20px">
     <section class="panel">
         <h2>Fase</h2>
         <p class="sub">Klikk for å se prosjektene</p>

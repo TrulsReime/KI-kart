@@ -37,7 +37,6 @@ public static class Lenker
         return sti switch
         {
             "" or "/home" or "/home/index" => "oversikten",
-            "/erfaringer" => "erfaringene",
             "/forvaltning" => "forvaltning",
             _ when sti.StartsWith("/meldinn/takk") => "kvitteringen",
             "/meldinn" => "skjemaet",

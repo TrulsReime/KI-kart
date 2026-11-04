@@ -31,8 +31,10 @@ public class MeldInnController : Controller
     public IActionResult Index(MeldInnSkjema skjema)
     {
         if (skjema.Id.HasValue && _repo.Finn(skjema.Id.Value) == null) return NotFound();
-        if (skjema.Kommune != null && !_kart.Kommuner.Contains(skjema.Kommune))
-            ModelState.AddModelError(nameof(skjema.Kommune), "Velg en kommune fra listen");
+        if (skjema.Kommune != null && !_kart.Aktorer.Contains(skjema.Kommune))
+            ModelState.AddModelError(nameof(skjema.Kommune), "Velg fra listen");
+        if (skjema.Deltakere.Any(k => !_kart.Aktorer.Contains(k)))
+            ModelState.AddModelError(nameof(skjema.Deltakere), "Ukjent kommune");
 
         if (!ModelState.IsValid)
         {
@@ -67,7 +69,7 @@ public class MeldInnController : Controller
         Skjema = skjema,
         Redigerer = skjema.Id.HasValue ? _repo.Finn(skjema.Id.Value) : null,
         Publiserte = _repo.Publiserte(),
-        Kommuner = _kart.Kommuner,
+        Kommuner = _kart.Aktorer,
         PopulareStikkord = ProsjektLogikk.Stikkord(_repo.Publiserte()).Select(t => t.Stikkord).Take(12).ToList(),
         StartSteg = steg
     };

@@ -39,12 +39,9 @@ public class MeldInnSkjema : IValidatableObject
     // Steg 2: Hvem står bak
     public string Organisering { get; set; } = "Enkeltkommune";
 
-    [Required(ErrorMessage = "Skriv hvem som er ansvarlig")]
+    /// <summary>Ansvarlig kommune eller Agder fylkeskommune. Bestemmer også plasseringen i kartet.</summary>
+    [Required(ErrorMessage = "Velg ansvarlig kommune eller virksomhet")]
     [Display(Name = "Ansvarlig kommune eller virksomhet")]
-    public string? Eier { get; set; }
-
-    [Required(ErrorMessage = "Velg kommune for plassering i kartet")]
-    [Display(Name = "Plassering i kartet")]
     public string? Kommune { get; set; }
 
     public List<string> Deltakere { get; set; } = new();
@@ -127,7 +124,7 @@ public class MeldInnSkjema : IValidatableObject
             Fase = Fase!,
             Stopp = Fase == Katalog.Avbrutt ? Stopp : null,
             Stikkord = StikkordListe(),
-            Eier = Eier!.Trim(),
+            Eier = Katalog.EierNavn(Kommune!),
             Kommune = Kommune!,
             Deltakere = deltakere,
             Apen = Organisering == "Samarbeid" && Apen,
@@ -160,7 +157,6 @@ public class MeldInnSkjema : IValidatableObject
             Stopp = p.Stopp,
             Stikkord = string.Join(", ", p.Stikkord),
             Organisering = p.Organisering,
-            Eier = p.Eier,
             Kommune = p.Kommune,
             Deltakere = p.Deltakere.ToList(),
             Apen = p.Apen,
@@ -188,7 +184,7 @@ public class MeldInnSkjema : IValidatableObject
     public static readonly string[][] FeltPerSteg =
     {
         new[] { nameof(Tittel), nameof(Beskrivelse), nameof(Sektor), nameof(Fase), nameof(Stopp), nameof(Stikkord) },
-        new[] { nameof(Organisering), nameof(Eier), nameof(Kommune), nameof(Deltakere), nameof(IktSamarbeid), nameof(KontaktNavn), nameof(KontaktRolle), nameof(KontaktEpost) },
+        new[] { nameof(Organisering), nameof(Kommune), nameof(Deltakere), nameof(IktSamarbeid), nameof(KontaktNavn), nameof(KontaktRolle), nameof(KontaktEpost) },
     };
 }
 
