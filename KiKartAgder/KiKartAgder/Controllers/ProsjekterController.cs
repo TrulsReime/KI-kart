@@ -57,7 +57,7 @@ public class ProsjekterController : Controller
         return View(new ProsjekterViewModel { Filter = filter, Resultat = resultat, Grupper = grupper, Idag = _dato.Idag });
     }
 
-    // GET /Prosjekter/Detaljer/5?tilbake=/Samarbeid
+    // GET /Prosjekter/Detaljer/5?tilbake=/Erfaringer
     public IActionResult Detaljer(int id, string? tilbake, string? apne)
     {
         var p = _repo.Finn(id);

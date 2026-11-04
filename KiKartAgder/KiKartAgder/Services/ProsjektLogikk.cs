@@ -55,29 +55,6 @@ public static class ProsjektLogikk
 
     public static bool ErInaktiv(Prosjekt p, DateOnly idag) => Aktualitetsstatus(p, idag).Niva == Aktualitet.Inaktiv;
 
-    // ---------- partnerforslag ----------
-    public record Partnertreff(Prosjekt Prosjekt, int Poeng, List<string> Grunner);
-
-    /// <summary>Finner prosjekter som kan passe som partner for <paramref name="a"/>.</summary>
-    public static List<Partnertreff> Partnere(Prosjekt a, IEnumerable<Prosjekt> alle)
-    {
-        return alle.Where(b => b.Id != a.Id).Select(b =>
-        {
-            var gi = a.Soker.Where(b.Tilbyr.Contains).ToList();
-            var fa = b.Soker.Where(a.Tilbyr.Contains).ToList();
-            var felles = a.Stikkord.Where(b.Stikkord.Contains).ToList();
-            var grunner = new List<string>();
-            var s = 0;
-            if (gi.Count > 0) { s += gi.Count * 3; grunner.Add("Kan tilby: " + string.Join(", ", gi).ToLowerInvariant()); }
-            if (felles.Count > 0) { s += felles.Count * 2; grunner.Add("Felles stikkord: " + string.Join(" ", felles.Select(t => "#" + t))); }
-            if (fa.Count > 0) { s += fa.Count * 2; grunner.Add("Ser etter det dere kan tilby: " + string.Join(", ", fa).ToLowerInvariant()); }
-            if (b.Sektor == a.Sektor) { s += 1; grunner.Add("Samme sektor"); }
-            if (b.ErApenForFlere && b.Samarbeid) { s += 1; grunner.Add("Åpent for flere kommuner"); }
-            if (b.Fase == Katalog.Avbrutt && felles.Count > 0) grunner.Add("Avbrutt: se hvorfor før dere starter");
-            return new Partnertreff(b, s, grunner);
-        }).Where(t => t.Poeng >= 3).OrderByDescending(t => t.Poeng).Take(5).ToList();
-    }
-
     /// <summary>Opptil fire prosjekter med felles stikkord eller samme sektor.</summary>
     public static List<Prosjekt> Lignende(Prosjekt p, IEnumerable<Prosjekt> alle) =>
         alle.Where(b => b.Id != p.Id)
