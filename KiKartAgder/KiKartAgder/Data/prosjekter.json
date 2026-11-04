@@ -1,5 +1,446 @@
 {
-  "prosjekter": [],
+  "prosjekter": [
+    {
+      "id": 1,
+      "tittel": "Chatbot for innbyggerspørsmål",
+      "eier": "Kristiansand kommune",
+      "kommune": "Kristiansand",
+      "deltakere": [
+        "Kristiansand"
+      ],
+      "sektor": "Administrativt og tverrfaglig",
+      "fase": "Drift",
+      "stopp": null,
+      "stikkord": [
+        "chatbot",
+        "språkmodell",
+        "innbyggerdialog"
+      ],
+      "mal": "Gi innbyggerne svar døgnet rundt og frigjøre tid på servicetorget.",
+      "beskrivelse": "Svarer på vanlige spørsmål om renovasjon, eiendomsskatt og barnehage på kommunens nettside, og sender videre til riktig tjeneste.",
+      "status": "I drift på kommunens nettside siden våren 2025.",
+      "nesteSteg": null,
+      "teknologi": null,
+      "gevinst": "Rundt 30 % færre telefoner om renovasjon og eiendomsskatt.",
+      "kontakt": {
+        "navn": "Marte Eksempel",
+        "rolle": "Digitaliseringsrådgiver",
+        "epost": "marte@eksempel.no"
+      },
+      "registrert": "2025-03-10",
+      "oppdatert": "2026-10-20",
+      "sistEndret": "La til nye tall for gevinst",
+      "soker": [],
+      "tilbyr": [
+        "Erfaringer fra andre",
+        "Kompetanse"
+      ],
+      "apen": false,
+      "fungerte": "Koble chatboten til fagsystemene, ikke bare til nettsiden.",
+      "annerledes": "Måle antall henvendelser før start.",
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "Kristiansand"
+      ]
+    },
+    {
+      "id": 2,
+      "tittel": "Tale til tekst i hjemmetjenesten",
+      "eier": "Arendal kommune",
+      "kommune": "Arendal",
+      "deltakere": [
+        "Arendal",
+        "Grimstad",
+        "Froland",
+        "Tvedestrand"
+      ],
+      "sektor": "E-helse",
+      "fase": "Pilot",
+      "stopp": null,
+      "stikkord": [
+        "tale-til-tekst",
+        "dokumentasjon",
+        "hjemmetjeneste"
+      ],
+      "mal": "Mindre tid til dokumentasjon og mer tid hos brukerne.",
+      "beskrivelse": "Ansatte dikterer notater etter besøk, og løsningen lager et utkast til journalnotat som ansatte godkjenner.",
+      "status": "Testes i to soner i Arendal og én i Grimstad.",
+      "nesteSteg": null,
+      "teknologi": null,
+      "gevinst": "Forventer 20 minutter spart per ansatt per vakt.",
+      "kontakt": {
+        "navn": "Jonas Eksempel",
+        "rolle": "Prosjektleder",
+        "epost": "jonas@eksempel.no"
+      },
+      "registrert": "2025-09-01",
+      "oppdatert": "2026-10-28",
+      "sistEndret": "Froland ble med i piloten",
+      "soker": [
+        "Pilotkommune",
+        "Personvernvurdering"
+      ],
+      "tilbyr": [],
+      "apen": true,
+      "fungerte": null,
+      "annerledes": null,
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "IKT Agder"
+      ]
+    },
+    {
+      "id": 3,
+      "tittel": "Felles KI-retningslinjer for Agder",
+      "eier": "Agder fylkeskommune",
+      "kommune": "Agder fylkeskommune",
+      "deltakere": [
+        "Agder fylkeskommune",
+        "Kristiansand",
+        "Arendal",
+        "Lindesnes",
+        "Vennesla",
+        "Grimstad"
+      ],
+      "sektor": "Administrativt og tverrfaglig",
+      "fase": "Fullført",
+      "stopp": null,
+      "stikkord": [
+        "retningslinjer",
+        "personvern",
+        "opplæring"
+      ],
+      "mal": "Gjøre det enklere for alle å ta i bruk KI på en trygg måte.",
+      "beskrivelse": "Felles mal for hvordan kommunene og fylkeskommunen kan bruke generativ KI trygt, med sjekkliste for personvern.",
+      "status": "Retningslinjene er vedtatt og delt med alle kommunene.",
+      "nesteSteg": null,
+      "teknologi": null,
+      "gevinst": "Brukt av 18 kommuner som utgangspunkt for egne regler.",
+      "kontakt": {
+        "navn": "Ingrid Eksempel",
+        "rolle": "Seniorrådgiver digitalisering",
+        "epost": "ingrid@eksempel.no"
+      },
+      "registrert": "2025-01-15",
+      "oppdatert": "2026-09-30",
+      "sistEndret": "Publiserte versjon 2",
+      "soker": [],
+      "tilbyr": [
+        "Kompetanse",
+        "Personvernvurdering"
+      ],
+      "apen": false,
+      "fungerte": "Lage malen sammen med jurister fra flere kommuner.",
+      "annerledes": "Ta med tillitsvalgte tidligere.",
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "Digi Agder"
+      ]
+    },
+    {
+      "id": 4,
+      "tittel": "Oversettelse av foreldrebrev",
+      "eier": "Farsund kommune",
+      "kommune": "Farsund",
+      "deltakere": [
+        "Farsund"
+      ],
+      "sektor": "Oppvekst",
+      "fase": "Drift",
+      "stopp": null,
+      "stikkord": [
+        "oversettelse",
+        "språk",
+        "foreldrekontakt"
+      ],
+      "mal": "Nå alle foreldre med viktig informasjon.",
+      "beskrivelse": "Oversetter brev fra skole og barnehage til de vanligste språkene blant foreldrene, med kontroll før utsending.",
+      "status": "Brukes på alle skolene i kommunen.",
+      "nesteSteg": null,
+      "teknologi": null,
+      "gevinst": "Færre bestillinger av tolk for skriftlig informasjon.",
+      "kontakt": {
+        "navn": "Sara Eksempel",
+        "rolle": "Rektor",
+        "epost": "sara@eksempel.no"
+      },
+      "registrert": "2025-05-20",
+      "oppdatert": "2026-10-15",
+      "sistEndret": "Lagt til ukrainsk og tigrinja",
+      "soker": [],
+      "tilbyr": [
+        "Erfaringer fra andre"
+      ],
+      "apen": false,
+      "fungerte": "Faste maler for de vanligste brevene.",
+      "annerledes": null,
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "DDV"
+      ]
+    },
+    {
+      "id": 5,
+      "tittel": "Felles innsynsløsning med KI",
+      "eier": "Lindesnes kommune",
+      "kommune": "Lindesnes",
+      "deltakere": [
+        "Lindesnes",
+        "Farsund",
+        "Flekkefjord",
+        "Hægebostad",
+        "Kvinesdal",
+        "Lyngdal",
+        "Åseral"
+      ],
+      "sektor": "Administrativt og tverrfaglig",
+      "fase": "Idé",
+      "stopp": null,
+      "stikkord": [
+        "innsyn",
+        "arkiv",
+        "språkmodell"
+      ],
+      "mal": "Raskere svar på innsynskrav.",
+      "beskrivelse": "Utreder om KI kan hjelpe med å finne og skjerme dokumenter når noen ber om innsyn.",
+      "status": "Behovsanalyse er i gang i DDV-kommunene.",
+      "nesteSteg": null,
+      "teknologi": null,
+      "gevinst": null,
+      "kontakt": {
+        "navn": "Henrik Eksempel",
+        "rolle": "Arkivleder",
+        "epost": "henrik@eksempel.no"
+      },
+      "registrert": "2026-10-12",
+      "oppdatert": "2026-10-12",
+      "sistEndret": "Lagt inn i kartet",
+      "soker": [
+        "Samarbeidspartner",
+        "Personvernvurdering"
+      ],
+      "tilbyr": [],
+      "apen": true,
+      "fungerte": null,
+      "annerledes": null,
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "DDV"
+      ]
+    },
+    {
+      "id": 6,
+      "tittel": "Prioritering av brøyting",
+      "eier": "Valle kommune",
+      "kommune": "Valle",
+      "deltakere": [
+        "Valle",
+        "Bykle",
+        "Bygland"
+      ],
+      "sektor": "Teknisk",
+      "fase": "Pilot",
+      "stopp": null,
+      "stikkord": [
+        "brøyting",
+        "værdata",
+        "prognose"
+      ],
+      "mal": "Bedre fremkommelighet og lavere kostnader om vinteren.",
+      "beskrivelse": "Kombinerer værvarsel og trafikktall for å foreslå hvilke veier som bør brøytes først.",
+      "status": "Testes gjennom vinteren 2026/27.",
+      "nesteSteg": null,
+      "teknologi": null,
+      "gevinst": "Mål om 10 % kortere kjørerute.",
+      "kontakt": {
+        "navn": "Knut Eksempel",
+        "rolle": "Driftsleder",
+        "epost": "knut@eksempel.no"
+      },
+      "registrert": "2025-10-15",
+      "oppdatert": "2026-10-30",
+      "sistEndret": "Startet test for ny sesong",
+      "soker": [
+        "Data"
+      ],
+      "tilbyr": [],
+      "apen": true,
+      "fungerte": null,
+      "annerledes": null,
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "IKT Agder"
+      ]
+    },
+    {
+      "id": 7,
+      "tittel": "KI-kurs for skoleledere",
+      "eier": "Lillesand kommune",
+      "kommune": "Lillesand",
+      "deltakere": [
+        "Lillesand",
+        "Birkenes"
+      ],
+      "sektor": "Oppvekst",
+      "fase": "Drift",
+      "stopp": null,
+      "stikkord": [
+        "opplæring",
+        "skole",
+        "ledelse"
+      ],
+      "mal": "Trygge ledere som kan ta gode valg om KI i skolen.",
+      "beskrivelse": "Kurs i fire samlinger der skoleledere lærer å bruke KI i planlegging og forstår hva elevene bruker.",
+      "status": "Tredje kull er i gang.",
+      "nesteSteg": null,
+      "teknologi": null,
+      "gevinst": "Alle skoleledere i begge kommunene har deltatt.",
+      "kontakt": {
+        "navn": "Line Eksempel",
+        "rolle": "Oppvekstsjef",
+        "epost": "line@eksempel.no"
+      },
+      "registrert": "2025-02-03",
+      "oppdatert": "2026-10-08",
+      "sistEndret": "Nytt kull startet",
+      "soker": [],
+      "tilbyr": [
+        "Kompetanse"
+      ],
+      "apen": true,
+      "fungerte": "Korte oppgaver mellom samlingene.",
+      "annerledes": null,
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "Lillesand og Birkenes"
+      ]
+    },
+    {
+      "id": 8,
+      "tittel": "Chatbot for sosialtjenesten",
+      "eier": "Lyngdal kommune",
+      "kommune": "Lyngdal",
+      "deltakere": [
+        "Lyngdal"
+      ],
+      "sektor": "Sosial og velferd",
+      "fase": "Avbrutt",
+      "stopp": "Personvern og juss",
+      "stikkord": [
+        "chatbot",
+        "nav",
+        "velferd"
+      ],
+      "mal": "Redusere ventetid på telefon.",
+      "beskrivelse": "Chatbot som skulle svare på spørsmål om økonomisk sosialhjelp.",
+      "status": "Avsluttet etter pilot.",
+      "nesteSteg": null,
+      "teknologi": null,
+      "gevinst": null,
+      "kontakt": {
+        "navn": "Per Eksempel",
+        "rolle": "Avdelingsleder",
+        "epost": "per@eksempel.no"
+      },
+      "registrert": "2025-04-01",
+      "oppdatert": "2026-06-20",
+      "sistEndret": "Prosjektet ble avbrutt",
+      "soker": [],
+      "tilbyr": [],
+      "apen": false,
+      "fungerte": "Kartleggingen av vanlige spørsmål kunne brukes videre.",
+      "annerledes": "Avklare personvern før valg av leverandør.",
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
+    },
+    {
+      "id": 9,
+      "tittel": "Fallvarsling med sensorer",
+      "eier": "Evje og Hornnes kommune",
+      "kommune": "Evje og Hornnes",
+      "deltakere": [
+        "Evje og Hornnes"
+      ],
+      "sektor": "E-helse",
+      "fase": "Drift",
+      "stopp": null,
+      "stikkord": [
+        "sensor",
+        "velferdsteknologi",
+        "fall"
+      ],
+      "mal": "Raskere hjelp ved fall og tryggere hverdag.",
+      "beskrivelse": "Sensorer i boliger varsler ansatte når en bruker faller, uten kamera.",
+      "status": "I bruk i 40 boliger.",
+      "nesteSteg": null,
+      "teknologi": null,
+      "gevinst": "Gjennomsnittlig responstid ned fra 12 til 4 minutter.",
+      "kontakt": {
+        "navn": "Anne Eksempel",
+        "rolle": "Fagleder velferdsteknologi",
+        "epost": "anne@eksempel.no"
+      },
+      "registrert": "2024-11-20",
+      "oppdatert": "2026-10-25",
+      "sistEndret": "Utvidet til 40 boliger",
+      "soker": [],
+      "tilbyr": [
+        "Erfaringer fra andre"
+      ],
+      "apen": false,
+      "fungerte": null,
+      "annerledes": null,
+      "tilGodkjenning": false,
+      "iktSamarbeid": [
+        "IKT Agder"
+      ]
+    },
+    {
+      "id": 10,
+      "tittel": "Analyse av kollektivtrafikk",
+      "eier": "Agder fylkeskommune",
+      "kommune": "Agder fylkeskommune",
+      "deltakere": [
+        "Agder fylkeskommune"
+      ],
+      "sektor": "Teknologi og infrastruktur",
+      "fase": "Pilot",
+      "stopp": null,
+      "stikkord": [
+        "kollektiv",
+        "prognose",
+        "data"
+      ],
+      "mal": "Bedre kollektivtilbud for pengene.",
+      "beskrivelse": "Bruker reisedata for å finne strekninger der flere avganger vil gi flest nye reisende.",
+      "status": "Testes på bussrutene i Kristiansandsregionen.",
+      "nesteSteg": null,
+      "teknologi": null,
+      "gevinst": null,
+      "kontakt": {
+        "navn": "Ola Eksempel",
+        "rolle": "Analytiker",
+        "epost": "ola@eksempel.no"
+      },
+      "registrert": "2026-10-22",
+      "oppdatert": "2026-10-22",
+      "sistEndret": "Lagt inn i kartet",
+      "soker": [
+        "Data",
+        "Samarbeidspartner"
+      ],
+      "tilbyr": [],
+      "apen": false,
+      "fungerte": null,
+      "annerledes": null,
+      "tilGodkjenning": false,
+      "iktSamarbeid": []
+    }
+  ],
   "innmeldinger": [],
-  "utvalgte": []
+  "utvalgte": [
+    2,
+    3,
+    7
+  ]
 }

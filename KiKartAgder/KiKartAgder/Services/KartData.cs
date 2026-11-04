@@ -16,6 +16,9 @@ public class KartData
     /// <summary>Alle 25 kommunene i Agder, sortert alfabetisk på norsk (Å sist).</summary>
     public IReadOnlyList<string> Kommuner { get; }
 
+    /// <summary>Kommunene og Agder fylkeskommune. Brukes der man velger hvem som står bak et prosjekt.</summary>
+    public IReadOnlyList<string> Aktorer { get; }
+
     public KartData(IWebHostEnvironment env)
     {
         var sti = Path.Combine(env.ContentRootPath, "Data", "agder.json");
@@ -26,6 +29,7 @@ public class KartData
         Former = raw.K.ToDictionary(kv => kv.Key, kv => new KommuneForm(kv.Value.D, kv.Value.C[0], kv.Value.C[1]));
         var nb = StringComparer.Create(CultureInfo.GetCultureInfo("nb-NO"), false);
         Kommuner = Former.Keys.OrderBy(k => k, nb).ToList();
+        Aktorer = Kommuner.Append(Models.Katalog.Fylkeskommune).ToList();
     }
 
     private class RaKart

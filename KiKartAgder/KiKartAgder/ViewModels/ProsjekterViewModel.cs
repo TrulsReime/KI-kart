@@ -21,13 +21,16 @@ public class ProsjektFilter
     /// <summary>Ta med prosjekter som er inaktive fordi de ikke er bekreftet på 12 måneder.</summary>
     public bool Inaktive { get; set; }
 
+    /// <summary>Bare prosjekter som har delt erfaringer (hva som fungerte, og hva de ville gjort annerledes).</summary>
+    public bool Erfaringer { get; set; }
+
     /// <summary>opp (sist oppdatert), kommune eller tittel.</summary>
     public string Sort { get; set; } = "opp";
 
     /// <summary>Sortering av kommunelisten i filteret: alfa eller antall.</summary>
     public string Ksort { get; set; } = "alfa";
 
-    public bool HarFilter => Inaktive || !string.IsNullOrWhiteSpace(Q) || Kommune.Count + Sektor.Count + Fase.Count + Stikkord.Count + Org.Count + Ikt.Count > 0;
+    public bool HarFilter => Inaktive || Erfaringer || !string.IsNullOrWhiteSpace(Q) || Kommune.Count + Sektor.Count + Fase.Count + Stikkord.Count + Org.Count + Ikt.Count > 0;
 
     public bool Passer(Prosjekt p) =>
         (Kommune.Count == 0 || p.Deltakere.Any(Kommune.Contains))
@@ -36,6 +39,7 @@ public class ProsjektFilter
         && (Org.Count == 0 || Org.Contains(p.Organisering))
         && (Stikkord.Count == 0 || Stikkord.All(p.Stikkord.Contains))
         && (Ikt.Count == 0 || p.IktSamarbeid.Any(Ikt.Contains))
+        && (!Erfaringer || p.HarErfaringer)
         && ProsjektLogikk.Treffer(p, Q);
 
     public IEnumerable<Prosjekt> Sorter(IEnumerable<Prosjekt> liste)
@@ -60,6 +64,7 @@ public class ProsjektFilter
                 if (!(fjernNokkel == navn && fjernVerdi == v)) qb.Add(navn, v);
         }
         Legg("org", Org); Legg("kommune", Kommune); Legg("sektor", Sektor); Legg("fase", Fase); Legg("ikt", Ikt); Legg("stikkord", Stikkord);
+        if (Erfaringer && fjernNokkel != "erfaringer") qb.Add("erfaringer", "true");
         if (Inaktive && fjernNokkel != "inaktive") qb.Add("inaktive", "true");
         if (Sort != "opp") qb.Add("sort", Sort);
         if (Ksort != "alfa") qb.Add("ksort", Ksort);
@@ -72,6 +77,7 @@ public class ProsjektFilter
         foreach (var (navn, liste) in new[] { ("org", Org), ("kommune", Kommune), ("sektor", Sektor), ("fase", Fase), ("ikt", Ikt), ("stikkord", Stikkord) })
             foreach (var v in liste)
                 yield return (navn == "stikkord" ? "#" + v : v, Url(navn, v));
+        if (Erfaringer) yield return ("Har delt erfaringer", Url("erfaringer"));
         if (Inaktive) yield return ("Med inaktive", Url("inaktive"));
     }
 }

@@ -15,7 +15,7 @@ public class KartViewModel
 
     public int Totalt(string kommune) => Egne.GetValueOrDefault(kommune) + ISamarbeid.GetValueOrDefault(kommune);
 
-    private int Maks => Math.Max(1, Kart.Kommuner.Max(Totalt));
+    private int Maks => Math.Max(1, Kart.Aktorer.Max(Totalt));
 
     /// <summary>Fargetrinn 0 til 6 (CSS-variablene --seq-0 til --seq-6).</summary>
     public int Trinn(string kommune)

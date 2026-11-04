@@ -45,7 +45,6 @@
     <nav class="tabs" aria-label="Visninger i KI-kartet">
         <a asp-controller="Home" asp-action="Index" aria-current="@Aktiv("oversikt")">Oversikt</a>
         <a asp-controller="Prosjekter" asp-action="Index" aria-current="@Aktiv("prosjekter")">Prosjekter<span class="count">@publiserte.Count</span></a>
-        <a asp-controller="Erfaringer" asp-action="Index" aria-current="@Aktiv("erfaringer")">Erfaringer<span class="count">@publiserte.Count(p => p.HarErfaringer)</span></a>
         <a asp-controller="MeldInn" asp-action="Index" aria-current="@Aktiv("meldinn")">Meld inn</a>
         <a asp-controller="Forvaltning" asp-action="Index" aria-current="@Aktiv("forvaltning")" class="tab-adm">Forvaltning<span class="count alert" hidden="@(tilBehandling == 0)">@tilBehandling</span></a>
     </nav>

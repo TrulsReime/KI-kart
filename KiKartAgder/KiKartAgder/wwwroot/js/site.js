@@ -64,6 +64,34 @@
     if (sti === location.pathname) scrollTo(0, +y);
     sessionStorage_set('kikart-scroll', null);
   }
+
+  // ---------- faner: etter klikk på en fane rulles siden rolig forbi det blå banneret ----------
+  const faner = $('nav.tabs');
+  if (faner && !FRAMED) {
+    $$('a', faner).forEach(a => a.addEventListener('click', () => sessionStorage_set('kikart-fane', '1')));
+    if (sessionStorage_get('kikart-fane')) {
+      sessionStorage_set('kikart-fane', null);
+      if (!lagret) {
+        const rolig = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const mal = faner.getBoundingClientRect().top + scrollY - 12;
+        if (rolig) scrollTo(0, mal);
+        else setTimeout(() => {
+          // Samme følelse som nettleserens smooth (rask start, myk slutt), men litt roligere
+          const fra = scrollY, varighet = 550, start = performance.now();
+          const myk = t => 1 - Math.pow(1 - t, 3);
+          let avbrutt = false;
+          ['wheel', 'touchstart', 'keydown'].forEach(e => addEventListener(e, () => { avbrutt = true; }, { once: true, passive: true }));
+          const steg = na => {
+            if (avbrutt) return;
+            const t = Math.min(1, (na - start) / varighet);
+            scrollTo(0, fra + (mal - fra) * myk(t));
+            if (t < 1) requestAnimationFrame(steg);
+          };
+          requestAnimationFrame(steg);
+        }, 80);
+      }
+    }
+  }
   // Tomme felt og standardverdier tas ikke med, så adressen blir kort og lesbar.
   const STANDARD = { sort: 'opp', ksort: 'alfa', status: 'alle' };
   function ryddOgSend(f) {
@@ -165,7 +193,7 @@
       dots.forEach((d, i) => d.setAttribute('aria-current', String(i === idx)));
     };
     const stop = () => { clearInterval(timer); timer = null; };
-    const start = () => { stop(); if (play) timer = setInterval(() => show(idx + 1), 3200); };
+    const start = () => { stop(); if (play) timer = setInterval(() => show(idx + 1), 6400); };
     dots.forEach(d => d.addEventListener('click', () => { show(+d.dataset.til); start(); }));
     playBtn.addEventListener('click', () => {
       play = !play;
@@ -276,7 +304,8 @@
       $('#stoppBox').hidden = fase !== 'Avbrutt';
       pv('tittel').textContent = verdi('Tittel') || 'Prosjektets navn';
       pv('beskrivelse').textContent = verdi('Beskrivelse') || 'Kort beskrivelse av hva løsningen gjør.';
-      pv('eier').textContent = verdi('Eier') || 'Ansvarlig kommune';
+      const ans = form.elements['Kommune'];
+      pv('eier').textContent = ans && ans.value ? ans.options[ans.selectedIndex].text : 'Ansvarlig kommune';
       pv('sektor').textContent = sektor || 'Sektor';
       pv('fase').textContent = fase || 'Idé';
       pv('fasepill').className = 'pill ' + (FASE_CLS[fase] || 'f-ide');
@@ -284,6 +313,58 @@
       pv('stikkord').textContent = (tags.length ? tags : ['stikkord']).slice(0, 3).map(t => '#' + t).join('  ');
       if (err.textContent && !mangler(step).length) err.textContent = '';
     }
+    // Velg alle kommunene med ett klikk
+    const deltakere = () => $$('input[name="Deltakere"]', form);
+    const velgAlle = $('[data-velg-alle]', form);
+    const kommuneBokser = () => deltakere().filter(c => c.dataset.kommune);
+    const oppdaterVelgAlle = () => {
+      if (velgAlle) velgAlle.textContent = kommuneBokser().every(c => c.checked) ? 'Fjern alle kommunene' : 'Velg alle kommunene';
+    };
+    if (velgAlle) velgAlle.addEventListener('click', () => {
+      const alle = !kommuneBokser().every(c => c.checked);
+      kommuneBokser().forEach(c => c.checked = alle);
+      oppdaterVelgAlle(); oppdater();
+    });
+
+    // Ansvarlig kommune er alltid med i samarbeidet
+    const ansvarlig = form.elements['Kommune'];
+    const kryssAv = navn => deltakere().forEach(c => { if (navn.includes(c.value)) c.checked = true; });
+    ansvarlig.addEventListener('change', () => { if (ansvarlig.value) kryssAv([ansvarlig.value]); oppdaterVelgAlle(); });
+
+    // Når et IKT-samarbeid velges, krysses kommunene i samarbeidet av
+    const medlemmerI = b => (b.dataset.medlemmer || '').split('|').filter(Boolean);
+    const lagtTilAv = new Map(); // samarbeid -> kommuner som ble krysset av fordi samarbeidet ble valgt
+    const ansvarligFra = new Map(); // samarbeid -> ansvarlig kommune som ble fylt ut automatisk
+    $$('input[name="IktSamarbeid"]', form).forEach(b => b.addEventListener('change', () => {
+      const medlemmer = medlemmerI(b);
+      if (!b.checked) {
+        // Ble ansvarlig fylt ut av dette samarbeidet, tømmes feltet igjen
+        if (ansvarligFra.has(b.value) && ansvarlig.value === ansvarligFra.get(b.value)) ansvarlig.value = '';
+        ansvarligFra.delete(b.value);
+        // Fjern kommunene i samarbeidet, men behold ansvarlig kommune og kommuner i andre valgte samarbeid
+        const beholdes = new Set([ansvarlig.value]);
+        $$('input[name="IktSamarbeid"]:checked', form).forEach(a => medlemmerI(a).forEach(k => beholdes.add(k)));
+        const lagtTil = lagtTilAv.get(b.value) || new Set(medlemmer); // forhåndsvalgt ved oppdatering: fjern alle medlemmene
+        lagtTilAv.delete(b.value);
+        lagtTilAv.forEach(set => set.forEach(k => beholdes.add(k)));
+        deltakere().forEach(c => { if (lagtTil.has(c.value) && !beholdes.has(c.value)) c.checked = false; });
+        oppdaterVelgAlle(); oppdater();
+        return;
+      }
+      if (medlemmer.length === 1 && !ansvarlig.value) { ansvarlig.value = medlemmer[0]; ansvarligFra.set(b.value, medlemmer[0]); }
+      if (medlemmer.length > 1) {
+        const sam = form.querySelector('input[name="Organisering"][value="Samarbeid"]');
+        if (sam) sam.checked = true;
+        if (ansvarlig.value) medlemmer.push(ansvarlig.value);
+      }
+      const lagtTil = new Set(deltakere().filter(c => medlemmer.includes(c.value) && !c.checked).map(c => c.value));
+      lagtTilAv.set(b.value, lagtTil);
+      kryssAv(medlemmer);
+      oppdaterVelgAlle(); oppdater();
+    }));
+    deltakere().forEach(c => c.addEventListener('change', oppdaterVelgAlle));
+    oppdaterVelgAlle();
+
     form.addEventListener('input', oppdater);
     form.addEventListener('change', oppdater);
     show(step);
