@@ -50,14 +50,44 @@ public static class Katalog
     };
 
     /// <summary>IKT-samarbeidene i Agder som et prosjekt kan være en del av. Valgfritt ved innmelding.</summary>
-    public static readonly string[] IktSamarbeid = { "IKT Agder", "DDV", "Digi Agder" };
+    public static readonly string[] IktSamarbeid = { "IKT Agder", "DDV", "Digi Agder", "Kristiansand", "Lillesand og Birkenes" };
 
     public static readonly Dictionary<string, string> IktSamarbeidHjelp = new()
     {
         ["IKT Agder"] = "Interkommunalt IKT-selskap",
         ["DDV"] = "Det Digitale Vestre Agder",
         ["Digi Agder"] = "Digitaliseringssamarbeidet i Agder",
+        ["Kristiansand"] = "Kristiansand kommunes egen IKT-tjeneste",
+        ["Lillesand og Birkenes"] = "Felles IT-tjeneste for Lillesand og Birkenes",
     };
 
     public static readonly string[] Organiseringer = { "Samarbeid", "Enkeltkommune" };
+
+    /// <summary>Kan velges som ansvarlig og deltaker, men har ingen egen flate i kartet.</summary>
+    public const string Fylkeskommune = "Agder fylkeskommune";
+
+    /// <summary>Navnet som vises som ansvarlig, f.eks. "Arendal kommune".</summary>
+    public static string EierNavn(string kommune) => kommune == Fylkeskommune ? kommune : kommune + " kommune";
+
+    private static readonly string[] AlleKommuner =
+    {
+        "Arendal", "Birkenes", "Bygland", "Bykle", "Evje og Hornnes", "Farsund", "Flekkefjord", "Froland",
+        "Gjerstad", "Grimstad", "Hægebostad", "Iveland", "Kristiansand", "Kvinesdal", "Lillesand", "Lindesnes",
+        "Lyngdal", "Risør", "Sirdal", "Tvedestrand", "Valle", "Vegårshei", "Vennesla", "Åmli", "Åseral"
+    };
+
+    /// <summary>
+    /// Hvem som er med i hvert IKT-samarbeid. Velges automatisk i skjemaet.
+    /// Kilder (november 2026): ikt-agder.no/Om-oss og ddv.no/om-oss/om-ddv-iks.
+    /// Digi Agder er satt til alle kommunene og fylkeskommunen. Det bør bekreftes av DigiAgder.
+    /// </summary>
+    public static readonly Dictionary<string, string[]> IktSamarbeidMedlemmer = new()
+    {
+        ["IKT Agder"] = new[] { "Arendal", "Bygland", "Bykle", "Evje og Hornnes", "Froland", "Gjerstad", "Grimstad",
+                                "Iveland", "Risør", "Tvedestrand", "Valle", "Vegårshei", "Vennesla", "Åmli", Fylkeskommune },
+        ["DDV"] = new[] { "Farsund", "Flekkefjord", "Hægebostad", "Kvinesdal", "Lindesnes", "Lyngdal", "Åseral" },
+        ["Digi Agder"] = AlleKommuner.Append(Fylkeskommune).ToArray(),
+        ["Kristiansand"] = new[] { "Kristiansand" },
+        ["Lillesand og Birkenes"] = new[] { "Lillesand", "Birkenes" },
+    };
 }

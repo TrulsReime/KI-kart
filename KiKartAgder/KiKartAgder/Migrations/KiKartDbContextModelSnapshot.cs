@@ -253,6 +253,22 @@ namespace KiKartAgder.Migrations
                             ErAktiv = true,
                             Navn = "Digi Agder",
                             Rekkefolge = 3
+                        },
+                        new
+                        {
+                            IktSamarbeidId = 4,
+                            Beskrivelse = "Kristiansand kommunes egen IKT-tjeneste",
+                            ErAktiv = true,
+                            Navn = "Kristiansand",
+                            Rekkefolge = 4
+                        },
+                        new
+                        {
+                            IktSamarbeidId = 5,
+                            Beskrivelse = "Felles IT-tjeneste for Lillesand og Birkenes",
+                            ErAktiv = true,
+                            Navn = "Lillesand og Birkenes",
+                            Rekkefolge = 5
                         });
                 });
 
@@ -326,6 +342,9 @@ namespace KiKartAgder.Migrations
                     b.Property<bool>("ErAktiv")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("ErFylkeskommune")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Fylke")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -345,6 +364,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4201",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Risør"
                         },
@@ -352,6 +372,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4202",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Grimstad"
                         },
@@ -359,6 +380,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4203",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Arendal"
                         },
@@ -366,6 +388,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4204",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Kristiansand"
                         },
@@ -373,6 +396,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4205",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Lindesnes"
                         },
@@ -380,6 +404,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4206",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Farsund"
                         },
@@ -387,6 +412,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4207",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Flekkefjord"
                         },
@@ -394,6 +420,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4211",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Gjerstad"
                         },
@@ -401,6 +428,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4212",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Vegårshei"
                         },
@@ -408,6 +436,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4213",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Tvedestrand"
                         },
@@ -415,6 +444,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4214",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Froland"
                         },
@@ -422,6 +452,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4215",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Lillesand"
                         },
@@ -429,6 +460,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4216",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Birkenes"
                         },
@@ -436,6 +468,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4217",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Åmli"
                         },
@@ -443,6 +476,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4218",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Iveland"
                         },
@@ -450,6 +484,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4219",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Evje og Hornnes"
                         },
@@ -457,6 +492,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4220",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Bygland"
                         },
@@ -464,6 +500,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4221",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Valle"
                         },
@@ -471,6 +508,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4222",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Bykle"
                         },
@@ -478,6 +516,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4223",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Vennesla"
                         },
@@ -485,6 +524,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4224",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Åseral"
                         },
@@ -492,6 +532,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4225",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Lyngdal"
                         },
@@ -499,6 +540,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4226",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Hægebostad"
                         },
@@ -506,6 +548,7 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4227",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Kvinesdal"
                         },
@@ -513,8 +556,17 @@ namespace KiKartAgder.Migrations
                         {
                             KommuneNr = "4228",
                             ErAktiv = true,
+                            ErFylkeskommune = false,
                             Fylke = "Agder",
                             Navn = "Sirdal"
+                        },
+                        new
+                        {
+                            KommuneNr = "4200",
+                            ErAktiv = true,
+                            ErFylkeskommune = true,
+                            Fylke = "Agder",
+                            Navn = "Agder fylkeskommune"
                         });
                 });
 

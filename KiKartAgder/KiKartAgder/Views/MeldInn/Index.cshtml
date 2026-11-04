@@ -35,7 +35,7 @@
             }
         </ol>
 
-        @if (p == null)
+        @if (p == null && Model.Publiserte.Count > 0)
         {
             @* Eget GET-skjema for å bytte til et eksisterende prosjekt. Kan ikke ligge inne i hovedskjemaet. *@
             <form method="get" action="/MeldInn" class="f" data-autosend data-bare-steg="1" style="margin-bottom:18px">
@@ -123,30 +123,25 @@
                         <label class="choicebox"><input type="radio" name="Organisering" value="Samarbeid" checked="@(s.Organisering == "Samarbeid")" /><span class="ct">Samarbeid</span><span class="ch">Flere kommuner er med</span></label>
                     </div>
                 </fieldset>
-                <div class="row2">
-                    <div class="f">
-                        <label for="Eier">Ansvarlig kommune eller virksomhet<span class="req"> *</span></label>
-                        <input id="Eier" name="Eier" value="@s.Eier" placeholder="F.eks. Arendal kommune" required data-pakrevd="ansvarlig" />
-                    @if (Feil("Eier") is string feilEier) {<span class="ferr">@feilEier</span>}
-                    </div>
-                    <div class="f">
-                        <label for="Kommune">Plassering i kartet<span class="req"> *</span></label>
-                        <select id="Kommune" name="Kommune" required data-pakrevd="plassering i kartet">
-                            <option value="">Velg …</option>
-                            @foreach (var k in Model.Kommuner)
-                            {
-                                <option value="@k" selected="@(s.Kommune == k)">@k</option>
-                            }
-                        </select>
-                        @if (Feil("Kommune") is string feilKommune) {<span class="ferr">@feilKommune</span>}
-                    </div>
+                <div class="f">
+                    <label for="Kommune">Ansvarlig kommune eller virksomhet<span class="req"> *</span></label>
+                    <select id="Kommune" name="Kommune" required data-pakrevd="ansvarlig kommune eller virksomhet">
+                        <option value="">Velg …</option>
+                        @foreach (var k in Model.Kommuner)
+                        {
+                            <option value="@k" selected="@(s.Kommune == k)">@(k == Katalog.Fylkeskommune ? k : k + " kommune")</option>
+                        }
+                    </select>
+                    <span class="hint">Prosjektet vises på denne kommunen i kartet. Prosjekter fra Agder fylkeskommune vises i listene, men ikke på én bestemt kommune.</span>
+                    @if (Feil("Kommune") is string feilKommune) {<span class="ferr">@feilKommune</span>}
                 </div>
                 <div class="f" id="partBox" hidden="@(s.Organisering != "Samarbeid")">
                     <span class="lab">Hvilke kommuner er med?</span>
+                    <button type="button" class="tag js-only" data-velg-alle style="margin:0 0 6px">Velg alle kommunene</button>
                     <div class="checks kgrid">
                         @foreach (var k in Model.Kommuner)
                         {
-                            <label><input type="checkbox" name="Deltakere" value="@k" checked="@s.Deltakere.Contains(k)" />@k</label>
+                            <label><input type="checkbox" name="Deltakere" value="@k" checked="@s.Deltakere.Contains(k)" data-kommune="@(k == Katalog.Fylkeskommune ? null : "true")" />@k</label>
                         }
                     </div>
                     <label class="opt" style="margin-top:6px"><input type="checkbox" name="Apen" value="true" checked="@s.Apen" />Åpent for at flere kommuner kan bli med</label>
@@ -158,10 +153,10 @@
                     <div class="choices">
                         @foreach (var x in Katalog.IktSamarbeid)
                         {
-                            <label class="choicebox"><input type="checkbox" name="IktSamarbeid" value="@x" checked="@s.IktSamarbeid.Contains(x)" /><span class="ct">@x</span><span class="ch">@Katalog.IktSamarbeidHjelp[x]</span></label>
+                            <label class="choicebox"><input type="checkbox" name="IktSamarbeid" value="@x" checked="@s.IktSamarbeid.Contains(x)" data-medlemmer="@string.Join("|", Katalog.IktSamarbeidMedlemmer[x])" /><span class="ct">@x</span><span class="ch">@Katalog.IktSamarbeidHjelp[x]</span></label>
                         }
                     </div>
-                    <span class="hint">Velg ett eller flere, eller la det stå tomt.</span>
+                    <span class="hint">Velg ett eller flere, eller la det stå tomt. Kommunene i samarbeidet blir krysset av under «Hvilke kommuner er med?».</span>
                 </fieldset>
                 <div class="subhead">Kontaktperson og prosjekteier<span>Vises for andre som vil ta kontakt</span></div>
                 <p class="hint" style="margin:-6px 0 0;font-size:13px;color:var(--ink-3)">@(p != null ? "Prosjekteieren endres ikke når du oppdaterer." : "Du som melder inn, blir eier av prosjektet. Eieren kan oppdatere det og får en påminnelse om å bekrefte det minst én gang i året.")</p>
@@ -260,7 +255,7 @@
                 <h3 data-vis="tittel">@(s.Tittel ?? "Prosjektets navn")</h3>
                 <p class="c-desc" data-vis="beskrivelse">@(s.Beskrivelse ?? "Kort beskrivelse av hva løsningen gjør.")</p>
                 <div class="c-meta">
-                    <span data-vis="eier">@(s.Eier ?? "Ansvarlig kommune")</span><span class="sep">·</span><span data-vis="sektor">@(s.Sektor ?? "Sektor")</span>
+                    <span data-vis="eier">@(s.Kommune != null ? Katalog.EierNavn(s.Kommune) : "Ansvarlig kommune")</span><span class="sep">·</span><span data-vis="sektor">@(s.Sektor ?? "Sektor")</span>
                     <span class="c-tags" data-vis="stikkord">@string.Join("  ", s.StikkordListe().Take(3).Select(t => "#" + t))</span>
                 </div>
             </div>

@@ -222,7 +222,10 @@ public class KiKartDbContext : DbContext
     /// <summary>Kommunenummer fra SSB er alltid fire siffer.</summary>
     private static void KommuneNr(PropertyBuilder p) => p.HasColumnType("char(4)");
 
-    /// <summary>De 25 kommunene i Agder med kommunenummer fra SSB (gjeldende fra 2024).</summary>
+    /// <summary>
+    /// De 25 kommunene i Agder med kommunenummer fra SSB (gjeldende fra 2024), og Agder fylkeskommune
+    /// med 4200 (fylkesnummer 42). 4200 er ikke et ekte kommunenummer.
+    /// </summary>
     private static readonly Kommune[] AgderKommuner = new (string Nr, string Navn)[]
     {
         ("4201", "Risør"), ("4202", "Grimstad"), ("4203", "Arendal"), ("4204", "Kristiansand"),
@@ -232,5 +235,7 @@ public class KiKartDbContext : DbContext
         ("4220", "Bygland"), ("4221", "Valle"), ("4222", "Bykle"), ("4223", "Vennesla"),
         ("4224", "Åseral"), ("4225", "Lyngdal"), ("4226", "Hægebostad"), ("4227", "Kvinesdal"),
         ("4228", "Sirdal"),
-    }.Select(k => new Kommune { KommuneNr = k.Nr, Navn = k.Navn, Fylke = "Agder", ErAktiv = true }).ToArray();
+    }.Select(k => new Kommune { KommuneNr = k.Nr, Navn = k.Navn, Fylke = "Agder", ErAktiv = true })
+     .Append(new Kommune { KommuneNr = "4200", Navn = Katalog.Fylkeskommune, Fylke = "Agder", ErAktiv = true, ErFylkeskommune = true })
+     .ToArray();
 }

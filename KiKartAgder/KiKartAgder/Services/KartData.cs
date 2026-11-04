@@ -20,6 +20,9 @@ public class KartData
     /// <summary>Kommunenummer for hver kommune, f.eks. «Birkenes» → «4216».</summary>
     public IReadOnlyDictionary<string, string> KommuneNr { get; }
 
+    /// <summary>Kommunene og Agder fylkeskommune. Brukes der man velger hvem som står bak et prosjekt.</summary>
+    public IReadOnlyList<string> Aktorer { get; }
+
     public KartData(IWebHostEnvironment env)
     {
         var sti = Path.Combine(env.ContentRootPath, "Data", "agder.json");
@@ -31,6 +34,7 @@ public class KartData
         KommuneNr = raw.K.ToDictionary(kv => kv.Value.N, kv => kv.Key);
         var nb = StringComparer.Create(CultureInfo.GetCultureInfo("nb-NO"), false);
         Kommuner = Former.Keys.OrderBy(k => k, nb).ToList();
+        Aktorer = Kommuner.Append(Models.Katalog.Fylkeskommune).ToList();
     }
 
     private class RaKart

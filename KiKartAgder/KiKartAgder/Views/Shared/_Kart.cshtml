@@ -18,6 +18,23 @@
                 </a>
             }
         </g>
+        @* Agder fylkeskommune har ingen egen flate, så den vises som et merke i det tomme hjørnet oppe til høyre *@
+        @{
+            var fk = Katalog.Fylkeskommune;
+            var fkEgne = Model.Egne.GetValueOrDefault(fk);
+            var fkSam = Model.ISamarbeid.GetValueOrDefault(fk);
+            var fkTrinn = Model.Trinn(fk);
+            var fkTekst = fkTrinn >= 4 ? "#fff" : "#212529";
+        }
+        <a href="/Prosjekter?kommune=@Uri.EscapeDataString(fk)" aria-label="@fk: @fkEgne egne prosjekter og @fkSam samarbeid"
+           data-navn="@fk" data-egne="@fkEgne" data-samarbeid="@fkSam">
+            <path class="k" d="M388 18H600V74H388Z" fill="var(--surface)" style="stroke:var(--line-2);stroke-width:1" />
+            <circle cx="416" cy="46" r="17" fill="var(--seq-@fkTrinn)" style="stroke:var(--line-2);stroke-width:1" />
+        </a>
+        @Html.Raw($"<text x=\"416\" y=\"51\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\" fill=\"{fkTekst}\">{Model.Totalt(fk)}</text>")
+        @Html.Raw($"<text x=\"442\" y=\"43\" font-size=\"13.5\" font-weight=\"600\" fill=\"var(--ink)\">Agder fylkeskommune</text>")
+        @Html.Raw($"<text x=\"442\" y=\"61\" font-size=\"11.5\" fill=\"var(--ink-3)\">Prosjekter for hele fylket</text>")
+
         <g>
             @foreach (var k in Model.Kart.Kommuner.Where(k => Model.Totalt(k) > 0))
             {

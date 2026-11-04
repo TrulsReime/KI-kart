@@ -38,7 +38,7 @@
     </aside>
 
     <section>
-        <partial name="_Sokefelt" model='new SokefeltModel("q", "Søk etter prosjekt, kommune, kontaktperson, #stikkord eller hvorfor noe ble avbrutt", f.Q)' />
+        <partial name="_Sokefelt" model='new SokefeltModel("q", "Søk i prosjekter og erfaringer, f.eks. kommune, #stikkord, personvern eller hvorfor noe ble avbrutt", f.Q)' />
         <div class="toolbar">
             <strong class="num">@Model.Resultat.Count prosjekter</strong>
             <div class="chips">
@@ -67,7 +67,7 @@
             }
             @if (Model.Resultat.Count == 0)
             {
-                <div class="empty">Ingen prosjekter passer. Prøv færre filtre eller et annet søkeord.</div>
+                <div class="empty">@(f.HarFilter ? "Ingen prosjekter passer. Prøv færre filtre eller et annet søkeord." : "Ingen prosjekter er lagt inn ennå.")</div>
             }
         </div>
     </section>

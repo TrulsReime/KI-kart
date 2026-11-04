@@ -32,7 +32,7 @@ public class ProsjekterController : Controller
         int Antall(Func<Prosjekt, bool> f) => alle.Count(f);
         var nb = StringComparer.Create(CultureInfo.GetCultureInfo("nb-NO"), false);
 
-        var kommuner = _kart.Kommuner.Select(k => new FilterValg(k, k, Antall(p => p.Deltakere.Contains(k)), filter.Kommune.Contains(k))).ToList();
+        var kommuner = _kart.Aktorer.Select(k => new FilterValg(k, k, Antall(p => p.Deltakere.Contains(k)), filter.Kommune.Contains(k))).ToList();
         if (filter.Ksort == "antall") kommuner = kommuner.OrderByDescending(v => v.Antall).ThenBy(v => v.Verdi, nb).ToList();
 
         var grupper = new List<FilterGruppe>
@@ -45,6 +45,10 @@ public class ProsjekterController : Controller
             new("Kommune", "kommune", kommuner, filter.Kommune.Count > 0),
             new("Sektor", "sektor", Katalog.Sektorer.Select(s => new FilterValg(s, s, Antall(p => p.Sektor == s), filter.Sektor.Contains(s))).ToList(), true),
             new("Fase", "fase", Katalog.Faser.Select(f => new FilterValg(f, f, Antall(p => p.Fase == f), filter.Fase.Contains(f))).ToList(), true),
+            new("Erfaringer", "erfaringer", new()
+            {
+                new("true", "Har delt erfaringer", Antall(p => p.HarErfaringer), filter.Erfaringer)
+            }, true),
             new("IKT-samarbeid", "ikt", Katalog.IktSamarbeid.Select(s => new FilterValg(s, s == "DDV" ? "DDV (Det Digitale Vestre Agder)" : s, Antall(p => p.IktSamarbeid.Contains(s)), filter.Ikt.Contains(s))).ToList(), filter.Ikt.Count > 0),
             new("Stikkord", "stikkord", ProsjektLogikk.Stikkord(alle).Select(t => new FilterValg(t.Stikkord, "#" + t.Stikkord, t.Antall, filter.Stikkord.Contains(t.Stikkord))).ToList(), filter.Stikkord.Count > 0),
         };
@@ -57,7 +61,7 @@ public class ProsjekterController : Controller
         return View(new ProsjekterViewModel { Filter = filter, Resultat = resultat, Grupper = grupper, Idag = _dato.Idag });
     }
 
-    // GET /Prosjekter/Detaljer/5?tilbake=/Samarbeid
+    // GET /Prosjekter/Detaljer/5?tilbake=/Erfaringer
     public IActionResult Detaljer(int id, string? tilbake, string? apne)
     {
         var p = _repo.Finn(id);
@@ -68,7 +72,7 @@ public class ProsjekterController : Controller
         {
             Prosjekt = p,
             Lignende = ProsjektLogikk.Lignende(p, alle),
-            KommunerSomKanBliMed = _kart.Kommuner.Where(k => !p.Deltakere.Contains(k)).ToList(),
+            KommunerSomKanBliMed = _kart.Aktorer.Where(k => !p.Deltakere.Contains(k)).ToList(),
             TilbakeUrl = tilbakeUrl,
             TilbakeTekst = Lenker.TilbakeTekst(tilbakeUrl),
             Apne = apne,
@@ -129,7 +133,7 @@ public class ProsjekterController : Controller
     {
         var p = _repo.Finn(id);
         if (p == null) return NotFound();
-        if (string.IsNullOrWhiteSpace(kommune) || string.IsNullOrWhiteSpace(navn) || !_kart.Kommuner.Contains(kommune))
+        if (string.IsNullOrWhiteSpace(kommune) || string.IsNullOrWhiteSpace(navn) || !_kart.Aktorer.Contains(kommune))
         {
             TempData["Melding"] = "Velg kommune og skriv navn";
             return TilbakeTilProsjekt(id, tilbake, "blimed");

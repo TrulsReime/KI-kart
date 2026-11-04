@@ -110,10 +110,11 @@ erDiagram
     PROSJEKT ||--o{ HENVENDELSE : "får"
 
     KOMMUNE {
-        char4 KommuneNr PK "SSB-nummer, f.eks. 4204"
+        char4 KommuneNr PK "SSB-nummer, f.eks. 4204. 4200 = Agder fylkeskommune"
         string Navn
         string Fylke
         bool ErAktiv
+        bool ErFylkeskommune "sann bare for 4200"
     }
     ORGANISASJON {
         int OrganisasjonId PK "ny"
@@ -327,4 +328,5 @@ Tabellnavnene i SQL Server blir flertall av klassenavnene, som `Prosjekter`, `Ko
 | `Rekkefolge` på `PROSJEKT_DELTAKER`, `PROSJEKT_STIKKORD` og `PROSJEKT_BEHOV` | Kartet viser ofte bare de første stikkordene og kommunene. Rekkefølgen innsenderen valgte må tas vare på |
 | Ny kodeliste `IKT_SAMARBEID` med `PROSJEKT_IKT_SAMARBEID` | Prosjekter kan være en del av IKT Agder, DDV eller Digi Agder (fra PR #3) |
 | `ProsjekteierId` på `PROSJEKT` | Den som meldte inn, kan bekrefte prosjektet og får påminnelser (fra PR #3) |
+| Agder fylkeskommune i `KOMMUNE` (4200) med `ErFylkeskommune` | Fylkeskommunen kan være ansvarlig og deltaker, men har ingen flate i kartet (fra PR #6) |
 | `SokerAnnet` og `TilbyrAnnet` på `PROSJEKT` | Skjemaet har «Annet» med fritekst. Kodelisten `BEHOV` holdes ren (fra PR #2) |
