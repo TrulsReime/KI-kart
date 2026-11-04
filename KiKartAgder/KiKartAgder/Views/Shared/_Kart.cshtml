@@ -3,10 +3,29 @@
 @{
     var inv = CultureInfo.InvariantCulture;
     string F(double d) => d.ToString("0.#", inv);
+    var viewBox = $"-6 -6 {F(Model.Kart.Bredde + 12)} {F(Model.Kart.Hoyde + 12)}";
+
+    // Agder fylkeskommune har ingen egen flate i kartet. Prosjektene telles likt med kommunene og vises i innfeltet.
+    var fk = Katalog.Fylkeskommune;
+    var fkEgne = Model.Egne.GetValueOrDefault(fk);
+    var fkSam = Model.ISamarbeid.GetValueOrDefault(fk);
+    var fkTotalt = fkEgne + fkSam;
+    var fkTrinn = Model.Trinn(fk);
 }
 @* Kartet tegnes på serveren som SVG. Hver kommune er en lenke til prosjektlisten filtrert på kommunen. *@
 <div class="map-wrap">
-    <svg viewBox="-6 -6 @F(Model.Kart.Bredde + 12) @F(Model.Kart.Hoyde + 12)" role="img" aria-label="Kart over Agder med antall KI-prosjekter per kommune">
+    <svg viewBox="@viewBox" role="img" aria-label="Kart over Agder med antall KI-prosjekter per kommune">
+        <defs>
+            @* Formen til hele fylket. Brukes til omrisset nedenfor og til silhuetten i fylkeskommune-innfeltet. *@
+            <g id="agder-form">
+                @foreach (var k in Model.Kart.Kommuner)
+                {
+                    <path d="@Model.Kart.Former[k].Sti" />
+                }
+            </g>
+        </defs>
+        @* Omrisset av hele fylket ligger under kommunene og vises når pekeren er over fylkeskommune-innfeltet *@
+        <use href="#agder-form" class="fylke-omriss" />
         <g>
             @foreach (var k in Model.Kart.Kommuner)
             {
@@ -18,22 +37,6 @@
                 </a>
             }
         </g>
-        @* Agder fylkeskommune har ingen egen flate, så den vises som et merke i det tomme hjørnet oppe til høyre *@
-        @{
-            var fk = Katalog.Fylkeskommune;
-            var fkEgne = Model.Egne.GetValueOrDefault(fk);
-            var fkSam = Model.ISamarbeid.GetValueOrDefault(fk);
-            var fkTrinn = Model.Trinn(fk);
-            var fkTekst = fkTrinn >= 4 ? "#fff" : "#212529";
-        }
-        <a href="/Prosjekter?kommune=@Uri.EscapeDataString(fk)" aria-label="@fk: @fkEgne egne prosjekter og @fkSam samarbeid"
-           data-navn="@fk" data-egne="@fkEgne" data-samarbeid="@fkSam">
-            <path class="k" d="M388 18H600V74H388Z" fill="var(--surface)" style="stroke:var(--line-2);stroke-width:1" />
-            <circle cx="416" cy="46" r="17" fill="var(--seq-@fkTrinn)" style="stroke:var(--line-2);stroke-width:1" />
-        </a>
-        @Html.Raw($"<text x=\"416\" y=\"51\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\" fill=\"{fkTekst}\">{Model.Totalt(fk)}</text>")
-        @Html.Raw($"<text x=\"442\" y=\"43\" font-size=\"13.5\" font-weight=\"600\" fill=\"var(--ink)\">Agder fylkeskommune</text>")
-        @Html.Raw($"<text x=\"442\" y=\"61\" font-size=\"11.5\" fill=\"var(--ink-3)\">Prosjekter for hele fylket</text>")
 
         <g>
             @foreach (var k in Model.Kart.Kommuner.Where(k => Model.Totalt(k) > 0))
@@ -44,5 +47,31 @@
             }
         </g>
     </svg>
+
+    @* Innfelt for Agder fylkeskommune: et lite kart i egen ramme, fargelagt og merket med tall som kommunene, med fylkesvåpenet i hjørnet.
+       data-navn/-egne/-samarbeid gir samme verktøytips som kommunene (site.js). *@
+    <a class="map-inset" href="/Prosjekter?kommune=@Uri.EscapeDataString(fk)"
+       aria-label="@fk: @fkEgne egne prosjekter og @fkSam samarbeid. Gjelder hele fylket."
+       data-navn="@fk" data-egne="@fkEgne" data-samarbeid="@fkSam">
+        <span class="inset-ramme">
+            <svg class="inset-form" viewBox="@viewBox" aria-hidden="true" focusable="false">
+                <use href="#agder-form" style="fill:var(--seq-@fkTrinn);stroke:var(--seq-@fkTrinn)" />
+            </svg>
+            @if (fkTotalt > 0)
+            {
+                <span class="inset-tall">@fkTotalt</span>
+            }
+            @* Navnet står i teksten under, så våpenet er pynt for skjermlesere (tom alt) *@
+            <img class="inset-vapen" src="~/img/agder-fylkesvapen.png" asp-append-version="true" alt="" width="30" height="38" />
+        </span>
+        <span class="inset-tekst">
+            <span class="inset-navn">@fk</span>
+            @if (fkTotalt == 0)
+            {
+                <span class="inset-tom">Ingen prosjekter ennå</span>
+            }
+        </span>
+    </a>
+
     <div class="map-legend">Færre<span class="ramp">@for (var i = 0; i <= 6; i++) {<span style="background:var(--seq-@i)"></span>}</span>Flere<span style="margin-left:auto">Tallet inkluderer samarbeid</span></div>
 </div>
