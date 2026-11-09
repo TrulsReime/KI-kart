@@ -69,6 +69,7 @@ public static class ProsjektLogikk
     /// <summary>«Evje og Hornnes» blir «EH», «Kristiansand» blir «KR».</summary>
     public static string Initialer(string kommune)
     {
+        if (kommune == Katalog.Fylkeskommune) return "AFK";
         var ord = kommune.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(w => w.Length > 2).ToList();
         var s = ord.Count > 1 ? $"{ord[0][0]}{ord[^1][0]}" : kommune[..Math.Min(2, kommune.Length)];
         return s.ToUpperInvariant();
