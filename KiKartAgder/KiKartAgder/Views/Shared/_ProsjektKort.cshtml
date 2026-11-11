@@ -3,6 +3,7 @@
 @{
     var akt = ProsjektLogikk.Aktualitetsstatus(Model, Dato.Idag);
     var inaktiv = akt.Niva == ProsjektLogikk.Aktualitet.Inaktiv;
+    var eiesAvSamarbeid = Katalog.EiesAvSamarbeid(Model);
     var ekstra = Model.Deltakere.Count - 1;
     var forhandsvisning = ViewData["Forhandsvisning"] is true;
 }
@@ -27,7 +28,7 @@
         <p class="c-desc">@Model.Beskrivelse</p>
     }
     <div class="c-meta">
-        <span>@Model.Eier@(ekstra > 0 ? $" + {ekstra} {(ekstra == 1 ? "kommune" : "kommuner")}" : "")</span>
+        <span>@Model.Eier@(eiesAvSamarbeid ? $" · {Model.Deltakere.Count} kommuner" : ekstra > 0 ? $" + {ekstra} {(ekstra == 1 ? "kommune" : "kommuner")}" : "")</span>
         <span class="sep">·</span>
         <span>@Model.Sektor</span>
         @if (Model.Stikkord.Count > 0)

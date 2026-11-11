@@ -329,7 +329,6 @@
     // Ansvarlig kommune er alltid med i samarbeidet
     const ansvarlig = form.elements['Kommune'];
     const kryssAv = navn => deltakere().forEach(c => { if (navn.includes(c.value)) c.checked = true; });
-    ansvarlig.addEventListener('change', () => { if (ansvarlig.value) kryssAv([ansvarlig.value]); oppdaterVelgAlle(); });
 
     // Når et IKT-samarbeid velges, krysses kommunene i samarbeidet av
     const medlemmerI = b => (b.dataset.medlemmer || '').split('|').filter(Boolean);
@@ -364,6 +363,32 @@
     }));
     deltakere().forEach(c => c.addEventListener('change', oppdaterVelgAlle));
     oppdaterVelgAlle();
+
+    // Ansvarlig kan være en kommune eller et IKT-samarbeid («ikt:DDV»). Et samarbeid krysser av samarbeidet og kommunene.
+    const iktBoks = navn => form.querySelector(`input[name="IktSamarbeid"][value="${CSS.escape(navn)}"]`);
+    const settIkt = (navn, pa) => {
+      const b = iktBoks(navn);
+      if (b && b.checked !== pa) { b.checked = pa; b.dispatchEvent(new Event('change', { bubbles: true })); }
+    };
+    const iktAv = v => v && v.startsWith('ikt:') ? v.slice(4) : null;
+    let forrigeAnsvarlig = ansvarlig.value, autoKommune = null;
+    ansvarlig.addEventListener('change', () => {
+      const forrige = iktAv(forrigeAnsvarlig), na = iktAv(ansvarlig.value);
+      // Kommunen som ble krysset av fordi den var ansvarlig, fjernes igjen når ansvarlig byttes
+      if (autoKommune && autoKommune !== ansvarlig.value) {
+        const iAnnet = $$('input[name="IktSamarbeid"]:checked', form).some(x => x.value !== forrige && medlemmerI(x).includes(autoKommune));
+        if (!iAnnet) deltakere().forEach(c => { if (c.value === autoKommune) c.checked = false; });
+        autoKommune = null;
+      }
+      forrigeAnsvarlig = ansvarlig.value;
+      if (forrige && forrige !== na) settIkt(forrige, false);
+      if (na) settIkt(na, true);
+      else if (ansvarlig.value) {
+        const c = deltakere().find(x => x.value === ansvarlig.value);
+        if (c && !c.checked) { c.checked = true; autoKommune = ansvarlig.value; }
+      }
+      oppdaterVelgAlle(); oppdater();
+    });
 
     form.addEventListener('input', oppdater);
     form.addEventListener('change', oppdater);

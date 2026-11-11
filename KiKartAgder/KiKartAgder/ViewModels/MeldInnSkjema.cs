@@ -39,13 +39,25 @@ public class MeldInnSkjema : IValidatableObject
     // Steg 2: Hvem står bak
     public string Organisering { get; set; } = "Enkeltkommune";
 
-    /// <summary>Ansvarlig kommune eller Agder fylkeskommune. Bestemmer også plasseringen i kartet.</summary>
+    /// <summary>Verdien i nedtrekkslisten når et IKT-samarbeid er ansvarlig, f.eks. «ikt:DDV».</summary>
+    public const string IktPrefiks = "ikt:";
+
+    /// <summary>
+    /// Ansvarlig kommune, Agder fylkeskommune eller et IKT-samarbeid (med prefikset «ikt:»).
+    /// Er en kommune ansvarlig, bestemmer den også plasseringen i kartet.
+    /// </summary>
     [Required(ErrorMessage = "Velg ansvarlig kommune eller virksomhet")]
     [Display(Name = "Ansvarlig kommune eller virksomhet")]
     public string? Kommune { get; set; }
 
     public List<string> Deltakere { get; set; } = new();
     public bool Apen { get; set; } = true;
+
+    /// <summary>Navnet på IKT-samarbeidet når det er valgt som ansvarlig, ellers null.</summary>
+    public string? AnsvarligSamarbeid => Kommune != null && Kommune.StartsWith(IktPrefiks) ? Kommune[IktPrefiks.Length..] : null;
+
+    /// <summary>Et IKT-samarbeid som ansvarlig betyr alltid samarbeid mellom kommuner.</summary>
+    private bool ErSamarbeid => Organisering == "Samarbeid" || AnsvarligSamarbeid != null;
 
     /// <summary>Valgfritt: IKT-samarbeid prosjektet er en del av.</summary>
     public List<string> IktSamarbeid { get; set; } = new();
@@ -91,16 +103,22 @@ public class MeldInnSkjema : IValidatableObject
             yield return new ValidationResult("Ukjent fase", new[] { nameof(Fase) });
         if (IktSamarbeid.Any(s => !Katalog.IktSamarbeid.Contains(s)))
             yield return new ValidationResult("Ukjent IKT-samarbeid", new[] { nameof(IktSamarbeid) });
-        if (Organisering == "Samarbeid" && Deltakere.Distinct().Count() < 2)
+        if (AnsvarligSamarbeid != null && !Katalog.AnsvarligeSamarbeid.Contains(AnsvarligSamarbeid))
+            yield return new ValidationResult("Ukjent IKT-samarbeid", new[] { nameof(Kommune) });
+        if (ErSamarbeid && Deltakere.Distinct().Count() < 2)
             yield return new ValidationResult("Velg minst to kommuner når flere er med", new[] { nameof(Deltakere) });
     }
 
     /// <summary>Gjør skjemaet om til et prosjekt.</summary>
     public Prosjekt TilProsjekt()
     {
-        var deltakere = Organisering == "Samarbeid"
-            ? new[] { Kommune! }.Concat(Deltakere.Where(k => k != Kommune)).Distinct().ToList()
+        var samarbeid = AnsvarligSamarbeid;
+        // Er et IKT-samarbeid ansvarlig, plasseres prosjektet i kartet på den første kommunen som er med
+        var deltakere = samarbeid != null ? Deltakere.Distinct().ToList()
+            : ErSamarbeid ? new[] { Kommune! }.Concat(Deltakere.Where(k => k != Kommune)).Distinct().ToList()
             : new List<string> { Kommune! };
+        var ikt = IktSamarbeid.Distinct().ToList();
+        if (samarbeid != null && !ikt.Contains(samarbeid)) ikt.Insert(0, samarbeid);
         var harNytt = !string.IsNullOrWhiteSpace(SistEndret);
 
         var soker = Soker.ToList();
@@ -124,11 +142,11 @@ public class MeldInnSkjema : IValidatableObject
             Fase = Fase!,
             Stopp = Fase == Katalog.Avbrutt ? Stopp : null,
             Stikkord = StikkordListe(),
-            Eier = Katalog.EierNavn(Kommune!),
-            Kommune = Kommune!,
+            Eier = samarbeid ?? Katalog.EierNavn(Kommune!),
+            Kommune = samarbeid != null ? deltakere[0] : Kommune!,
             Deltakere = deltakere,
-            Apen = Organisering == "Samarbeid" && Apen,
-            IktSamarbeid = IktSamarbeid.Distinct().ToList(),
+            Apen = ErSamarbeid && Apen,
+            IktSamarbeid = ikt,
             Kontakt = new Kontaktperson { Navn = KontaktNavn!.Trim(), Rolle = KontaktRolle?.Trim() ?? "", Epost = KontaktEpost!.Trim() },
             Soker = soker, Tilbyr = tilbyr,
             Mal = Mal, Status = Status, Gevinst = Gevinst, Fungerte = Fungerte, Annerledes = Annerledes,
@@ -156,8 +174,8 @@ public class MeldInnSkjema : IValidatableObject
             Fase = p.Fase,
             Stopp = p.Stopp,
             Stikkord = string.Join(", ", p.Stikkord),
-            Organisering = p.Organisering,
-            Kommune = p.Kommune,
+            Organisering = Katalog.EiesAvSamarbeid(p) ? "Samarbeid" : p.Organisering,
+            Kommune = Katalog.EiesAvSamarbeid(p) ? IktPrefiks + p.Eier : p.Kommune,
             Deltakere = p.Deltakere.ToList(),
             Apen = p.Apen,
             IktSamarbeid = p.IktSamarbeid.ToList(),

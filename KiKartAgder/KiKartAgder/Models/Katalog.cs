@@ -81,6 +81,18 @@ public static class Katalog
     /// Kilder (november 2026): ikt-agder.no/Om-oss og ddv.no/om-oss/om-ddv-iks.
     /// Digi Agder er satt til alle kommunene og fylkeskommunen. Det bør bekreftes av DigiAgder.
     /// </summary>
+    /// <summary>
+    /// IKT-samarbeid som kan velges som ansvarlig for et prosjekt. Kristiansand er utelatt,
+    /// fordi det er kommunens egen IKT-tjeneste og velges som «Kristiansand kommune».
+    /// </summary>
+    public static IEnumerable<string> AnsvarligeSamarbeid => IktSamarbeid.Where(s => IktSamarbeidMedlemmer[s].Length > 1);
+
+    /// <summary>Sant når et IKT-samarbeid står som ansvarlig (eier) for prosjektet.</summary>
+    public static bool EiesAvSamarbeid(Prosjekt p) => AnsvarligeSamarbeid.Contains(p.Eier);
+
+    /// <summary>Kort navn på den ansvarlige: kommunen, fylkeskommunen eller IKT-samarbeidet.</summary>
+    public static string AnsvarligNavn(Prosjekt p) => EiesAvSamarbeid(p) ? p.Eier : p.Kommune;
+
     public static readonly Dictionary<string, string[]> IktSamarbeidMedlemmer = new()
     {
         ["IKT Agder"] = new[] { "Arendal", "Bygland", "Bykle", "Evje og Hornnes", "Froland", "Gjerstad", "Grimstad",
