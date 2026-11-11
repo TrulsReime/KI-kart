@@ -186,11 +186,11 @@
         </div>
 
         <div class="panel" style="padding:16px">
-            <h3 class="eyebrow" style="margin-bottom:8px">@(p.Samarbeid ? $"Kommuner som er med ({p.Deltakere.Count})" : "Hvem står bak")</h3>
+            <h3 class="eyebrow" style="margin-bottom:8px">@(Katalog.EiesAvSamarbeid(p) ? $"{p.Eier}: kommuner som er med ({p.Deltakere.Count})" : p.Samarbeid ? $"Kommuner som er med ({p.Deltakere.Count})" : "Hvem står bak")</h3>
             <div class="members">
                 @for (var i = 0; i < p.Deltakere.Count; i++)
                 {
-                    <span class="mem@(i == 0 ? " lead" : "")">@p.Deltakere[i]@(i == 0 && p.Samarbeid ? " (leder)" : "")</span>
+                    <span class="mem@(i == 0 && !Katalog.EiesAvSamarbeid(p) ? " lead" : "")">@p.Deltakere[i]@(i == 0 && p.Samarbeid && !Katalog.EiesAvSamarbeid(p) ? " (leder)" : "")</span>
                 }
             </div>
             @if (p.IktSamarbeid.Count > 0)

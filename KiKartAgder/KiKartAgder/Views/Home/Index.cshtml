@@ -6,7 +6,7 @@
 
 <form class="herosearch" action="/Prosjekter" method="get" role="search">
     <label for="gq" class="eyebrow">Finn et prosjekt</label>
-    <partial name="_Sokefelt" model='new SokefeltModel("gq", "Søk etter prosjektnavn, kommune eller stikkord")' />
+    <partial name="_Sokefelt" model='new SokefeltModel("gq", "Søk i prosjekter og erfaringer, f.eks. kommune, #stikkord, personvern eller hvorfor noe ble avbrutt")' />
 </form>
 
 @* 1. Nøkkeltall *@
@@ -132,7 +132,7 @@
             @foreach (var p in Model.Nyeste)
             {
                 <li>
-                    <span class="kb big" title="@p.Kommune">@ProsjektLogikk.Initialer(p.Kommune)</span>
+                    <span class="kb big" title="@Katalog.AnsvarligNavn(p)">@ProsjektLogikk.Initialer(Katalog.AnsvarligNavn(p))</span>
                     <div>
                         <a class="linkbtn t" href="@Lenker.Prosjekt(Context, p.Id)">@p.Tittel</a>
                         <div class="what">@p.Eier · lagt inn @Datoformat.Lang(p.Registrert)</div>

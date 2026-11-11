@@ -9,9 +9,11 @@ public static class ProsjektLogikk
     private static string Hoystakk(Prosjekt p) => string.Join(' ', new[]
     {
         p.Tittel, p.Eier, p.Beskrivelse, p.Mal, p.Status, p.Teknologi, p.Gevinst, p.Sektor, p.Fase, p.Stopp,
-        p.Kontakt.Navn, p.Fungerte, p.Annerledes, p.Samarbeid ? "samarbeid" : "enkeltkommune",
+        p.Kontakt.Navn, p.Kontakt.Rolle, p.Fungerte, p.Annerledes, p.SistEndret,
+        p.Samarbeid ? "samarbeid" : "enkeltkommune", p.ErApenForFlere ? "åpent for flere" : null,
         p.Fase == Katalog.Avbrutt ? "stoppet stoppede" : null
-    }.Concat(p.Deltakere).Concat(p.Stikkord).Where(s => !string.IsNullOrEmpty(s))).ToLowerInvariant();
+    }.Concat(p.Deltakere).Concat(p.Stikkord).Concat(p.IktSamarbeid).Concat(p.Soker).Concat(p.Tilbyr)
+     .Where(s => !string.IsNullOrEmpty(s))).ToLowerInvariant();
 
     /// <summary>Sant hvis alle ordene i søket finnes et sted i prosjektet.</summary>
     public static bool Treffer(Prosjekt p, string? sok)

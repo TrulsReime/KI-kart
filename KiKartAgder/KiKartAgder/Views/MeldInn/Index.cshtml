@@ -127,12 +127,24 @@
                     <label for="Kommune">Ansvarlig kommune eller virksomhet<span class="req"> *</span></label>
                     <select id="Kommune" name="Kommune" required data-pakrevd="ansvarlig kommune eller virksomhet">
                         <option value="">Velg …</option>
-                        @foreach (var k in Model.Kommuner)
-                        {
-                            <option value="@k" selected="@(s.Kommune == k)">@(k == Katalog.Fylkeskommune ? k : k + " kommune")</option>
-                        }
+                        <optgroup label="Kommuner">
+                            @foreach (var k in Model.Kommuner.Where(k => k != Katalog.Fylkeskommune))
+                            {
+                                <option value="@k" selected="@(s.Kommune == k)">@k kommune</option>
+                            }
+                        </optgroup>
+                        <optgroup label="Fylkeskommunen">
+                            <option value="@Katalog.Fylkeskommune" selected="@(s.Kommune == Katalog.Fylkeskommune)">@Katalog.Fylkeskommune</option>
+                        </optgroup>
+                        <optgroup label="IKT-samarbeid">
+                            @foreach (var x in Katalog.AnsvarligeSamarbeid)
+                            {
+                                var verdi = MeldInnSkjema.IktPrefiks + x;
+                                <option value="@verdi" selected="@(s.Kommune == verdi)">@x</option>
+                            }
+                        </optgroup>
                     </select>
-                    <span class="hint">Prosjektet vises på denne kommunen i kartet. Prosjekter fra Agder fylkeskommune vises i listene, men ikke på én bestemt kommune.</span>
+                    <span class="hint">Er en kommune ansvarlig, vises prosjektet på den i kartet. Velger du et IKT-samarbeid, krysses kommunene i samarbeidet av, og prosjektet vises på dem. Prosjekter fra Agder fylkeskommune vises i et eget felt i kartet.</span>
                     @if (Feil("Kommune") is string feilKommune) {<span class="ferr">@feilKommune</span>}
                 </div>
                 <div class="f" id="partBox" hidden="@(s.Organisering != "Samarbeid")">

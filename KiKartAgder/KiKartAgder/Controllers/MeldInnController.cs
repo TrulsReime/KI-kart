@@ -31,7 +31,7 @@ public class MeldInnController : Controller
     public IActionResult Index(MeldInnSkjema skjema)
     {
         if (skjema.Id.HasValue && _repo.Finn(skjema.Id.Value) == null) return NotFound();
-        if (skjema.Kommune != null && !_kart.Aktorer.Contains(skjema.Kommune))
+        if (skjema.Kommune != null && skjema.AnsvarligSamarbeid == null && !_kart.Aktorer.Contains(skjema.Kommune))
             ModelState.AddModelError(nameof(skjema.Kommune), "Velg fra listen");
         if (skjema.Deltakere.Any(k => !_kart.Aktorer.Contains(k)))
             ModelState.AddModelError(nameof(skjema.Deltakere), "Ukjent kommune");
