@@ -43,7 +43,7 @@ dotnet test                                    # kjører alle testene
 
 I Visual Studio Code holder det å åpne denne mappen og trykke F5.
 
-## Viktig å vite før du bygger videre
+## Viktig å vite før man bygger videre på prosjektet
 
 - **Lagringen er et forslag.** Appen kan lagre i en JSON-fil eller i PostgreSQL. DigiAgder eller IKT Agder skal etter planen bruke sin egen database. All lesing og skriving går derfor gjennom grensesnittet `IKiKartRepository`, slik at lagringen kan byttes uten å endre resten av koden.
 - **Forvaltning har ingen innlogging ennå.** Den må på plass før løsningen publiseres.
