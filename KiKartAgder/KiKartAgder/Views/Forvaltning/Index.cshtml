@@ -27,7 +27,77 @@
 </nav>
 
 <section class="panel qpanel">
-    @if (Model.Fane == "pam")
+    @if (Model.Fane == "utvalgte")
+    {
+        var fulle = Model.Utvalgte.Count >= Katalog.MaksUtvalgte;
+        <p class="sub" style="margin-top:0">Prosjektene her vises i karusellen på forsiden, i denne rekkefølgen. Du kan velge ut opptil @Katalog.MaksUtvalgte. Er ingen valgt ut, viser forsiden de nyeste prosjektene i stedet. Inaktive prosjekter vises ikke og bør byttes ut.</p>
+
+        <h3 class="eyebrow" style="margin:14px 0 4px">Valgt ut nå (@Model.Utvalgte.Count av @Katalog.MaksUtvalgte)</h3>
+        <ol class="alist">
+            @for (var n = 0; n < Model.Utvalgte.Count; n++)
+            {
+                var r = Model.Utvalgte[n];
+                var p = r.Prosjekt;
+                <li>
+                    <div>
+                        <span class="num" style="font-weight:700;margin-right:8px">@(n + 1).</span><a class="linkbtn t" href="@Lenker.Prosjekt(Context, p.Id)">@p.Tittel</a>
+                        <div class="w">@p.Eier · @p.Fase</div>
+                        @if (r.Inaktiv)
+                        {
+                            <div class="w" style="color:var(--crit-ink);font-weight:600">Inaktivt, vises ikke på forsiden. Bytt det ut eller be eieren bekrefte det.</div>
+                        }
+                    </div>
+                    <div style="display:flex;gap:6px">
+                        <form asp-action="FlyttUtvalgt" asp-route-id="@p.Id" asp-route-retning="-1" method="post">
+                            <button class="btn small" type="submit" disabled="@(n == 0)" aria-label="Flytt @p.Tittel opp">↑</button>
+                        </form>
+                        <form asp-action="FlyttUtvalgt" asp-route-id="@p.Id" asp-route-retning="1" method="post">
+                            <button class="btn small" type="submit" disabled="@(n == Model.Utvalgte.Count - 1)" aria-label="Flytt @p.Tittel ned">↓</button>
+                        </form>
+                        <form asp-action="FjernUtvalgt" asp-route-id="@p.Id" method="post">
+                            <button class="btn small" type="submit" aria-label="Fjern @p.Tittel fra karusellen">Fjern</button>
+                        </form>
+                    </div>
+                </li>
+            }
+            @if (Model.Utvalgte.Count == 0)
+            {
+                <li><span class="muted">Ingen er valgt ut. Forsiden viser de nyeste prosjektene.</span></li>
+            }
+        </ol>
+
+        <h3 class="eyebrow" style="margin:22px 0 6px">Velg ut flere</h3>
+        <form method="get" action="/Forvaltning" role="search" style="margin-bottom:6px">
+            <input type="hidden" name="fane" value="utvalgte" />
+            <div class="searchbox">
+                @Ikoner.Sok
+                <input name="q" type="search" value="@Model.Sok" placeholder="Søk etter prosjekt, kommune eller stikkord" aria-label="Søk etter prosjekter som kan velges ut" />
+            </div>
+        </form>
+        @if (fulle)
+        {
+            <p class="hint" style="margin:6px 0">Karusellen er full. Fjern et prosjekt for å velge ut et annet.</p>
+        }
+        <ul class="alist">
+            @foreach (var p in Model.Kandidater)
+            {
+                <li>
+                    <div>
+                        <a class="linkbtn t" href="@Lenker.Prosjekt(Context, p.Id)">@p.Tittel</a>
+                        <div class="w">@p.Eier · @p.Fase · oppdatert @Datoformat.Kort(p.Oppdatert)@(p.HarErfaringer ? " · har erfaringer" : "")</div>
+                    </div>
+                    <form asp-action="VelgUt" asp-route-id="@p.Id" asp-route-q="@Model.Sok" method="post">
+                        <button class="btn small" type="submit" disabled="@fulle">Velg ut</button>
+                    </form>
+                </li>
+            }
+            @if (Model.Kandidater.Count == 0)
+            {
+                <li><span class="muted">@(string.IsNullOrWhiteSpace(Model.Sok) ? "Ingen flere publiserte prosjekter." : "Ingen prosjekter passer søket.")</span></li>
+            }
+        </ul>
+    }
+    else if (Model.Fane == "pam")
     {
         <p class="sub" style="margin-top:0">Prosjekteieren får en påminnelse etter @ProsjektLogikk.MndPaminnelse måneder uten oppdatering. Bekreftes ikke prosjektet innen @ProsjektLogikk.MndInaktiv måneder, blir det inaktivt og skjules fra oversikten. I ferdig løsning sendes påminnelsen automatisk. Her kan du også sende den manuelt, for eksempel til eiere av inaktive prosjekter.</p>
         @foreach (var (tittel, inaktive) in new[] { ("Inaktive prosjekter", true), ("Må bekreftes snart", false) })

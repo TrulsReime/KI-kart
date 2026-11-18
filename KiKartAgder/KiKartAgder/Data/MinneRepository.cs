@@ -156,6 +156,46 @@ public class MinneRepository : IKiKartRepository
                 .Where(p => p != null).Cast<Prosjekt>().ToList();
     }
 
+    public IReadOnlyList<int> UtvalgteIder()
+    {
+        lock (_las) return _utvalgte.ToList();
+    }
+
+    public bool VelgUt(int prosjektId)
+    {
+        lock (_las)
+        {
+            var p = _prosjekter.FirstOrDefault(x => x.Id == prosjektId);
+            if (p == null || p.TilGodkjenning || _utvalgte.Contains(prosjektId) || _utvalgte.Count >= Katalog.MaksUtvalgte) return false;
+            _utvalgte.Add(prosjektId);
+            Lagre();
+            return true;
+        }
+    }
+
+    public bool FjernUtvalgt(int prosjektId)
+    {
+        lock (_las)
+        {
+            if (!_utvalgte.Remove(prosjektId)) return false;
+            Lagre();
+            return true;
+        }
+    }
+
+    public bool FlyttUtvalgt(int prosjektId, int retning)
+    {
+        lock (_las)
+        {
+            var i = _utvalgte.IndexOf(prosjektId);
+            var j = i + Math.Sign(retning);
+            if (i < 0 || j < 0 || j >= _utvalgte.Count) return false;
+            (_utvalgte[i], _utvalgte[j]) = (_utvalgte[j], _utvalgte[i]);
+            Lagre();
+            return true;
+        }
+    }
+
     public IReadOnlyList<Innmelding> Innmeldinger()
     {
         lock (_las) return _innmeldinger.OrderByDescending(i => i.Dato).ThenByDescending(i => i.Id).ToList();

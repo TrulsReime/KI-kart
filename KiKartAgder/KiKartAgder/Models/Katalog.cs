@@ -61,6 +61,9 @@ public static class Katalog
         ["Lillesand og Birkenes"] = "Felles IT-tjeneste for Lillesand og Birkenes",
     };
 
+    /// <summary>Hvor mange prosjekter DigiAgder kan velge ut til karusellen på forsiden.</summary>
+    public const int MaksUtvalgte = 5;
+
     public static readonly string[] Organiseringer = { "Samarbeid", "Enkeltkommune" };
 
     /// <summary>Kan velges som ansvarlig og deltaker, men har ingen egen flate i kartet.</summary>

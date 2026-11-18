@@ -22,7 +22,7 @@ public class ForvaltningController : Controller
     }
 
     // GET /Forvaltning?fane=venter
-    public IActionResult Index(string? fane, int? apen)
+    public IActionResult Index(string? fane, int? apen, string? q)
     {
         fane = ForvaltningViewModel.Faner.Any(f => f.Verdi == fane) ? fane! : "ny";
         var innmeldinger = _repo.Innmeldinger();
@@ -55,6 +55,13 @@ public class ForvaltningController : Controller
             })
             .ToList();
 
+        // Utvalgte til karusellen på forsiden, og prosjekter som kan velges ut
+        var utvalgteIder = _repo.UtvalgteIder();
+        var utvalgte = utvalgteIder.Select(id => _repo.Finn(id)).Where(p => p != null && !p.TilGodkjenning)
+            .Select(p => new UtvalgtRad(p!, ProsjektLogikk.ErInaktiv(p!, idag))).ToList();
+        var kandidater = _repo.Aktive().Where(p => !utvalgteIder.Contains(p.Id) && ProsjektLogikk.Treffer(p, q))
+            .OrderByDescending(p => p.Oppdatert).ToList();
+
         var henvendelser = _repo.Henvendelser()
             .Select(h => new HenvendelseRad(h, _repo.Finn(h.ProsjektId)?.Tittel ?? "Ukjent prosjekt")).ToList();
 
@@ -64,6 +71,9 @@ public class ForvaltningController : Controller
             Rader = rader,
             Paminnelser = paminnelser,
             Henvendelser = henvendelser,
+            Utvalgte = utvalgte,
+            Kandidater = kandidater,
+            Sok = q,
             AntallNye = innmeldinger.Count(i => i.Status == InnmeldingStatus.Ny),
             AntallVenter = innmeldinger.Count(i => i.Status == InnmeldingStatus.VenterPaInnsender),
             AntallGodkjent = innmeldinger.Count(i => i.Status == InnmeldingStatus.Godkjent),
@@ -104,6 +114,30 @@ public class ForvaltningController : Controller
                 break;
         }
         return RedirectToAction(nameof(Index), new { fane });
+    }
+
+    // ---------- utvalgte prosjekter til karusellen på forsiden ----------
+    [HttpPost]
+    public IActionResult VelgUt(int id, string? q)
+    {
+        TempData["Melding"] = _repo.VelgUt(id)
+            ? "Prosjektet vises nå i karusellen på forsiden"
+            : $"Kunne ikke velge ut prosjektet. Det kan være maks {Katalog.MaksUtvalgte} utvalgte samtidig";
+        return RedirectToAction(nameof(Index), new { fane = "utvalgte", q });
+    }
+
+    [HttpPost]
+    public IActionResult FjernUtvalgt(int id)
+    {
+        if (_repo.FjernUtvalgt(id)) TempData["Melding"] = "Prosjektet er fjernet fra karusellen";
+        return RedirectToAction(nameof(Index), new { fane = "utvalgte" });
+    }
+
+    [HttpPost]
+    public IActionResult FlyttUtvalgt(int id, int retning)
+    {
+        _repo.FlyttUtvalgt(id, retning);
+        return RedirectToAction(nameof(Index), new { fane = "utvalgte" });
     }
 
     /// <summary>

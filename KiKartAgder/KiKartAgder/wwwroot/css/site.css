@@ -644,3 +644,5 @@ nav.tabs a{cursor:pointer;white-space:nowrap;text-decoration:none;padding:10px 1
 .topprad>.panel{display:flex;flex-direction:column}
 .topprad>.panel>.sub{flex:1 0 auto}
 .topprad>.panel::after{content:"";flex:5 0 0}
+/* Knapper som ikke kan brukes, f.eks. «opp» på den første i Utvalgte */
+.btn:disabled{opacity:.4;cursor:not-allowed}

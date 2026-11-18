@@ -9,12 +9,22 @@ public record PaminnelseRad(Prosjekt Prosjekt, bool Inaktiv, ProsjektLogikk.Aktu
 
 public record HenvendelseRad(Henvendelse Henvendelse, string ProsjektTittel);
 
+/// <summary>Et prosjekt i fanen «Utvalgte». Inaktive vises ikke på forsiden og bør byttes ut.</summary>
+public record UtvalgtRad(Prosjekt Prosjekt, bool Inaktiv);
+
 public class ForvaltningViewModel
 {
     public required string Fane { get; init; }
     public required IReadOnlyList<InnmeldingRad> Rader { get; init; }
     public required IReadOnlyList<PaminnelseRad> Paminnelser { get; init; }
     public required IReadOnlyList<HenvendelseRad> Henvendelser { get; init; }
+
+    /// <summary>De utvalgte prosjektene i rekkefølgen i karusellen.</summary>
+    public IReadOnlyList<UtvalgtRad> Utvalgte { get; init; } = Array.Empty<UtvalgtRad>();
+
+    /// <summary>Publiserte og aktive prosjekter som kan velges ut, filtrert på søket.</summary>
+    public IReadOnlyList<Prosjekt> Kandidater { get; init; } = Array.Empty<Prosjekt>();
+    public string? Sok { get; init; }
 
     public int AntallNye { get; init; }
     public int AntallVenter { get; init; }
@@ -25,7 +35,7 @@ public class ForvaltningViewModel
     public int? ApenId { get; init; }
 
     public static readonly (string Verdi, string Etikett)[] Faner =
-        { ("ny", "Til behandling"), ("venter", "Venter på innsender"), ("ferdig", "Behandlet"), ("pam", "Påminnelser") };
+        { ("ny", "Til behandling"), ("venter", "Venter på innsender"), ("ferdig", "Behandlet"), ("pam", "Påminnelser"), ("utvalgte", "Utvalgte") };
 
     public int Antall(string fane) => fane switch
     {
@@ -33,6 +43,7 @@ public class ForvaltningViewModel
         "venter" => AntallVenter,
         "ferdig" => AntallBehandlet,
         "pam" => Paminnelser.Count,
+        "utvalgte" => Utvalgte.Count,
         _ => 0
     };
 

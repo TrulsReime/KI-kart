@@ -24,8 +24,22 @@ public interface IKiKartRepository
 
     Prosjekt? Finn(int id);
 
-    /// <summary>Prosjektene DigiAgder har valgt ut til karusellen på forsiden.</summary>
+    /// <summary>Prosjektene DigiAgder har valgt ut til karusellen på forsiden. Inaktive prosjekter er filtrert bort.</summary>
     IReadOnlyList<Prosjekt> Utvalgte();
+
+    /// <summary>Id-ene til alle utvalgte prosjekter i rekkefølgen i karusellen, også inaktive. Brukes i Forvaltning.</summary>
+    IReadOnlyList<int> UtvalgteIder();
+
+    /// <summary>
+    /// Legger et publisert prosjekt sist i karusellen. Returnerer false hvis prosjektet ikke finnes,
+    /// ikke er publisert, allerede er valgt ut, eller hvis det allerede er <see cref="Models.Katalog.MaksUtvalgte"/> utvalgte.
+    /// </summary>
+    bool VelgUt(int prosjektId);
+
+    bool FjernUtvalgt(int prosjektId);
+
+    /// <summary>Flytter et utvalgt prosjekt én plass opp (retning -1) eller ned (retning 1) i karusellen.</summary>
+    bool FlyttUtvalgt(int prosjektId, int retning);
 
     IReadOnlyList<Innmelding> Innmeldinger();
     IReadOnlyList<Henvendelse> Henvendelser();
