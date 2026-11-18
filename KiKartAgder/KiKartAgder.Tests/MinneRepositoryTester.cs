@@ -98,4 +98,73 @@ public class MinneRepositoryTester : IDisposable
         repo.Godkjenn(bliMed.Id);
         Assert.Contains("Grimstad", repo.Finn(id)!.Deltakere);
     }
+    /// <summary>Melder inn og godkjenner et prosjekt, så det er publisert.</summary>
+    private static int Publiser(MinneRepository repo, string tittel = "Testprosjekt")
+    {
+        var id = repo.MeldInnNytt(Lag.Prosjekt(tittel: tittel));
+        repo.Godkjenn(repo.Innmeldinger().Single(i => i.ProsjektId == id).Id);
+        return id;
+    }
+
+    [Fact]
+    public void Utvalgte_vises_i_rekkefolgen_de_ble_valgt()
+    {
+        var repo = Start();
+        var a = Publiser(repo, "A"); var b = Publiser(repo, "B");
+        Assert.True(repo.VelgUt(b));
+        Assert.True(repo.VelgUt(a));
+        Assert.Equal(new[] { "B", "A" }, repo.Utvalgte().Select(p => p.Tittel));
+    }
+
+    [Fact]
+    public void Prosjekt_som_venter_pa_godkjenning_kan_ikke_velges_ut()
+    {
+        var repo = Start();
+        var id = repo.MeldInnNytt(Lag.Prosjekt());
+        Assert.False(repo.VelgUt(id));
+    }
+
+    [Fact]
+    public void Det_kan_ikke_velges_ut_flere_enn_maks()
+    {
+        var repo = Start();
+        var ider = Enumerable.Range(1, Katalog.MaksUtvalgte + 1).Select(n => Publiser(repo, "P" + n)).ToList();
+        foreach (var id in ider.Take(Katalog.MaksUtvalgte)) Assert.True(repo.VelgUt(id));
+        Assert.False(repo.VelgUt(ider.Last()));
+        Assert.Equal(Katalog.MaksUtvalgte, repo.UtvalgteIder().Count);
+    }
+
+    [Fact]
+    public void Samme_prosjekt_kan_ikke_velges_ut_to_ganger()
+    {
+        var repo = Start();
+        var id = Publiser(repo);
+        Assert.True(repo.VelgUt(id));
+        Assert.False(repo.VelgUt(id));
+    }
+
+    [Fact]
+    public void Utvalgte_kan_flyttes_og_fjernes()
+    {
+        var repo = Start();
+        var a = Publiser(repo, "A"); var b = Publiser(repo, "B"); var c = Publiser(repo, "C");
+        repo.VelgUt(a); repo.VelgUt(b); repo.VelgUt(c);
+
+        Assert.True(repo.FlyttUtvalgt(c, -1));
+        Assert.Equal(new[] { a, c, b }, repo.UtvalgteIder().ToArray());
+        Assert.False(repo.FlyttUtvalgt(a, -1)); // står allerede først
+
+        Assert.True(repo.FjernUtvalgt(c));
+        Assert.Equal(new[] { a, b }, repo.UtvalgteIder().ToArray());
+    }
+
+    [Fact]
+    public void Utvalget_overlever_en_omstart()
+    {
+        var forst = Start();
+        var a = Publiser(forst, "A"); var b = Publiser(forst, "B");
+        forst.VelgUt(b); forst.VelgUt(a);
+
+        Assert.Equal(new[] { b, a }, Start().UtvalgteIder().ToArray());
+    }
 }

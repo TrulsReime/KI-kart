@@ -44,6 +44,50 @@ public class EfRepository : IKiKartRepository
         LastAlle().Where(x => x.Status == Publiseringsstatus.Publisert && x.Utvalgt != null && !ProsjektLogikk.ErInaktiv(x.Prosjekt, Idag))
             .OrderBy(x => x.Utvalgt).Select(x => x.Prosjekt).ToList();
 
+    public IReadOnlyList<int> UtvalgteIder() =>
+        _db.Prosjekter.AsNoTracking().Where(p => p.UtvalgtRekkefolge != null)
+            .OrderBy(p => p.UtvalgtRekkefolge).Select(p => p.ProsjektId).ToList();
+
+    public bool VelgUt(int prosjektId)
+    {
+        var p = _db.Prosjekter.FirstOrDefault(x => x.ProsjektId == prosjektId);
+        if (p == null || p.Publiseringsstatus != Publiseringsstatus.Publisert || p.UtvalgtRekkefolge != null) return false;
+        var utvalgte = _db.Prosjekter.Where(x => x.UtvalgtRekkefolge != null).OrderBy(x => x.UtvalgtRekkefolge).ToList();
+        if (utvalgte.Count >= M.Katalog.MaksUtvalgte) return false;
+        utvalgte.Add(p);
+        Nummerer(utvalgte);
+        return true;
+    }
+
+    public bool FjernUtvalgt(int prosjektId)
+    {
+        var utvalgte = _db.Prosjekter.Where(x => x.UtvalgtRekkefolge != null).OrderBy(x => x.UtvalgtRekkefolge).ToList();
+        var p = utvalgte.FirstOrDefault(x => x.ProsjektId == prosjektId);
+        if (p == null) return false;
+        p.UtvalgtRekkefolge = null;
+        utvalgte.Remove(p);
+        Nummerer(utvalgte);
+        return true;
+    }
+
+    public bool FlyttUtvalgt(int prosjektId, int retning)
+    {
+        var utvalgte = _db.Prosjekter.Where(x => x.UtvalgtRekkefolge != null).OrderBy(x => x.UtvalgtRekkefolge).ToList();
+        var i = utvalgte.FindIndex(x => x.ProsjektId == prosjektId);
+        var j = i + Math.Sign(retning);
+        if (i < 0 || j < 0 || j >= utvalgte.Count) return false;
+        (utvalgte[i], utvalgte[j]) = (utvalgte[j], utvalgte[i]);
+        Nummerer(utvalgte);
+        return true;
+    }
+
+    /// <summary>Gir de utvalgte rekkefølgen 1, 2, 3 ... og lagrer.</summary>
+    private void Nummerer(List<Prosjekt> utvalgte)
+    {
+        for (var i = 0; i < utvalgte.Count; i++) utvalgte[i].UtvalgtRekkefolge = i + 1;
+        Lagre();
+    }
+
     public IReadOnlyList<M.Innmelding> Innmeldinger() =>
         _db.Innmeldinger.AsNoTracking().Include(i => i.Kommune)
             .OrderByDescending(i => i.Dato).ThenByDescending(i => i.InnmeldingId)
