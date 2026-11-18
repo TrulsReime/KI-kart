@@ -288,6 +288,16 @@
       err.textContent = ''; show(step + 1); tilToppen();
     });
     back.addEventListener('click', () => { err.textContent = ''; show(step - 1); tilToppen(); });
+
+    // Tøm alt: laster skjemaet på nytt (GET), så alle felt, stikkord og avkrysninger nullstilles
+    const tom = $('[data-tom]', form);
+    if (tom) tom.addEventListener('click', () => {
+      const tekst = tom.textContent.trim() === 'Tøm alt' ? 'Vil du tømme alle feltene i skjemaet?' : 'Vil du forkaste endringene du har gjort?';
+      if (!confirm(tekst)) return;
+      // Etter en innsending med feil står adressen uten ?id, så id-en hentes fra skjemaet
+      const id = form.elements['Id'] && form.elements['Id'].value;
+      location.href = '/MeldInn' + (id ? '?id=' + encodeURIComponent(id) : '');
+    });
     form.addEventListener('submit', e => {
       const m = [...mangler(1), ...mangler(2)];
       if (m.length) { e.preventDefault(); err.textContent = 'Fyll ut: ' + m.join(', ') + '.'; }
