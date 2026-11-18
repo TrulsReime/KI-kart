@@ -69,7 +69,8 @@ public static class Katalog
     /// <summary>Navnet som vises som ansvarlig, f.eks. "Arendal kommune".</summary>
     public static string EierNavn(string kommune) => kommune == Fylkeskommune ? kommune : kommune + " kommune";
 
-    private static readonly string[] AlleKommuner =
+    /// <summary>De 25 kommunene i Agder. KatalogTester sjekker at listen er lik kommunene i kartet (agder.json).</summary>
+    public static readonly string[] Kommuner =
     {
         "Arendal", "Birkenes", "Bygland", "Bykle", "Evje og Hornnes", "Farsund", "Flekkefjord", "Froland",
         "Gjerstad", "Grimstad", "Hægebostad", "Iveland", "Kristiansand", "Kvinesdal", "Lillesand", "Lindesnes",
@@ -98,7 +99,7 @@ public static class Katalog
         ["IKT Agder"] = new[] { "Arendal", "Bygland", "Bykle", "Evje og Hornnes", "Froland", "Gjerstad", "Grimstad",
                                 "Iveland", "Risør", "Tvedestrand", "Valle", "Vegårshei", "Vennesla", "Åmli", Fylkeskommune },
         ["DDV"] = new[] { "Farsund", "Flekkefjord", "Hægebostad", "Kvinesdal", "Lindesnes", "Lyngdal", "Åseral" },
-        ["Digi Agder"] = AlleKommuner.Append(Fylkeskommune).ToArray(),
+        ["Digi Agder"] = Kommuner.Append(Fylkeskommune).ToArray(),
         ["Kristiansand"] = new[] { "Kristiansand" },
         ["Lillesand og Birkenes"] = new[] { "Lillesand", "Birkenes" },
     };

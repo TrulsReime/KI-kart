@@ -3,9 +3,10 @@ using KiKartAgder.Models;
 namespace KiKartAgder.Data;
 
 /// <summary>
-/// All lesing og skriving av data går gjennom dette grensesnittet. I prototypen ligger alt i minnet
-/// (<see cref="MinneRepository"/>). I en ferdig løsning byttes klassen ut med en som leser fra
-/// Power BI-datasettet eller en database, uten at kontrollerne eller visningene må endres.
+/// All lesing og skriving av data går gjennom dette grensesnittet. Det finnes to implementasjoner:
+/// <see cref="MinneRepository"/> (JSON-fil) og <see cref="EfRepository"/> (PostgreSQL). Program.cs velger
+/// mellom dem. Begge er forslag. DigiAgder eller IKT Agder kan lage sin egen implementasjon mot sin egen
+/// database og bytte den inn i Program.cs, uten at kontrollerne eller visningene må endres.
 /// </summary>
 public interface IKiKartRepository
 {

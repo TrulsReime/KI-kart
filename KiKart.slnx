@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="KiKartAgder/KiKartAgder/KiKartAgder.csproj" />
+  <Project Path="KiKartAgder/KiKartAgder.Tests/KiKartAgder.Tests.csproj" />
+</Solution>

@@ -12,9 +12,11 @@
     var fkTotalt = fkEgne + fkSam;
     var fkTrinn = Model.Trinn(fk);
 }
-@* Kartet tegnes på serveren som SVG. Hver kommune er en lenke til prosjektlisten filtrert på kommunen. *@
+@* Kartet tegnes på serveren som SVG. Hver kommune er en lenke til prosjektlisten filtrert på kommunen.
+   role="group" (ikke "img") gjør at skjermlesere når lenkene. Lenkene har egen aria-label med navn og antall,
+   så tallene og omrisset er skjult for skjermlesere for å unngå at de leses opp dobbelt. *@
 <div class="map-wrap">
-    <svg viewBox="@viewBox" role="img" aria-label="Kart over Agder med antall KI-prosjekter per kommune">
+    <svg viewBox="@viewBox" role="group" aria-label="Kart over Agder. Hver kommune er en lenke til prosjektene der.">
         <defs>
             @* Formen til hele fylket. Brukes til omrisset nedenfor og til silhuetten i fylkeskommune-innfeltet. *@
             <g id="agder-form">
@@ -25,20 +27,20 @@
             </g>
         </defs>
         @* Omrisset av hele fylket ligger under kommunene og vises når pekeren er over fylkeskommune-innfeltet *@
-        <use href="#agder-form" class="fylke-omriss" />
+        <use href="#agder-form" class="fylke-omriss" aria-hidden="true" />
         <g>
             @foreach (var k in Model.Kart.Kommuner)
             {
                 var egne = Model.Egne.GetValueOrDefault(k);
                 var sam = Model.ISamarbeid.GetValueOrDefault(k);
-                <a href="/Prosjekter?kommune=@Uri.EscapeDataString(k)" aria-label="@k: @egne egne prosjekter og @sam samarbeid"
+                <a href="/Prosjekter?kommune=@Uri.EscapeDataString(k)" aria-label="@k: @egne egne prosjekter og @sam samarbeid" role="link"
                    data-navn="@k" data-egne="@egne" data-samarbeid="@sam">
                     <path class="k" d="@Model.Kart.Former[k].Sti" fill="var(--seq-@Model.Trinn(k))" />
                 </a>
             }
         </g>
 
-        <g>
+        <g aria-hidden="true">
             @foreach (var k in Model.Kart.Kommuner.Where(k => Model.Totalt(k) > 0))
             {
                 var f = Model.Kart.Former[k];
