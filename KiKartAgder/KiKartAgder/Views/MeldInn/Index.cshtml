@@ -124,28 +124,28 @@
                     </div>
                 </fieldset>
                 <div class="f">
-                    <label for="Kommune">Ansvarlig kommune eller virksomhet<span class="req"> *</span></label>
-                    <select id="Kommune" name="Kommune" required data-pakrevd="ansvarlig kommune eller virksomhet">
+                    <label for="Ansvarlig">Ansvarlig kommune eller virksomhet<span class="req"> *</span></label>
+                    <select id="Ansvarlig" name="Ansvarlig" required data-pakrevd="ansvarlig kommune eller virksomhet">
                         <option value="">Velg …</option>
                         <optgroup label="Kommuner">
                             @foreach (var k in Model.Kommuner.Where(k => k != Katalog.Fylkeskommune))
                             {
-                                <option value="@k" selected="@(s.Kommune == k)">@k kommune</option>
+                                <option value="@k" selected="@(s.Ansvarlig == k)">@k kommune</option>
                             }
                         </optgroup>
                         <optgroup label="Fylkeskommunen">
-                            <option value="@Katalog.Fylkeskommune" selected="@(s.Kommune == Katalog.Fylkeskommune)">@Katalog.Fylkeskommune</option>
+                            <option value="@Katalog.Fylkeskommune" selected="@(s.Ansvarlig == Katalog.Fylkeskommune)">@Katalog.Fylkeskommune</option>
                         </optgroup>
                         <optgroup label="IKT-samarbeid">
                             @foreach (var x in Katalog.AnsvarligeSamarbeid)
                             {
-                                var verdi = MeldInnSkjema.IktPrefiks + x;
-                                <option value="@verdi" selected="@(s.Kommune == verdi)">@x</option>
+                                @* data-ikt forteller site.js at valget er et samarbeid, så kommunene krysses av *@
+                                <option value="@x" data-ikt selected="@(s.Ansvarlig == x)">@x</option>
                             }
                         </optgroup>
                     </select>
                     <span class="hint">Er en kommune ansvarlig, vises prosjektet på den i kartet. Velger du et IKT-samarbeid, krysses kommunene i samarbeidet av, og prosjektet vises på dem. Prosjekter fra Agder fylkeskommune vises i et eget felt i kartet.</span>
-                    @if (Feil("Kommune") is string feilKommune) {<span class="ferr">@feilKommune</span>}
+                    @if (Feil("Ansvarlig") is string feilAnsvarlig) {<span class="ferr">@feilAnsvarlig</span>}
                 </div>
                 <div class="f" id="partBox" hidden="@(s.Organisering != "Samarbeid")">
                     <span class="lab">Hvilke kommuner er med?</span>
@@ -267,7 +267,7 @@
                 <h3 data-vis="tittel">@(s.Tittel ?? "Prosjektets navn")</h3>
                 <p class="c-desc" data-vis="beskrivelse">@(s.Beskrivelse ?? "Kort beskrivelse av hva løsningen gjør.")</p>
                 <div class="c-meta">
-                    <span data-vis="eier">@(s.Kommune != null ? Katalog.EierNavn(s.Kommune) : "Ansvarlig kommune")</span><span class="sep">·</span><span data-vis="sektor">@(s.Sektor ?? "Sektor")</span>
+                    <span data-vis="eier">@(s.Ansvarlig == null ? "Ansvarlig kommune" : s.AnsvarligSamarbeid ?? Katalog.EierNavn(s.Ansvarlig))</span><span class="sep">·</span><span data-vis="sektor">@(s.Sektor ?? "Sektor")</span>
                     <span class="c-tags" data-vis="stikkord">@string.Join("  ", s.StikkordListe().Take(3).Select(t => "#" + t))</span>
                 </div>
             </div>

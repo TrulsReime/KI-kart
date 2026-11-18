@@ -304,7 +304,7 @@
       $('#stoppBox').hidden = fase !== 'Avbrutt';
       pv('tittel').textContent = verdi('Tittel') || 'Prosjektets navn';
       pv('beskrivelse').textContent = verdi('Beskrivelse') || 'Kort beskrivelse av hva løsningen gjør.';
-      const ans = form.elements['Kommune'];
+      const ans = form.elements['Ansvarlig'];
       pv('eier').textContent = ans && ans.value ? ans.options[ans.selectedIndex].text : 'Ansvarlig kommune';
       pv('sektor').textContent = sektor || 'Sektor';
       pv('fase').textContent = fase || 'Idé';
@@ -327,7 +327,7 @@
     });
 
     // Ansvarlig kommune er alltid med i samarbeidet
-    const ansvarlig = form.elements['Kommune'];
+    const ansvarlig = form.elements['Ansvarlig'];
     const kryssAv = navn => deltakere().forEach(c => { if (navn.includes(c.value)) c.checked = true; });
 
     // Når et IKT-samarbeid velges, krysses kommunene i samarbeidet av
@@ -364,13 +364,13 @@
     deltakere().forEach(c => c.addEventListener('change', oppdaterVelgAlle));
     oppdaterVelgAlle();
 
-    // Ansvarlig kan være en kommune eller et IKT-samarbeid («ikt:DDV»). Et samarbeid krysser av samarbeidet og kommunene.
+    // Ansvarlig kan være en kommune eller et IKT-samarbeid (valg merket med data-ikt). Et samarbeid krysser av samarbeidet og kommunene.
     const iktBoks = navn => form.querySelector(`input[name="IktSamarbeid"][value="${CSS.escape(navn)}"]`);
     const settIkt = (navn, pa) => {
       const b = iktBoks(navn);
       if (b && b.checked !== pa) { b.checked = pa; b.dispatchEvent(new Event('change', { bubbles: true })); }
     };
-    const iktAv = v => v && v.startsWith('ikt:') ? v.slice(4) : null;
+    const iktAv = v => { const o = [...ansvarlig.options].find(x => x.value === v); return o && 'ikt' in o.dataset ? v : null; };
     let forrigeAnsvarlig = ansvarlig.value, autoKommune = null;
     ansvarlig.addEventListener('change', () => {
       const forrige = iktAv(forrigeAnsvarlig), na = iktAv(ansvarlig.value);

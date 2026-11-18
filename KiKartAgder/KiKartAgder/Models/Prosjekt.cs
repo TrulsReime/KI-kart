@@ -1,7 +1,7 @@
 namespace KiKartAgder.Models;
 
 /// <summary>
-/// Ett KI-prosjekt i kartet. Tilsvarer én rad i datasettet (i dag en JSON-fil, senere Power BI eller en database).
+/// Ett KI-prosjekt i kartet, slik kontrollerne og visningene ser det. Hvordan det lagres, bestemmer repositoryet.
 /// </summary>
 public class Prosjekt
 {

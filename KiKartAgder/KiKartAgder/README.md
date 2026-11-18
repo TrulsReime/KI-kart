@@ -22,16 +22,17 @@ eller `dotnet watch run` for å laste siden på nytt automatisk når du endrer f
 | Mappe | Innhold |
 |---|---|
 | `Models/` | Domeneklassene: `Prosjekt`, `Innmelding`, `Henvendelse` og kodelistene i `Katalog` (faser, sektorer, stoppårsaker). |
-| `Data/` | `IKiKartRepository` (grensesnittet for all datatilgang), `MinneRepository` (data i minnet) og startdataene `prosjekter.json` og kartet `agder.json`. |
+| `Data/` | `IKiKartRepository` (grensesnittet for all datatilgang) med to implementasjoner: `MinneRepository` (JSON-fil) og `EfRepository` (PostgreSQL via Entity Framework Core). Databasetabellene ligger i `Data/Entiteter`, startdataene i `prosjekter.json` og kartet i `agder.json`. |
+| `Migrations/` | Endringer i databasestrukturen, laget av Entity Framework Core. Ikke rediger for hånd. |
 | `Services/` | Regler som brukes flere steder: søk, partnerforslag, lignende prosjekter, påminnelser (`ProsjektLogikk`), datoformat, kartdata og lenker. |
 | `ViewModels/` | Det hver visning trenger, f.eks. `OversiktViewModel`, `ProsjektFilter` og skjemamodellen `MeldInnSkjema` med validering. |
-| `Controllers/` | Én kontroller per fane: `Home` (Oversikt), `Prosjekter`, `Erfaringer`, `MeldInn` og `Forvaltning`. |
+| `Controllers/` | Én kontroller per fane: `Home` (Oversikt), `Prosjekter`, `MeldInn` og `Forvaltning`. `Erfaringer` sender bare gamle lenker videre til prosjektlisten, siden erfaringene nå ligger der. |
 | `Views/` | Razor-visningene. Felles deler ligger i `Views/Shared` (meny, prosjektkort, kart, stolpediagram, søkefelt). |
 | `wwwroot/` | `css/site.css` (utseendet fra prototypen) og `js/site.js` (karusell, søkeforslag, skjema i steg, iframe-høyde). |
 
 ## Slik henger M, V og C sammen
 
-- **Model**: `Prosjekt` og `Innmelding` beskriver dataene. `MinneRepository` henter og lagrer dem.
+- **Model**: `Prosjekt` og `Innmelding` beskriver dataene. Et repository (`MinneRepository` eller `EfRepository`) henter og lagrer dem.
 - **Controller**: tar imot forespørselen, henter data via repository og lager en ViewModel. Eksempel: `ProsjekterController.Index` leser filtrene fra adressen (`/Prosjekter?fase=Pilot&kommune=Arendal`) og sender resultatet til visningen.
 - **View**: Razor-filene viser ViewModel-en som HTML. Visningene inneholder ingen forretningslogikk.
 
@@ -44,20 +45,43 @@ Alle filtre ligger i adressen, så et filtrert utvalg kan deles som lenke. Skjem
 | Oversikt | `/` |
 | Prosjekter med filter | `/Prosjekter?org=Samarbeid&fase=Pilot` |
 | Ett prosjekt | `/Prosjekter/Detaljer/24` |
-| Erfaringer | `/Erfaringer?status=stoppet` |
+| Prosjekter med erfaringer | `/Prosjekter?erfaringer=true` |
 | Meld inn / oppdater | `/MeldInn`, `/MeldInn?id=12` |
 | Forvaltning | `/Forvaltning`, `/Forvaltning?fane=pam` |
 
 ## Viktig å vite
 
-- **Data forsvinner ved omstart.** Alt ligger i minnet. Nye prosjekter og godkjenninger nullstilles når applikasjonen startes på nytt.
+- **Hvor dataene lagres** avgjøres i `Program.cs`. Finnes tilkoblingen `ConnectionStrings:KiKart`, brukes databasen. Ellers lagres alt i én JSON-fil: `App_Data/kikart-data.json` lokalt og `%HOME%\data\kikart\kikart-data.json` på Azure App Service. Filen beholdes ved omstart. Begge er forslag, siden DigiAgder eller IKT Agder skal bruke sin egen database.
+- **IKT-samarbeid:** hvilke kommuner som er med i hvert samarbeid, står i `Katalog.IktSamarbeidMedlemmer` i `Models/Katalog.cs`. Listen for Digi Agder er ikke bekreftet av DigiAgder.
 - **Dato for testing:** `KiKart:Dato` i `appsettings.json` er tom, så løsningen bruker dagens dato. Sett en dato der (f.eks. `2027-10-01`) for å teste påminnelser og inaktive prosjekter.
 - **Forvaltning krever ingen innlogging** i prototypen. I en ferdig løsning bør `ForvaltningController` få `[Authorize]`, for eksempel med kommunenes Microsoft Entra ID (tidligere Azure AD).
 - **Fonten Inter** hentes fra Google Fonts. Uten nett brukes systemfonten.
 
+## Database lokalt (valgfritt)
+
+1. Lag en fil `KiKartAgder/.env` med `DB_USER` og `DB_PASSWORD`. Filen skal ikke inn i git.
+2. Start databasen fra mappen `KiKartAgder`: `docker compose up -d db`
+3. Lagre tilkoblingen som User Secret, så passordet ikke havner i koden:
+   `dotnet user-secrets set "ConnectionStrings:KiKart" "Host=localhost;Database=KiKart;Username=...;Password=..."`
+4. Start appen. Lokalt kjøres migrasjonene automatisk, og testdata fra `prosjekter.json` legges inn hvis databasen er tom. I produksjon må migrasjonene kjøres manuelt med `dotnet ef database update`.
+
+## Tester
+
+Testene ligger i `KiKartAgder.Tests` og kjøres med `dotnet test` fra rotmappen, eller fra Testing-panelet i VS Code.
+
+| Fil | Hva den sikrer |
+|---|---|
+| `MeldInnSkjemaTester` | Validering i skjemaet og at det blir riktig prosjekt, også med fylkeskommunen eller et IKT-samarbeid som ansvarlig |
+| `SokOgFilterTester` | At søket finner tekst i alle feltene, og at filtrene kombineres riktig |
+| `AktualitetTester` | Grensene for når et prosjekt blir eldre, må bekreftes og blir inaktivt |
+| `KatalogTester` | At medlemslistene for IKT-samarbeid bare har ekte kommunenavn og ikke overlapper |
+| `MinneRepositoryTester` | Godkjenning av innmeldinger og at dataene overlever en omstart |
+
+`EfRepository` har ingen tester ennå.
+
 ## Veien videre
 
-- **Power BI eller database:** lag en ny klasse som implementerer `IKiKartRepository` og bytt den inn i `Program.cs`. Kontrollere og visninger trenger ikke endres. Power BI er godt egnet til å lese og analysere data, men ikke til å ta imot innmeldinger. En database (f.eks. SQL Server med Entity Framework Core) eller en SharePoint-liste som Power BI leser fra, er derfor et mer realistisk oppsett.
+- **Egen database hos DigiAgder eller IKT Agder:** lag en ny klasse som implementerer `IKiKartRepository` og bytt den inn i `Program.cs`. Kontrollere og visninger trenger ikke endres. `EfRepository` og ER-diagrammet i `docs/` kan brukes som mal. Testene i `MinneRepositoryTester` viser hvordan en implementasjon skal oppføre seg.
 - **E-post:** påminnelser og varsler er bare simulert. Koble til en e-posttjeneste for å sende dem.
 
 ## iframe på digiagder.no

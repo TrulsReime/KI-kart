@@ -3,8 +3,8 @@ using System.Globalization;
 namespace KiKartAgder.Services;
 
 /// <summary>
-/// Gir «dagens dato». Eksempeldataene er laget rundt 7. oktober 2026, så prototypen låser datoen
-/// via appsettings.json (KiKart:Dato). Tom verdi betyr ekte dagens dato.
+/// Gir «dagens dato». Vanligvis er KiKart:Dato i appsettings.json tom, og da brukes ekte dagens dato.
+/// Settes en dato der, kan man teste påminnelser og inaktive prosjekter uten å vente.
 /// </summary>
 public interface IDatoTjeneste
 {
