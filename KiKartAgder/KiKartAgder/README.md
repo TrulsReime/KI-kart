@@ -88,7 +88,7 @@ Testene ligger i `KiKartAgder.Tests` og kjøres med `dotnet test` fra rotmappen,
 
 `Program.cs` setter `Content-Security-Policy: frame-ancestors`, styrt av `KiKart:IframeVerter` i `appsettings.json`. Bare de nettstedene som står der, kan vise kartet i en iframe. I produksjon settes cookies til `SameSite=None; Secure`, så skjemaene virker inne i iframen. Det krever HTTPS (Hypertext Transfer Protocol Secure).
 
-Når siden vises i en iframe, skjules den etterlignede DigiAgder-menyen, og siden sender høyden sin til foreldresiden:
+Når siden vises i en iframe, sender den høyden sin til foreldresiden, så iframen aldri får eget rullefelt:
 
 ```html
 <iframe id="kikart" src="https://ki-kart.example.no/" style="width:100%;border:0" title="KI-kart for Agder"></iframe>

@@ -233,20 +233,11 @@ details.fold>.body{padding-bottom:14px}
 :focus-visible{outline:3px solid var(--navy);outline-offset:2px}
 .skip{position:absolute;left:-9999px;top:8px;background:var(--navy);color:#fff;padding:10px 14px;z-index:100}
 .skip:focus{left:8px}
-.hostbar{border-bottom:1px solid var(--line);background:#fff}
-.hostinner{display:flex;align-items:center;gap:24px;min-height:76px}
-.hostlogo{display:flex;gap:12px;align-items:center;font-weight:700;font-size:19px;color:var(--navy)}
-.hostlogo small{display:block;font-size:11.5px;font-weight:500;color:var(--ink-3)}
-.hostnav{display:flex;gap:26px;margin-left:auto;font-size:15.5px;color:var(--ink)}
-@media (max-width:860px){
-  .hostnav{display:none}
-}
 .crumbs{display:flex;flex-wrap:wrap;gap:8px;color:var(--ink-3)}
 .crumbs span:not([aria-current]):not([aria-hidden]){color:var(--navy);text-decoration:underline;text-underline-offset:2px}
 .pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
 .pagehead h1{line-height:1.15}
 .ingress{line-height:1.55;color:var(--ink);margin:12px 0 0}
-.alert{border-left:4px solid var(--cyan);color:var(--ink)}
 .btn{border-radius:2px;font-size:15px}
 .btn.small{font-size:13.5px}
 .btn.big{padding:12px 22px;font-size:16px}
@@ -362,7 +353,6 @@ fieldset.choice legend{padding:0;margin-bottom:6px}
 /* v9: skarpere farger og forvaltning */
 :root{--bg:#FFFFFF;--surface:#FFFFFF;--accent-ink:#FFFFFF;--warn:#FAB219;--shadow:0 12px 40px rgba(0,47,108,.18);--font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--radius:2px;--ink:#0B1620;--ink-2:#26323D;--ink-3:#4A5662;--line:#D2D9E0;--line-2:#A9B5C1;--surface-2:#EDF1F5;--navy:#002F6C;--accent:#002F6C;--accent-strong:#001D45;--cyan:#0099D8;--sky:#33AEE3;--accent-soft:#D4EEF9;--teal:#00756E;--teal-soft:#D0EEEB;--seq-0:#E3E8ED;--seq-1:#BFE6F7;--seq-2:#7FCCEE;--seq-3:#33AEE3;--seq-4:#0099D8;--seq-5:#0068A8;--seq-6:#002F6C;--good:#0A8F2E;--good-ink:#06652A;--good-soft:#DDF2E3;--crit:#C62828;--crit-ink:#9E1B1B;--crit-soft:#FADBDB;--warn-soft:#FFEFC7;--warn-ink:#6B4500}
 .pagehead h1{color:var(--navy)}
-.alert{border-left-color:var(--cyan);background:#E3F4FC}
 nav.tabs{scrollbar-width:none;border-bottom-color:var(--line)}
 nav.tabs .tab-adm{margin-left:auto}
 .pill{white-space:nowrap;background:#E1E7ED;color:var(--ink-2);font-weight:600}
@@ -520,17 +510,6 @@ main>.grid,main>section,main>div{margin-top:0}
 @media (max-width:980px){
   .grid.halves{grid-template-columns:1fr}
 }
-/* DigiAgder-toppmeny (prototype) */
-.dabar{border-bottom:1px solid #E6E9EC}
-.dabar .hostinner{min-height:68px;justify-content:center;gap:28px}
-.dalogo{gap:8px;font-weight:600;font-size:18px;color:#2B2F33;letter-spacing:-.01em}
-.danav{margin-left:0;gap:22px;font-size:14px;color:#2B2F33}
-.danav span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
-.danav .on{color:var(--navy);font-weight:700;box-shadow:inset 0 -2px 0 var(--cyan);padding-bottom:3px}
-.dasearch{color:#2B2F33;display:inline-flex}
-@media (max-width:1100px){
-  .danav span:not(.on){display:none}
-}
 @media (max-width:980px){
   .grid.ov{grid-template-columns:1fr}
 }
@@ -587,8 +566,6 @@ fieldset.step{border:0;padding:0;margin:0;min-width:0}
 .toolbar select{font:inherit;font-size:13.5px}
 /* Elementer som bare gir mening med JavaScript */
 html:not(.js) .js-only{display:none !important}
-/* I iframe på digiagder.no har siden allerede egen meny */
-html.framed .dabar{display:none}
 /* Mobil: én kolonne som aldri blir bredere enn skjermen */
 @media (max-width:980px){
   .grid.explore,.grid.form-grid,.grid.ov,.grid.halves{grid-template-columns:minmax(0,1fr)}
@@ -640,7 +617,6 @@ body{font-family:var(--font);line-height:1.5;padding-inline:16px;padding-block:0
 .pagehead h1{font-size:clamp(24px,2.9vw,31px)}
 .ingress{max-width:62ch;font-size:16.5px;margin-top:8px}
 .btn.outline-cta,.hero .pagehead .btn.primary.big.outline-cta{padding:11px 18px;font-size:13px}
-.alert{padding:9px 14px;font-size:13.5px;margin-bottom:16px}
 nav.tabs a{cursor:pointer;white-space:nowrap;text-decoration:none;padding:10px 16px;font-size:15px}
 .herosearch{margin-bottom:18px}
 .herosearch .searchbox input{padding:11px 14px 11px 40px;font-size:16px}

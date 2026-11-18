@@ -246,6 +246,8 @@
             <p class="formerr" role="alert" id="formerr">@(feil.Count > 0 ? "Rett opp: " + string.Join(", ", feil).ToLowerInvariant() + "." : "")</p>
             <div class="stepnav">
                 <button class="btn js-only" type="button" data-tilbake>Tilbake</button>
+                @* Starter skjemaet på nytt. Ved oppdatering hentes prosjektets lagrede verdier tilbake. *@
+                <button class="btn ghost js-only" type="button" data-tom>@(p != null ? "Angre endringer" : "Tøm alt")</button>
                 <span class="grow"></span>
                 <button class="btn primary big js-only" type="button" data-neste>Neste</button>
                 <button class="btn primary big" type="submit" data-send>@(p != null ? "Send oppdatering" : "Send inn prosjektet")</button>
